@@ -314,13 +314,13 @@ function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edi
     // SYNERGY - add javascript to control subchapter collapsing.
 }
 
-function giportfolio_add_fakeuser_block($chapters, $chapter, $giportfolio, $cm, $edit, $userid) {
+function giportfolio_add_fakeuser_block($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $mentor = 0 ) {
     global $OUTPUT, $PAGE;
 
     if (!$edit) {
-        $toc = giportfolio_get_userviewtoc($chapters, $chapter, $giportfolio, $cm, $edit, $userid);
+        $toc = giportfolio_get_userviewtoc($chapters, $chapter, $giportfolio, $cm, $edit, $userid,  $mentor);
     } else {
-        $toc = giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, 0);
+        $toc = giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit);
     }
 
     if ($edit) {
@@ -504,6 +504,7 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
                 if ($ch->id == $chapter->id) {
                     $toc .= '<strong>'.$title.'</strong>';
                 } else {
+
                     $toc .= '<a title="'.s($title).'" href="viewgiportfolio.php?id='.$cm->id.'&amp;chapterid='.$ch->id.'">'.
                         $title.'</a>';
                 }
@@ -724,7 +725,7 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
     return $toc;
 }
 
-function giportfolio_get_userviewtoc($chapters, $chapter, $giportfolio, $cm, $edit, $userid) {
+function giportfolio_get_userviewtoc($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $mentor = 0) {
     $toc = ''; // Representation of toc (HTML).
     $nch = 0; // Chapter number.
     $ns = 0; // Subchapter number.
@@ -751,6 +752,7 @@ function giportfolio_get_userviewtoc($chapters, $chapter, $giportfolio, $cm, $ed
     // SYNERGY - add 'giportfolio-toc' ID.
 
     if ($tocid) { // Normal students view.
+        $ismentor = '&amp;mentor='. $mentor;
         $toc .= '<ul>';
         $i = 0;
 
@@ -810,7 +812,7 @@ function giportfolio_get_userviewtoc($chapters, $chapter, $giportfolio, $cm, $ed
                 $toc .= '<strong>'.$title.'</strong>';
             } else {
                 $toc .= '<a title="'.s($title).'" href="viewcontribute.php?id='.$cm->id.'&amp;chapterid='.$ch->id.
-                    '&amp;userid='.$userid.'">'.$title.'</a>';
+                    '&amp;userid='.$userid.$ismentor.'">'.$title.'</a>';
             }
             $toc .= '&nbsp;&nbsp;';
             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
@@ -938,7 +940,7 @@ function giportfolio_chapter_count_contributions($giportfolioid, $chapterid) {
     return $DB->count_records_select('giportfolio_contributions', $select, $params);
 }
 
-function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid) {
+function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid, $mentor = 0) {
     global $OUTPUT, $PAGE, $CFG, $DB;
 
     require_once($CFG->libdir.'/gradelib.php');
@@ -976,30 +978,32 @@ function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid) {
     $bc->content .= '<br/>';
     $bc->content .= $lastupdated;
 
-    $hasgrade = ($userfinalgrade && (!is_null($userfinalgrade->grade) || $userfinalgrade->feedback));
-    $gradelocked = ($userfinalgrade && $userfinalgrade->locked);
+    if ($mentor == 0) {
+        $hasgrade = ($userfinalgrade && (!is_null($userfinalgrade->grade) || $userfinalgrade->feedback));
+        $gradelocked = ($userfinalgrade && $userfinalgrade->locked);
 
-    $bc->content .= '<br/>';
-    if ($hasgrade) {
-        $bc->content .= '<strong>'.get_string('grade').'</strong>';
         $bc->content .= '<br/>';
-        $bc->content .= $userfinalgrade->grade.'  ';
-    }
-    if (!$gradelocked) {
-        $gradeurl = new moodle_url('/mod/giportfolio/updategrade.php', array('id' => $cm->id, 'userid' => $userid));
-        $strgrade = $hasgrade ? get_string('upgrade', 'mod_giportfolio') : get_string('insertgrade', 'mod_giportfolio');
-        $bc->content .= html_writer::link($gradeurl, $strgrade);
-    }
-    if ($hasgrade) {
-        if ($userfinalgrade->feedback) {
-            $feedback = $userfinalgrade->feedback;
-        } else {
-            $feedback = '-';
+        if ($hasgrade) {
+            $bc->content .= '<strong>'.get_string('grade').'</strong>';
+            $bc->content .= '<br/>';
+            $bc->content .= $userfinalgrade->grade.'  ';
         }
-        $bc->content .= '<br/>';
-        $bc->content .= '<strong>'.get_string('feedback').'</strong>';
-        $bc->content .= '<br/>';
-        $bc->content .= $feedback;
+        if (!$gradelocked) {
+            $gradeurl = new moodle_url('/mod/giportfolio/updategrade.php', array('id' => $cm->id, 'userid' => $userid));
+            $strgrade = $hasgrade ? get_string('upgrade', 'mod_giportfolio') : get_string('insertgrade', 'mod_giportfolio');
+            $bc->content .= html_writer::link($gradeurl, $strgrade);
+        }
+        if ($hasgrade) {
+            if ($userfinalgrade->feedback) {
+                $feedback = $userfinalgrade->feedback;
+            } else {
+                $feedback = '-';
+            }
+            $bc->content .= '<br/>';
+            $bc->content .= '<strong>'.get_string('feedback').'</strong>';
+            $bc->content .= '<br/>';
+            $bc->content .= $feedback;
+        }
     }
     $bc->content .= '<br/>';
 
@@ -1213,6 +1217,33 @@ function giportfolio_delete_chapter_contributions($chapterid, $cmid, $giportfoli
 
     // Delete the contributions.
     $DB->delete_records('giportfolio_contributions', $params);
+}
+
+// Parent view of own child's activity functionality
+function giportfolio_user_is_mentor($context, $user) {
+    global $DB;
+
+    if (!is_enrolled($context, $user)) {
+        $userfields = user_picture::fields('u');
+
+        $sql = "SELECT u.id, $userfields
+                FROM {role_assignments} ra, {context} c, {user} u
+                WHERE ra.userid = :mentorid
+                AND ra.contextid = c.id
+                AND c.instanceid = u.id
+                AND c.contextlevel = :contextlevel";
+
+        $params = array(
+            'mentorid' => $user->id,
+            'contextlevel' => CONTEXT_USER
+        );
+
+        if ($users = $DB->get_records_sql($sql, $params)) {
+          return [$users,true];
+        }
+    }
+
+    return [null,false];
 }
 
 /**

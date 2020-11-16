@@ -23,7 +23,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die;
-
+require_once(dirname(__FILE__).'/locallib.php');
 /**
  * Returns list of available numbering types
  * @return array
@@ -78,7 +78,7 @@ function giportfolio_add_instance($giportfolio, $mform) {
 
     if ($giportfolio) {
         $addcontent = get_string('addcontent', 'mod_giportfolio');
-        
+
         for ($ch = 0; $ch < $giportfolio->chapternumber; $ch++) {
             $initchapter = new stdClass();
             $initchapter->giportfolioid = $giportfolio->id;
@@ -617,11 +617,15 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
     $strattachment = get_string('attachment', 'giportfolio');
 
     $fs = get_file_storage();
-
+    #var_dump($contribution);
+    #var_dump($filecontext);
+    #var_dump($fs->get_area_files($filecontext->id, 'mod_giportfolio', 'attachment', $contribution->id, "timemodified", false));
     $output = '';
     /** @var stored_file[] $files */
     if ($files = $fs->get_area_files($filecontext->id, 'mod_giportfolio', 'attachment', $contribution->id, "timemodified", false)) {
+
         foreach ($files as $file) {
+
             $filename = $file->get_filename();
             $mimetype = $file->get_mimetype();
             $iconimage = '<img src="'.$OUTPUT->image_url(file_mimetype_icon($mimetype)).'" class="icon" alt="'.$mimetype.'" />';
@@ -650,7 +654,7 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
             }
         }
     }
-
+       # exit;
     return $output;
 }
 
@@ -734,6 +738,8 @@ function giportfolio_pluginfile($course, $cm, $context, $filearea, $args, $force
     if ($context->contextlevel != CONTEXT_MODULE) {
         return false;
     }
+    // Part of Parent view of own child's activity functionality
+    list($mentees, $ismentor) = giportfolio_user_is_mentor($context, $cm, $USER);
 
     require_course_login($course, true, $cm);
 
@@ -769,18 +775,23 @@ function giportfolio_pluginfile($course, $cm, $context, $filearea, $args, $force
         ) {
             return false;
         }
-        if ($contribution->userid != $USER->id) {
+
+
+        if ($contribution->userid != $USER->id && !$ismentor) {
+            // If the user trying to see the portfolio is the contributor mentor let it see images
+
             // The contribution belongs to another user.
-            if (!$contribution->shared && !has_capability('mod/giportfolio:viewgiportfolios', $context)) {
+            if (!$contribution->shared && !has_capability('mod/giportfolio:viewgiportfolios', $context) ) {
                 // The contribution has not been shared and the viewing user does not have permission to view portfolios.
                 return false;
             }
         }
+
         if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $contribution->chapterid,
                                                                       'giportfolioid' => $giportfolio->id))) {
             return false;
         }
-        if ($chapter->userid && $chapter->userid != $USER->id) {
+        if (($chapter->userid && $chapter->userid != $USER->id) && !$ismentor ) {
             if (!has_capability('mod/giportfolio:viewgiportfolios', $context)) {
                 return false;
             }
@@ -842,7 +853,7 @@ function mod_giportfolio_comment_validate($opts) {
                                                                              'id' => $opts->itemid,
                                                                              'giportfolioid' => $opts->cm->instance
                                                                         ));
-        if ($userid != $USER->id) {
+        if ($userid != $USER->id && !giportfolio_user_is_mentor($opts->context, $USER)) {
             return false;
         }
     }
@@ -904,3 +915,7 @@ function mod_giportfolio_cm_info_view(cm_info $cm) {
     $count = html_writer::tag('span', $count, array('class' => 'giportfolio-count'));
     $cm->set_after_link($count);
 }
+
+
+
+

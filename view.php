@@ -50,14 +50,14 @@ require_course_login($course, true, $cm);
 // MikeV - Parent view implementation notes:
 // Here we need to determine if the user is enrolled in the course. To help with this, get a list of enrolled users in the course:
 //    - $courseuserroles = enrol_get_course_users_roles($courseid);
-// If the user is enrolled it means their are either a student or teacher (it doesn't matter which one) just continue as usual. 
-// If the user has no enrolment in the course then they are likely a parent. Check to see if the user has any mentees in this course. 
+// If the user is enrolled it means their are either a student or teacher (it doesn't matter which one) just continue as usual.
+// If the user has no enrolment in the course then they are likely a parent. Check to see if the user has any mentees in this course.
 // To do that, you can use the list of enrolled users previously retreived, as well as the mentor role in the system:
 //    - $mentorrole = $DB->get_record('role', array('shortname' => 'parent'));
 // And finally, run an SQL query that looks at the mdl_role_assignmnets table to see if there is any mentor relationship between the current user and the enrolled users.
-// If there is a mentor/mentee relationship, proceed to impersonating the child. 
+// If there is a mentor/mentee relationship, proceed to impersonating the child.
 // If there is more than one relationship, they will need to be displayed a choice of which student to impersonate before continuing.
-// When you have the student that needs to be viewed, you can use that user in subsequent functions to bypass capability checks 
+// When you have the student that needs to be viewed, you can use that user in subsequent functions to bypass capability checks
 // and load the correct portfolio data.
 
 $chapters = giportfolio_preload_chapters($giportfolio);
@@ -72,9 +72,13 @@ if ($additionalchapters) {
 $context = context_module::instance($cm->id);
 require_capability('mod/giportfolio:view', $context);
 
+// Parent view of own child's activity functionality
+list($mentees, $ismentor) = giportfolio_user_is_mentor($context, $USER);
+
 $allowedit = has_capability('mod/giportfolio:edit', $context);
 $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context);
 $allowreport = has_capability('report/outline:view', $context->get_course_context());
+$allowview = has_capability('mod/giportfolio:view', $context);
 
 if ($allowedit) {
     if ($edit != -1 and confirm_sesskey()) {
@@ -91,7 +95,7 @@ if ($allowedit) {
 }
 
 if ($giportfolio->skipintro) {
-    if ($allowcontribute && !$allowedit) {
+    if ($allowcontribute && !$allowedit ) {
         // Redirect to the 'update contribution' page.
         redirect(new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id)));
     }
@@ -189,6 +193,28 @@ if ($allowedit) {
         echo '</br>';
         echo html_writer::end_tag('div');
     }
+} else if ($ismentor) {
+    echo html_writer::start_tag('div', array('class' => 'giportfolioparent'));
+    echo '</br>';
+   // Replace link with button.
+    foreach ($mentees as $mentee) {
+        $form = new stdClass();
+        $form->url = new moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id,
+            'userid'=>$mentee->id, 'mentor' => $ismentor));
+        $form->text = get_string('viewmenteetemplate', 'mod_giportfolio', ['name' => $mentee->firstname]);
+        echo $OUTPUT->single_button($form->url, $form->text, '', array());
+        echo '<br><br>';
+
+    }
+    echo html_writer::end_tag('div');
+}
+
+// To show the parent perspective. 
+if (is_role_switched($course->id) ) {
+    $f = new stdClass();
+    $f->url = new moodle_url('/mod/giportfolio/view.php', array('id' => $cm->id));
+    $text =  get_string('viewmenteetemplate', 'mod_giportfolio', ['name' => 'Mentee\'s name']);
+    echo $OUTPUT->single_button( $f->url, $text, '', array());
 }
 
 echo $OUTPUT->box_end();

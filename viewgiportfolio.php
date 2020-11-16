@@ -302,7 +302,7 @@ if ($giportfolio->klassenbuchtrainer && giportfolio_include_klassenbuchtrainer()
 
 if ($contriblist) {
     echo $OUTPUT->box_start('giportfolio_contributions');
-    
+
     $contribution_buffer = '';
     $contribution_outline = '';
     if($giportfolio->displayoutline) {
@@ -314,7 +314,7 @@ if ($contriblist) {
             .'</span></p><table id="giportfolio_outline" class="contents">';
     }
     $contribution_count = 0;
-    
+
     comment::init();
     $commentopts = (object)array(
         'context' => $context,
@@ -380,7 +380,7 @@ if ($contriblist) {
         	$cout .= '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
         }
         $cout .= '<br/><br/>';
-        
+
         $cout = html_writer::tag('contribheader', $cout);
         $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                     'contribution', $contrib->id);
@@ -403,13 +403,13 @@ if ($contriblist) {
         }
 
         $contribution_count++;
-        
+
         $class = 'giportfolio-contribution';
         $class .= $ismine ? ' mine' : ' notmine';
         $contribution_buffer .= html_writer::tag('article', $cout, array('class' => $class, 'id' => 'contribution'.$contribution_count));
-        
+
         if($giportfolio->displayoutline) {
-            
+
             $date_display = date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
             if($contrib->timecreated !== $contrib->timemodified) {
                 $date_display .= '&nbsp;<span class="timemodified">&raquo;<span class="timemodified_details">'
@@ -417,7 +417,7 @@ if ($contriblist) {
                     .date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified)
                 .'</span></span>';
             }
-            
+
             $contribution_outline .= html_writer::tag('tr',
                 '<td><a href="#contribution'.$contribution_count.'">'.format_string($contrib->title).'</a></td>'.
                 '<td class="contribdate">'.$date_display.'</td>',
@@ -425,7 +425,7 @@ if ($contriblist) {
             );
         }
     }
-    
+
     if($giportfolio->displayoutline) {
         echo $contribution_outline.'</table><br/>';
     }

@@ -32,7 +32,7 @@ $userid = required_param('userid', PARAM_INT);
 $id = optional_param('id', 0, PARAM_INT); // Course Module ID.
 $bid = optional_param('b', 0, PARAM_INT); // Giportfolio id.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
-
+$ismentor = optional_param('mentor', 0, PARAM_INT);
 // Security checks START - teachers edit; students view.
 
 if ($id) {
@@ -50,7 +50,9 @@ require_course_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
 require_capability('mod/giportfolio:view', $context);
+if ($ismentor != 1) {
 require_capability('mod/giportfolio:viewgiportfolios', $context);
+}
 
 $viewhidden = has_capability('mod/giportfolio:viewhiddenchapters', $context);
 
@@ -118,8 +120,8 @@ $PAGE->set_title(format_string($giportfolio->name));
 $PAGE->add_body_class('mod_giportfolio');
 $PAGE->set_heading(format_string($course->fullname));
 
-giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $course->id);
-giportfolio_add_fakeuser_block($chapters, $chapter, $giportfolio, $cm, $edit, $userid);
+giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $course->id, $ismentor);
+giportfolio_add_fakeuser_block($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $ismentor);
 
 // Prepare chapter navigation icons.
 $previd = null;
@@ -140,9 +142,10 @@ foreach ($chapters as $ch) {
 }
 
 $chnavigation = '';
+$mentor = '&amp;mentor='. $ismentor;
 if ($previd) {
     $chnavigation .= '<a title="'.get_string('navprev', 'giportfolio').'" href="viewcontribute.php?id='.$cm->id.
-        '&amp;chapterid='.$previd.'&amp;userid='.$userid.'">
+        '&amp;chapterid='.$previd.'&amp;userid='.$userid.$mentor.'">
         <img src="'.$OUTPUT->image_url('nav_prev', 'mod_giportfolio').'" class="bigicon" alt="'.
         get_string('navprev', 'giportfolio').'"/></a>';
 } else {
@@ -150,7 +153,7 @@ if ($previd) {
 }
 if ($nextid) {
     $chnavigation .= '<a title="'.get_string('navnext', 'giportfolio').'" href="viewcontribute.php?id='.$cm->id.
-        '&amp;chapterid='.$nextid.'&amp;userid='.$userid.'">
+        '&amp;chapterid='.$nextid.'&amp;userid='.$userid.$mentor.'">
         <img src="'.$OUTPUT->image_url('nav_next', 'mod_giportfolio').'" class="bigicon" alt="'.
         get_string('navnext', 'giportfolio').'" /></a>';
 } else {
@@ -160,8 +163,10 @@ if ($nextid) {
     }
     if ($course->id == $SITE->id) {
         $returnurl = "$CFG->wwwroot/";
-    } else {
+    } else if ($ismentor == 0){
         $returnurl = "$CFG->wwwroot/mod/giportfolio/submissions.php?id=$cm->id";
+    } else {
+        $returnurl = "$CFG->wwwroot/mod/giportfolio/view.php?id=$cm->id";
     }
     $chnavigation .= '<a title="'.get_string('navexit', 'giportfolio').'" href="'.$returnurl.'">
     <img src="'.$OUTPUT->image_url('nav_exit', 'mod_giportfolio').'" class="bigicon" alt="'.
@@ -200,6 +205,7 @@ if (!$giportfolio->customtitles) {
 }
 
 $pixpath = "$CFG->wwwroot/pix";
+
 $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $userid);
 $chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                             'chapter', $chapter->id);
@@ -207,7 +213,7 @@ echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true,
 
 if ($contriblist) {
     echo $OUTPUT->box_start('giportfolio_contributions');
-    
+
     $contribution_buffer = '';
     $contribution_outline = '';
     if($giportfolio->displayoutline) {
@@ -218,9 +224,9 @@ if ($contriblist) {
                 .'<span id="toggleshow">'.get_string('outline_show', 'mod_giportfolio').'</span> ]'
             .'</span></p><table id="giportfolio_outline" class="contents">';
     }
-    
+
     $contribution_count = 0;
-    
+
     comment::init();
     $commentopts = (object)array(
         'context' => $context,
@@ -235,6 +241,7 @@ if ($contriblist) {
 
     $align = 'right';
     foreach ($contriblist as $contrib) {
+
         if (!$contrib->hidden) {
             $cout = '';
             $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio',
@@ -251,8 +258,9 @@ if ($contriblist) {
             $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                         'contribution', $contrib->id);
             $cout .= html_writer::tag('contribtext', format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context)));
-            
+
             $files = giportfolio_print_attachments($contrib, $cm, $type = null, $align = "right");
+
             if ($files) {
                 $cout .= "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\" nowrap=\"nowrap\">\n";
                 $cout .= $files;
@@ -261,8 +269,11 @@ if ($contriblist) {
             }
 
             $commentopts->itemid = $contrib->id;
-            $commentbox = new comment($commentopts);
-            $cout .= html_writer::tag('contribcomment', $commentbox->output());
+            //if ($ismentor != 1) {
+                $commentbox = new comment($commentopts);
+                $cout .= html_writer::tag('contribcomment', $commentbox->output());
+
+            //}
 
             // Wrap contribution and make entry in the contents
             $contribution_count++;
@@ -276,7 +287,7 @@ if ($contriblist) {
                         .date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified)
                    .'</span></span>';
                 }
-                
+                $ismine = true; //TODO: DELETE
                 $contribution_outline .= html_writer::tag('tr',
                     '<td><a href="#contribution'.$contribution_count.'">'.format_string($contrib->title).'</a></td>'.
                     '<td class="contribdate">'.$date_display.'</td>',
@@ -285,7 +296,7 @@ if ($contriblist) {
             }
         }
     }
-    
+
     if($giportfolio->displayoutline) {
         echo $contribution_outline.'</table><br/>';
     }

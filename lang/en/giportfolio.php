@@ -184,6 +184,7 @@ $string['usertoc'] = 'User table of contents';
 $string['view'] = 'View';
 $string['viewgiportfolio'] = 'View Portfolio:  ';
 $string['viewtemplate'] = 'View/Edit portfolio template';
+$string['viewmenteetemplate'] = 'View {$a->name} portfolio template';
 $string['visibility'] = 'Visibility';
 $string['visibilityexplain'] = 'setting visibility for the contribution';
 $string['visibilityexplain_help'] = '
