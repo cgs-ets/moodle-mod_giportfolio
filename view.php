@@ -74,6 +74,8 @@ require_capability('mod/giportfolio:view', $context);
 
 // Parent view of own child's activity functionality
 list($mentees, $ismentor) = giportfolio_user_is_mentor($context, $USER);
+$courseuserroles = enrol_get_course_users_roles($course->id);
+$userswithaccesstoportofolio = giportfolio_users_with_access($courseuserroles, $course, $cm->id);
 
 $allowedit = has_capability('mod/giportfolio:edit', $context);
 $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context);
@@ -198,18 +200,26 @@ if ($allowedit) {
     echo '</br>';
    // Replace link with button.
     foreach ($mentees as $mentee) {
-        $form = new stdClass();
-        $form->url = new moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id,
-            'userid'=>$mentee->id, 'mentor' => $ismentor));
-        $form->text = get_string('viewmenteetemplate', 'mod_giportfolio', ['name' => $mentee->firstname]);
-        echo $OUTPUT->single_button($form->url, $form->text, '', array());
-        echo '<br><br>';
+        if (!array_key_exists($mentee->id, $courseuserroles)) {
+            continue;
+        }
+        if (!array_key_exists($mentee->id, $userswithaccesstoportofolio)) {
+            echo html_writer::start_span('alert alert-info'). get_string('noaccessformentee', 'mod_giportfolio')
+                . html_writer::end_span();
+        } else {
+            $form = new stdClass();
+            $form->url = new moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id,
+                'userid'=>$mentee->id, 'mentor' => $ismentor));
+            $form->text = get_string('viewmenteeportfolio', 'mod_giportfolio', ['name' => $mentee->firstname]);
+            echo $OUTPUT->single_button($form->url, $form->text, '', array());
+            echo '<br><br>';
+        }
 
     }
     echo html_writer::end_tag('div');
 }
 
-// To show the parent perspective. 
+// To show the parent perspective.
 if (is_role_switched($course->id) ) {
     $f = new stdClass();
     $f->url = new moodle_url('/mod/giportfolio/view.php', array('id' => $cm->id));

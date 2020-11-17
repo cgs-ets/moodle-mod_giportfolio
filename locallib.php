@@ -1246,6 +1246,13 @@ function giportfolio_user_is_mentor($context, $user) {
     return [null,false];
 }
 
+function giportfolio_users_with_access($users, $course, $cmid) {
+    $modinfo = get_fast_modinfo($course);
+    $cm = $modinfo->get_cm($cmid);
+    $info = new \core_availability\info_module($cm);
+    return $info->filter_user_list($users);
+}
+
 /**
  * File browsing support class
  */
