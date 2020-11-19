@@ -269,11 +269,8 @@ if ($contriblist) {
             }
 
             $commentopts->itemid = $contrib->id;
-            //if ($ismentor != 1) {
-                $commentbox = new comment($commentopts);
-                $cout .= html_writer::tag('contribcomment', $commentbox->output());
-
-            //}
+            $commentbox = new comment($commentopts);
+            $cout .= html_writer::tag('contribcomment', $commentbox->output());
 
             // Wrap contribution and make entry in the contents
             $contribution_count++;
@@ -287,7 +284,7 @@ if ($contriblist) {
                         .date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified)
                    .'</span></span>';
                 }
-                $ismine = true; //TODO: DELETE
+
                 $contribution_outline .= html_writer::tag('tr',
                     '<td><a href="#contribution'.$contribution_count.'">'.format_string($contrib->title).'</a></td>'.
                     '<td class="contribdate">'.$date_display.'</td>',

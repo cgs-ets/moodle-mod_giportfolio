@@ -617,9 +617,6 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
     $strattachment = get_string('attachment', 'giportfolio');
 
     $fs = get_file_storage();
-    #var_dump($contribution);
-    #var_dump($filecontext);
-    #var_dump($fs->get_area_files($filecontext->id, 'mod_giportfolio', 'attachment', $contribution->id, "timemodified", false));
     $output = '';
     /** @var stored_file[] $files */
     if ($files = $fs->get_area_files($filecontext->id, 'mod_giportfolio', 'attachment', $contribution->id, "timemodified", false)) {
@@ -654,7 +651,6 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
             }
         }
     }
-       # exit;
     return $output;
 }
 

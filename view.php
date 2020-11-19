@@ -47,19 +47,6 @@ if ($id) {
 
 require_course_login($course, true, $cm);
 
-// MikeV - Parent view implementation notes:
-// Here we need to determine if the user is enrolled in the course. To help with this, get a list of enrolled users in the course:
-//    - $courseuserroles = enrol_get_course_users_roles($courseid);
-// If the user is enrolled it means their are either a student or teacher (it doesn't matter which one) just continue as usual.
-// If the user has no enrolment in the course then they are likely a parent. Check to see if the user has any mentees in this course.
-// To do that, you can use the list of enrolled users previously retreived, as well as the mentor role in the system:
-//    - $mentorrole = $DB->get_record('role', array('shortname' => 'parent'));
-// And finally, run an SQL query that looks at the mdl_role_assignmnets table to see if there is any mentor relationship between the current user and the enrolled users.
-// If there is a mentor/mentee relationship, proceed to impersonating the child.
-// If there is more than one relationship, they will need to be displayed a choice of which student to impersonate before continuing.
-// When you have the student that needs to be viewed, you can use that user in subsequent functions to bypass capability checks
-// and load the correct portfolio data.
-
 $chapters = giportfolio_preload_chapters($giportfolio);
 
 // SYNERGY - add fake user chapters.
@@ -199,13 +186,17 @@ if ($allowedit) {
     echo html_writer::start_tag('div', array('class' => 'giportfolioparent'));
     echo '</br>';
    // Replace link with button.
+    $totalmentees = count($mentees);
     foreach ($mentees as $mentee) {
         if (!array_key_exists($mentee->id, $courseuserroles)) {
             continue;
         }
         if (!array_key_exists($mentee->id, $userswithaccesstoportofolio)) {
-            echo html_writer::start_span('alert alert-info'). get_string('noaccessformentee', 'mod_giportfolio')
-                . html_writer::end_span();
+            if ($totalmentees == 1)  {
+                echo html_writer::start_span('alert alert-info'). get_string('noaccessformentee', 'mod_giportfolio',
+                    ['name' => $mentee->firstname])
+                    . html_writer::end_span();
+            }
         } else {
             $form = new stdClass();
             $form->url = new moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id,
