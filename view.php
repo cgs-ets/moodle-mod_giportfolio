@@ -185,17 +185,20 @@ if ($allowedit) {
 } else if ($ismentor) {
     echo html_writer::start_tag('div', array('class' => 'giportfolioparent'));
     echo '</br>';
-   // Replace link with button.
-    $totalmentees = count($mentees);
+    // Replace link with button.
+    $totalmenteesallowed = count(array_intersect_key($mentees, $userswithaccesstoportofolio));
+    $totalmenteesenrolled = count(array_intersect_key($mentees, $courseuserroles));
+
     foreach ($mentees as $mentee) {
         if (!array_key_exists($mentee->id, $courseuserroles)) {
             continue;
         }
         if (!array_key_exists($mentee->id, $userswithaccesstoportofolio)) {
-            if ($totalmentees == 1)  {
+            if (($totalmenteesallowed == $totalmenteesenrolled) || $totalmenteesallowed == 0)  {
                 echo html_writer::start_span('alert alert-info'). get_string('noaccessformentee', 'mod_giportfolio',
                     ['name' => $mentee->firstname])
                     . html_writer::end_span();
+                echo '<br><br>';
             }
         } else {
             $form = new stdClass();
