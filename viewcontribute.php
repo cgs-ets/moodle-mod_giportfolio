@@ -209,6 +209,7 @@ $pixpath = "$CFG->wwwroot/pix";
 $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $userid);
 $chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                             'chapter', $chapter->id);
+
 echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
 
 if ($contriblist) {
@@ -241,6 +242,7 @@ if ($contriblist) {
 
     $align = 'right';
     foreach ($contriblist as $contrib) {
+        $ismine = ($contrib->userid == $USER->id) || $ismentor;
 
         if (!$contrib->hidden) {
             $cout = '';
@@ -258,14 +260,12 @@ if ($contriblist) {
             $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                         'contribution', $contrib->id);
             $cout .= html_writer::tag('contribtext', format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context)));
-
             $files = giportfolio_print_attachments($contrib, $cm, $type = null, $align = "right");
-
             if ($files) {
                 $cout .= "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\" nowrap=\"nowrap\">\n";
                 $cout .= $files;
                 $cout .= "</td></tr></table>\n";
-                $cout .= '</br>';
+                $cout .= '<br>';
             }
 
             $commentopts->itemid = $contrib->id;
@@ -298,7 +298,7 @@ if ($contriblist) {
         echo $contribution_outline.'</table><br/>';
     }
     echo $contribution_buffer;
-    echo $OUTPUT->box_end(); // giportfolio_contributions
+    echo $OUTPUT->box_end();
 }
 
 echo $OUTPUT->box_end();

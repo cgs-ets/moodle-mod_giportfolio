@@ -619,8 +619,8 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
     $fs = get_file_storage();
     $output = '';
     /** @var stored_file[] $files */
-    if ($files = $fs->get_area_files($filecontext->id, 'mod_giportfolio', 'attachment', $contribution->id, "timemodified", false)) {
 
+    if ($files = $fs->get_area_files($filecontext->id, 'mod_giportfolio', 'attachment', $contribution->id, "timemodified", false)) {
         foreach ($files as $file) {
 
             $filename = $file->get_filename();
@@ -651,6 +651,7 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
             }
         }
     }
+
     return $output;
 }
 
@@ -772,10 +773,8 @@ function giportfolio_pluginfile($course, $cm, $context, $filearea, $args, $force
             return false;
         }
 
-
-        if ($contribution->userid != $USER->id && !$ismentor) {
+        if (($contribution->userid != $USER->id )&& $ismentor) {
             // If the user trying to see the portfolio is the contributor mentor let it see images
-
             // The contribution belongs to another user.
             if (!$contribution->shared && !has_capability('mod/giportfolio:viewgiportfolios', $context) ) {
                 // The contribution has not been shared and the viewing user does not have permission to view portfolios.
@@ -787,6 +786,7 @@ function giportfolio_pluginfile($course, $cm, $context, $filearea, $args, $force
                                                                       'giportfolioid' => $giportfolio->id))) {
             return false;
         }
+
         if (($chapter->userid && $chapter->userid != $USER->id) && !$ismentor ) {
             if (!has_capability('mod/giportfolio:viewgiportfolios', $context)) {
                 return false;
