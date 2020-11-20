@@ -223,3 +223,8 @@ p.giportfolio_outline {
 .path-mod-giportfolio .giportfolio_content .singlebutton {
     display: inline-block;
 }
+
+/* Part of Parent view of own child's activity functionality */
+p.alert.alert-info.giportfolio-restricted-access {
+  max-width: fit-content;
+}

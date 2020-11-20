@@ -195,10 +195,9 @@ if ($allowedit) {
         }
         if (!array_key_exists($mentee->id, $userswithaccesstoportofolio)) {
             if (($totalmenteesallowed == $totalmenteesenrolled) || $totalmenteesallowed == 0)  {
-                echo html_writer::start_span('alert alert-info'). get_string('noaccessformentee', 'mod_giportfolio',
-                    ['name' => $mentee->firstname])
-                    . html_writer::end_span();
-                echo '<br><br>';
+                echo html_writer::start_tag('p', ['class' => 'alert alert-info giportfolio-restricted-access']);
+                echo get_string('noaccessformentee', 'mod_giportfolio', ['name' => $mentee->firstname]);
+                echo html_writer::end_tag('p');
             }
         } else {
             $form = new stdClass();
