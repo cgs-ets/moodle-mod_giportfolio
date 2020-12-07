@@ -1274,9 +1274,9 @@ function giportfolio_mentor_allowed_to_contribute($instanceid) {
 function giportfolio_get_mentees_mentor($menteeid) {
     global $DB;
 
-    $sql = "SELECT user.id AS mentorid
-            FROM mdl_user user
-            JOIN mdl_role_assignments ra ON ra.userid = user.id
+    $sql = "SELECT u.id AS mentorid
+            FROM mdl_user as u
+            JOIN mdl_role_assignments ra ON ra.userid = u.id
             JOIN mdl_role role ON role.id = ra.roleid
             JOIN mdl_context ctx ON ctx.id = ra.contextid AND ctx.contextlevel = 30
             JOIN mdl_user child ON child.id = ctx.instanceid
