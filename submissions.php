@@ -253,6 +253,7 @@ if (!empty($allusers)) {
     $strnotstarted = get_string('notstarted', 'mod_giportfolio');
     $strprivate = get_string('private', 'mod_giportfolio');
     $strgrade = get_string('grade');
+    $strcontribute = get_string('contribute', 'mod_giportfolio');
 
     foreach ($pusers as $puser) {
         if ($currentposition == $offset && $offset < $endposition) {
@@ -303,10 +304,14 @@ if (!empty($allusers)) {
 
             if ($usercontribution) {
                 $params = array('id' => $cm->id, 'userid' => $puser->id);
+                $cid = giportfolio_get_user_default_chapter($giportfolio->id, $puser->id);
+                $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id, 'chapterid' => $cid->chapterid);
                 $viewurl = new moodle_url('/mod/giportfolio/viewcontribute.php', $params);
                 $gradeurl = new moodle_url('/mod/giportfolio/updategrade.php', $params);
+                $contribute = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $paramscontrib);
                 $statuspublish = html_writer::link($viewurl, $strview);
                 $statuspublish .= ' | '.html_writer::link($gradeurl, $strgrade);
+                $statuspublish .= ' | '.html_writer::link($contribute, $strcontribute);
                 $rowclass = '';
             } else if ($private) {
                 $statuspublish = $strprivate;
@@ -314,6 +319,9 @@ if (!empty($allusers)) {
             } else {
                 $statuspublish = $strnotstarted;
                 $rowclass = 'late';
+                $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id);
+                $contribute = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $paramscontrib);
+                $statuspublish .= ' | '.html_writer::link($contribute, $strcontribute);
             }
 
             $userlink = '<a href="'.$CFG->wwwroot.'/user/view.php?id='.$puser->id.'&amp;course='.$course->id.'">'.

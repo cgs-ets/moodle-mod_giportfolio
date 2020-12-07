@@ -192,3 +192,6 @@ $string['visibilityexplain_help'] = '
 * Show - contribution is visible to non-students
 * Hide - contribution is visible only to yourself
 ';
+$string['allowmentorcontrib'] = 'Allow Mentor contribution';
+$string['onbehalf'] = 'Contribute on behalf of {$a->name}';
+$string['contribute'] = 'Contribute';

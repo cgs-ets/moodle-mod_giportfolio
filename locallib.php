@@ -831,7 +831,7 @@ function giportfolio_get_collaborative_status($giportfolio) { // Check if the ac
     return $giportfolio->participantadd;
 }
 
-function giportfolio_get_user_contributions($chapterid, $giportfolioid, $userid, $showshared = false) { // Return user contributions for a chapter-page.
+function giportfolio_get_user_contributions($chapterid, $giportfolioid, $ids, $showshared = false) { // Return user contributions for a chapter-page.
     global $DB;
 
     $sharedsql = '';
@@ -840,14 +840,34 @@ function giportfolio_get_user_contributions($chapterid, $giportfolioid, $userid,
     }
     $sql = "SELECT * FROM {giportfolio_contributions}
             WHERE chapterid = :chapterid AND giportfolioid= :giportfolioid
-            AND (userid = :userid $sharedsql)
+            AND (userid  in ($ids) $sharedsql)
             ORDER BY timemodified DESC
             ";
-    $params = array('giportfolioid' => $giportfolioid, 'chapterid' => $chapterid, 'userid' => $userid);
+    $params = array('giportfolioid' => $giportfolioid, 'chapterid' => $chapterid);
 
     return $DB->get_records_sql($sql, $params);
 }
 
+function giportfolio_set_mentor_info($contributions, $menteeid) {
+    $mentorids = giportfolio_get_mentees_mentor($menteeid);
+    $mentorids = explode(',', $mentorids);
+    foreach ($contributions as $contribution) {
+        if (in_array($contribution->userid, $mentorids)) {
+            $contribution->mentorid = $contribution->userid;
+            $contribution->userid = $menteeid;
+        }
+    }
+    return $contribution;
+}
+
+function giportfolio_get_user_default_chapter($giportfolioid, $userid) { // Part of Allow a teacher to make a contribution on behalf of a student.
+    global $DB;
+    $sql = "SELECT chapterid  FROM mdl_giportfolio_contributions
+            WHERE userid = {$userid} and  giportfolioid = {$giportfolioid}
+            group BY chapterid ";
+
+    return  $DB->get_record_sql($sql);
+}
 function giportfolio_get_user_chapters($giportfolioid, $userid) { // Return user added chapters for a giportfolio.
     global $DB;
 
@@ -1244,6 +1264,35 @@ function giportfolio_user_is_mentor($context, $user) {
     }
 
     return [null,false];
+}
+
+function giportfolio_mentor_allowed_to_contribute($instanceid) {
+    global $DB;
+    return $DB->get_field('giportfolio', 'allowmentorcontrib', ['id' => $instanceid], IGNORE_MISSING);
+}
+
+function giportfolio_get_mentees_mentor($menteeid) {
+    global $DB;
+
+    $sql = "SELECT user.id AS mentorid
+            FROM mdl_user user
+            JOIN mdl_role_assignments ra ON ra.userid = user.id
+            JOIN mdl_role role ON role.id = ra.roleid
+            JOIN mdl_context ctx ON ctx.id = ra.contextid AND ctx.contextlevel = 30
+            JOIN mdl_user child ON child.id = ctx.instanceid
+            WHERE role.shortname = 'parent' and  child.id = {$menteeid};";
+
+    $mentors = $DB->get_records_sql($sql);
+    $ids = [];
+
+    foreach ($mentors as $mentor) {
+        $ids [] = $mentor->mentorid;
+    }
+
+    $ids = implode ( ',',$ids);
+    return $ids;
+
+
 }
 
 function giportfolio_users_with_access($users, $course, $cmid) {

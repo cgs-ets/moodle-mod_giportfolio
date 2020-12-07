@@ -72,6 +72,10 @@ function giportfolio_add_instance($giportfolio, $mform) {
         $giportfolio->publishnotification = 0;
     }
 
+    if (!isset($giportfolio->allowmentorcontrib)) {
+        $giportfolio->allowmentorcontrib = 0;
+    }
+
     // Synergy add grade item and default chapters.
 
     $giportfolio->id = $DB->insert_record('giportfolio', $giportfolio);
@@ -127,6 +131,9 @@ function giportfolio_update_instance($data, $mform) {
         $data->publishnotification = 0;
     }
 
+    if (!isset($data->allowmentorcontrib)) {
+        $data->allowmentorcontrib = 0;
+    }
     $DB->update_record('giportfolio', $data);
 
     $giportfolio = $DB->get_record('giportfolio', array('id' => $data->id));

@@ -82,20 +82,20 @@ class mod_giportfolio_mod_form extends moodleform_mod {
 
         // SYNERGY - add collapsesubchapters option to settings.
         $mform->addElement('selectyesno', 'collapsesubchapters', get_string('collapsesubchapters', 'giportfolio'));
-        
+
         // add peersharing option to settings
         $mform->addElement('selectyesno', 'peersharing', get_string('peersharing', 'giportfolio'));
         $mform->setDefault('peersharing', 1);
-        
+
         // add display hour/minute to dates
         $mform->addElement('selectyesno', 'timeofday', get_string('showtimeofday', 'giportfolio'));
         $mform->setDefault('timeofday', 0);
-        
+
         // add display outline option to settings
         $mform->addElement('selectyesno', 'displayoutline', get_string('displayoutline', 'giportfolio'));
         $mform->addHelpButton('displayoutline', 'displayoutline', 'mod_giportfolio');
         $mform->setDefault('displayoutline', 1);
-        
+
         $mform->addElement('selectyesno', 'participantadd', get_string('participantadd', 'giportfolio'));
         $mform->setDefault('participantadd', 1);
 
@@ -121,6 +121,10 @@ class mod_giportfolio_mod_form extends moodleform_mod {
 
         $mform->addElement('selectyesno', 'myactivitylink', get_string('myactivitylink', 'giportfolio'));
         $mform->setDefault('myactivitylink', 1);
+
+        //
+        $mform->addElement('selectyesno', 'allowmentorcontrib', get_string('allowmentorcontrib', 'giportfolio'));
+        $mform->setDefault('myactivitylink', 0);
 
         if (giportfolio_include_klassenbuchtrainer()) {
             $mform->addElement('selectyesno', 'klassenbuchtrainer', get_string('klassenbuchtrainer', 'giportfolio'));

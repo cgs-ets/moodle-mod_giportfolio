@@ -32,7 +32,8 @@ $userid = required_param('userid', PARAM_INT);
 $id = optional_param('id', 0, PARAM_INT); // Course Module ID.
 $bid = optional_param('b', 0, PARAM_INT); // Giportfolio id.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
-$ismentor = optional_param('mentor', 0, PARAM_INT);
+$mentor = optional_param('mentor', 0, PARAM_INT);
+
 // Security checks START - teachers edit; students view.
 
 if ($id) {
@@ -50,8 +51,9 @@ require_course_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
 require_capability('mod/giportfolio:view', $context);
-if ($ismentor != 1) {
-require_capability('mod/giportfolio:viewgiportfolios', $context);
+
+if ($mentor == 0) {
+    require_capability('mod/giportfolio:viewgiportfolios', $context);
 }
 
 $viewhidden = has_capability('mod/giportfolio:viewhiddenchapters', $context);
@@ -120,8 +122,8 @@ $PAGE->set_title(format_string($giportfolio->name));
 $PAGE->add_body_class('mod_giportfolio');
 $PAGE->set_heading(format_string($course->fullname));
 
-giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $course->id, $ismentor);
-giportfolio_add_fakeuser_block($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $ismentor);
+giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $course->id, $mentor);
+giportfolio_add_fakeuser_block($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $mentor);
 
 // Prepare chapter navigation icons.
 $previd = null;
@@ -142,7 +144,7 @@ foreach ($chapters as $ch) {
 }
 
 $chnavigation = '';
-$mentor = '&amp;mentor='. $ismentor;
+$mentor = '&amp;mentor='. $mentor;
 if ($previd) {
     $chnavigation .= '<a title="'.get_string('navprev', 'giportfolio').'" href="viewcontribute.php?id='.$cm->id.
         '&amp;chapterid='.$previd.'&amp;userid='.$userid.$mentor.'">
@@ -163,7 +165,7 @@ if ($nextid) {
     }
     if ($course->id == $SITE->id) {
         $returnurl = "$CFG->wwwroot/";
-    } else if ($ismentor == 0){
+    } else if ($mentor != 0){
         $returnurl = "$CFG->wwwroot/mod/giportfolio/submissions.php?id=$cm->id";
     } else {
         $returnurl = "$CFG->wwwroot/mod/giportfolio/view.php?id=$cm->id";
@@ -180,6 +182,7 @@ if ($nextid) {
 // Giportfolio display HTML code.
 
 $realuser = $DB->get_record('user', array('id' => $userid));
+
 $PAGE->navbar->add(get_string('studentgiportfolio', 'mod_giportfolio'),
                    new moodle_url('submissions.php?=', array('id' => $cm->id)));
 $PAGE->navbar->add(fullname($realuser));
@@ -242,7 +245,7 @@ if ($contriblist) {
 
     $align = 'right';
     foreach ($contriblist as $contrib) {
-        $ismine = ($contrib->userid == $USER->id) || $ismentor;
+        $ismine = ($contrib->userid == $USER->id) || $mentor != 0;
 
         if (!$contrib->hidden) {
             $cout = '';

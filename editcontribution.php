@@ -31,12 +31,15 @@ $cmid = required_param('id', PARAM_INT); // CMID.
 $contributionid = optional_param('contributionid', 0, PARAM_INT);
 $chapterid = required_param('chapterid', PARAM_INT); // Chapter ID.
 $action = optional_param('action', null, PARAM_ALPHA);
+$mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID
+$mentee = optional_param('mentee', 0, PARAM_INT); // Mentor ID
 
 $cm = get_coursemodule_from_id('giportfolio', $cmid, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
 
-$url = new moodle_url('/mod/giportfolio/editcontribution.php', array('id' => $cm->id, 'chapterid' => $chapterid));
+$url = new moodle_url('/mod/giportfolio/editcontribution.php', array('id' => $cm->id, 'chapterid' => $chapterid, 'mentor' => $mentor, 'mentee' => $mentee));
+
 if ($action) {
     $url->param('action', $action);
 }
@@ -48,7 +51,11 @@ $PAGE->set_url($url);
 require_login($course, false, $cm);
 
 $context = context_module::instance($cm->id);
-require_capability('mod/giportfolio:submitportfolio', $context);
+
+$mentorcancontribute = giportfolio_mentor_allowed_to_contribute($giportfolio->id);
+if ($mentor == 0 && !$mentorcancontribute) {
+    require_capability('mod/giportfolio:submitportfolio', $context);
+}
 
 $maxfiles = 99; // TODO: add some setting.
 $maxbytes = $course->maxbytes; // TODO: add some setting.
@@ -94,13 +101,15 @@ if ($contributionid) {
 }
 $formdata->id = $cm->id;
 $formdata->chapterid = $chapter->id;
+$formdata->mentor = $mentor;
+$formdata->mentee = $mentee;
 
 // Header and strings.
 $PAGE->set_title(format_string($giportfolio->name));
 $PAGE->add_body_class('mod_giportfolio');
 $PAGE->set_heading(format_string($course->fullname));
 
-$redir = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'chapterid' => $chapter->id));
+$redir = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'chapterid' => $chapter->id, 'mentor' => $mentor, 'mentee' => $mentee));
 
 // Handle delete / show / hide actions.
 if ($action) {
@@ -171,7 +180,6 @@ if ($action) {
 // Handle add new contribution / edit contribution.
 $custom = array('editoroptions' => $editoroptions, 'attachmentoptions' => $attachmentoptions);
 $mform = new mod_giportfolio_contribution_edit_form(null, $custom);
-
 $mform->set_data($formdata);
 
 if ($mform->is_cancelled()) {
@@ -193,7 +201,8 @@ if ($mform->is_cancelled()) {
             'hidden' => 0, // Updated later.
             'timecreated' => time(),
             'timemodified' => 0, // Updated later.
-            'userid' => $USER->id,
+            'userid' => $formdata->mentee == 0 ? $USER->id : $formdata->mentee,
+            'mentorid' => $formdata->mentor,
         );
         $contributionid = $DB->insert_record('giportfolio_contributions', $ins);
 

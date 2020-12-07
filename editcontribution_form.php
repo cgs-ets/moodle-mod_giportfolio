@@ -57,6 +57,12 @@ class mod_giportfolio_contribution_edit_form extends moodleform {
         $mform->addElement('filemanager', 'attachment_filemanager', get_string('attachment', 'giportfolio'),
                            null, $attachmentoptions);
 
+        // Parent view of own child's activity functionality.
+        $mform->addElement('hidden', 'mentor');
+        $mform->setType('mentor', PARAM_INT);
+        $mform->addElement('hidden', 'mentee');
+        $mform->setType('mentee', PARAM_INT);
+
         $this->add_action_buttons(true, get_string('updatecontrib', 'giportfolio'));
     }
 }

@@ -510,40 +510,62 @@ function xmldb_giportfolio_upgrade($oldversion) {
     // SYNERGY - end add new fields to database.
 
     if ($oldversion < 2019061500) {
-    
+
     	// Define field peersharing to be added to giportfolio.
     	$table = new xmldb_table('giportfolio');
     	$peersharing_field = new xmldb_field('peersharing', XMLDB_TYPE_INTEGER, '2', null, null, null, '1', 'notifyaddentry');
-    
+
     	// Conditionally launch add field peersharing.
     	if (!$dbman->field_exists($table, $peersharing_field)) {
     		$dbman->add_field($table, $peersharing_field);
     	}
-    	 
+
     	// Conditionally launch add field showtimeofday.
     	$timeofday_field = new xmldb_field('timeofday', XMLDB_TYPE_INTEGER, '2', null, null, null, '1', 'notifyaddentry');
     	if (!$dbman->field_exists($table, $timeofday_field)) {
     		$dbman->add_field($table, $timeofday_field);
     	}
-    	
+
     	// Giportfolio savepoint reached.
     	upgrade_mod_savepoint(true, 2019061500, 'giportfolio');
     }
-    
+
     if ($oldversion < 2020032200) {
-        
+
         // Define field peersharing to be added to giportfolio.
         $table = new xmldb_table('giportfolio');
         $displayoutline_field = new xmldb_field('displayoutline', XMLDB_TYPE_INTEGER, '2', null, null, null, '1', 'notifyaddentry');
-        
+
         // Conditionally launch add field displayoutline.
         if (!$dbman->field_exists($table, $displayoutline_field)) {
             $dbman->add_field($table, $displayoutline_field);
         }
-        
+
         // Giportfolio savepoint reached.
         upgrade_mod_savepoint(true, 2020032200, 'giportfolio');
     }
-    
+
+    if ($oldversion < 2020032200) {
+
+        // Define field allowmentorcontrib to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('allowmentorcontrib', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'myactivitylink');
+
+        // Conditionally launch add field allowmentorcontrib.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $table2 = new xmldb_table('giportfolio_contributions');
+        $field2 = new xmldb_field('mentorid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'userid');
+
+        // Conditionally launch add field mentorid.
+        if (!$dbman->field_exists($table2, $field2)) {
+            $dbman->add_field($table2, $field2);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2020032200, 'giportfolio');
+    }
     return true;
 }

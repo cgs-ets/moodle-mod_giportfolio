@@ -60,11 +60,13 @@ $context = context_module::instance($cm->id);
 require_capability('mod/giportfolio:view', $context);
 
 // Parent view of own child's activity functionality
-list($mentees, $ismentor) = giportfolio_user_is_mentor($context, $USER);
+list($mentees, $mentor) = giportfolio_user_is_mentor($context, $USER);
 $courseuserroles = enrol_get_course_users_roles($course->id);
 $userswithaccesstoportofolio = giportfolio_users_with_access($courseuserroles, $course, $cm->id);
+$mentorcancontribute = giportfolio_mentor_allowed_to_contribute($giportfolio->id);
 
 $allowedit = has_capability('mod/giportfolio:edit', $context);
+
 $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context);
 $allowreport = has_capability('report/outline:view', $context->get_course_context());
 $allowview = has_capability('mod/giportfolio:view', $context);
@@ -182,7 +184,7 @@ if ($allowedit) {
         echo '</br>';
         echo html_writer::end_tag('div');
     }
-} else if ($ismentor) {
+} else if ($mentor) {
     echo html_writer::start_tag('div', array('class' => 'giportfolioparent'));
     echo '</br>';
     // Replace link with button.
@@ -200,12 +202,21 @@ if ($allowedit) {
                 echo html_writer::end_tag('p');
             }
         } else {
+            echo html_writer::start_div('viewcontribute');
             $form = new stdClass();
             $form->url = new moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id,
-                'userid'=>$mentee->id, 'mentor' => $ismentor));
+                'userid'=>$mentee->id, 'mentor' => $USER->id));
             $form->text = get_string('viewmenteeportfolio', 'mod_giportfolio', ['name' => $mentee->firstname]);
+
             echo $OUTPUT->single_button($form->url, $form->text, '', array());
+
+            if ($mentorcancontribute) {
+                $addurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'mentor' =>  $USER->id, 'mentee' => $mentee->id));
+                echo $OUTPUT->single_button($addurl, get_string('onbehalf', 'mod_giportfolio',
+                    ['name' => $mentee->firstname]), 'GET');
+            }
             echo '<br><br>';
+            echo html_writer::end_div();
         }
 
     }
