@@ -545,27 +545,5 @@ function xmldb_giportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020032200, 'giportfolio');
     }
 
-    if ($oldversion < 2020032200) {
-
-        // Define field allowmentorcontrib to be added to giportfolio.
-        $table = new xmldb_table('giportfolio');
-        $field = new xmldb_field('allowmentorcontrib', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'myactivitylink');
-
-        // Conditionally launch add field allowmentorcontrib.
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-
-        $table2 = new xmldb_table('giportfolio_contributions');
-        $field2 = new xmldb_field('mentorid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'userid');
-
-        // Conditionally launch add field mentorid.
-        if (!$dbman->field_exists($table2, $field2)) {
-            $dbman->add_field($table2, $field2);
-        }
-
-        // Giportfolio savepoint reached.
-        upgrade_mod_savepoint(true, 2020032200, 'giportfolio');
-    }
     return true;
 }
