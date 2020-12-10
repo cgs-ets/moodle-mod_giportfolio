@@ -117,7 +117,7 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->setDefault('automaticgrading', 0);
 
         $mform->addElement('selectyesno', 'skipintro', get_string('skipintro', 'giportfolio'));
-        $mform->setDefault('skipintro', 0);
+        $mform->setDefault('skipintro', 1);
 
         $mform->addElement('selectyesno', 'myactivitylink', get_string('myactivitylink', 'giportfolio'));
         $mform->setDefault('myactivitylink', 1);
