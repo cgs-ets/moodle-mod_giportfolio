@@ -257,8 +257,7 @@ $pixpath = "$CFG->wwwroot/pix";
 // Parent view of own child's activity functionality
 $userid = $mentee == 0 ? $USER->id : $mentee;
 $menteesmentorsid = giportfolio_get_mentees_mentor($userid);
-$ids = $mentee == 0 ? $userid : (!empty($menteesmentorsid)) ? $menteesmentorsid.',' . $userid : $userid;
-
+$ids = ($mentee == 0) ? $userid : ((!empty($menteesmentorsid)) ? $menteesmentorsid.',' . $userid : $userid);
 $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $ids, $showshared);
 if (count($contriblist) > 0) {
     giportfolio_set_mentor_info($contriblist, $userid);
