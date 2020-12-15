@@ -62,6 +62,16 @@ Intentionally omitted features:
 * detailed student tracking (postponed till officially supported)
 * export as zipped set of HTML pages - instead use browser command Save page as... in print view
 
-Future:
+**CGS Costumisations:** 
 
-* No more development planned
+> Contributions
+>>
+* Allow mentors to view mentee's portfolios contributions
+* Allow mentors to contribute on behalf of a mentee.
+* Allow teachers to contribute on behalf of a student.
+
+> Settings
+>>
+* Change on students skip intro page default to true. 
+
+
