@@ -79,7 +79,7 @@ if ($chapter->hidden) {
     require_capability('mod/giportfolio:viewhiddenchapters', $context);
 }
 
-giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, 0, 0); // Add TOC.
+giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, 0, 0, $mentor, $mentee ); // Add TOC.
 
 $editoroptions = array('noclean' => true, 'subdirs' => true, 'maxfiles' => -1, 'maxbytes' => 0, 'context' => $context);
 $attachmentoptions = array('subdirs' => false, 'maxfiles' => $maxfiles, 'maxbytes' => $maxbytes);

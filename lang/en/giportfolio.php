@@ -195,3 +195,4 @@ $string['visibilityexplain_help'] = '
 $string['allowmentorcontrib'] = 'Allow Mentor contribution';
 $string['onbehalf'] = 'Contribute on behalf of {$a->name}';
 $string['contribute'] = 'Contribute';
+$string['chaptersupdated'] = 'Updated Chapters';

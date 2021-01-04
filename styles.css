@@ -228,3 +228,16 @@ p.giportfolio_outline {
 p.alert.alert-info.giportfolio-restricted-access {
   max-width: fit-content;
 }
+/* Display updates chapters */
+.giportfolio-updatedch {
+    display: none;
+}
+.giportfolio-updatedch.giportfolio-visible {
+    display: block;
+}
+
+.giportfolio-more {
+  cursor: pointer;  
+  color: #1177d1;
+}
+

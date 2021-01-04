@@ -268,7 +268,7 @@ function giportfolio_log($str1, $str2, $level = 0) {
     }
 }
 
-function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edit, $userdit) {
+function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edit, $userdit, $mentor = 0, $mentee = 0) {
     global $OUTPUT, $PAGE, $USER, $COURSE;
 
     $context = context_module::instance($cm->id);
@@ -276,9 +276,9 @@ function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edi
     $allowreport = has_capability('report/outline:view', $context);
 
     if (giportfolio_get_collaborative_status($giportfolio) && !$edit) {
-        $toc = giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, $USER->id, $userdit);
+        $toc = giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, $USER->id, $userdit, $mentor, $mentee);
     } else {
-        $toc = giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, 0);
+        $toc = giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $mentee);
     }
 
     if ($edit) {
@@ -360,7 +360,7 @@ function giportfolio_add_fakeuser_block($chapters, $chapter, $giportfolio, $cm, 
  * @param bool $edit
  * @return string
  */
-function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
+function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $mentee ) {
     global $USER, $OUTPUT;
 
     $toc = ''; // Representation of toc (HTML).
@@ -426,7 +426,8 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
             if ($ch->id == $chapter->id) {
                 $toc .= '<strong>'.$title.'</strong>';
             } else {
-                $toc .= '<a title="'.s($title).'" href="viewgiportfolio.php?id='.$cm->id.'&amp;chapterid='.$ch->id.'">'.
+                $toc .= '<a title="'.s($title).'" href="viewgiportfolio.php?id='.$cm->id.'&amp;chapterid='.$ch->id.'&amp;mentee='.$mentee.
+                    '">'.
                     $title.'</a>';
             }
             $toc .= '&nbsp;&nbsp;';
@@ -504,7 +505,6 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
                 if ($ch->id == $chapter->id) {
                     $toc .= '<strong>'.$title.'</strong>';
                 } else {
-
                     $toc .= '<a title="'.s($title).'" href="viewgiportfolio.php?id='.$cm->id.'&amp;chapterid='.$ch->id.'">'.
                         $title.'</a>';
                 }
@@ -534,7 +534,7 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
  * @param $useredit
  * @return string
  */
-function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $useredit) {
+function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $useredit, $mentor = 0, $mentee = 0) {
     global $USER, $OUTPUT;
 
     $toc = ''; // Representation of toc (HTML).
@@ -707,8 +707,12 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
                 if ($ch->id == $chapter->id) {
                     $toc .= '<strong>'.$title.'</strong>';
                 } else {
-                    $toc .= '<a title="'.s($title).'" href="viewgiportfolio.php?id='.$cm->id.'&amp;chapterid='.$ch->id.'">'.
-                        $title.'</a>';
+                   # var_dump($mentee); exit;
+                    $toc .= '<a title="'.s($title).'" href="viewgiportfolio.php?id='.$cm->id.'&amp;chapterid='.$ch->id
+                        .'&amp;mentor='.$mentor.'&amp;mentee='.$mentee.
+                    '">'.
+                    $title.'</a>';
+
                 }
                 $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
                 $first = 0;
@@ -864,7 +868,7 @@ function giportfolio_get_user_default_chapter($giportfolioid, $userid) { // Part
     global $DB;
     $sql = "SELECT chapterid  FROM mdl_giportfolio_contributions
             WHERE userid = {$userid} and  giportfolioid = {$giportfolioid}
-            group BY chapterid ";
+            LIMIT 1 ";
 
     return  $DB->get_record_sql($sql);
 }

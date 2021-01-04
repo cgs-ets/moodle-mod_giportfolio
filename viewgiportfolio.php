@@ -126,7 +126,7 @@ if ($chapter->hidden and !$viewhidden) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
 }
 
-$PAGE->set_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $id, 'chapterid' => $chapterid, 'mentor' => $mentor));
+$PAGE->set_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $id, 'chapterid' => $chapterid, 'mentor' => $mentor, 'mentee' => $mentee));
 
 // Unset all page parameters.
 unset($id);
@@ -149,7 +149,7 @@ $PAGE->add_body_class('mod_giportfolio');
 $PAGE->set_heading(format_string($course->fullname));
 
 // Synergy add $useredit.
-giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edit, $useredit);
+giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edit, $useredit, $mentor, $mentee);
 
 // Prepare chapter navigation icons.
 $previd = null;
@@ -269,7 +269,7 @@ echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true,
 
 echo $OUTPUT->box_start('giportfolio_actions');
 
-if (!$allowedit || $cangrade ) {
+if (!$allowedit || $cangrade  && $mentee != 0) {
     $addurl = new moodle_url('/mod/giportfolio/editcontribution.php',
         array('id' => $cm->id, 'chapterid' => $chapter->id, 'mentor' => $mentor, 'mentee' => $mentee));
     echo $OUTPUT->single_button($addurl, get_string('addcontrib', 'mod_giportfolio'), 'GET');
@@ -314,7 +314,6 @@ if ($giportfolio->klassenbuchtrainer && giportfolio_include_klassenbuchtrainer()
     echo klassenbuchtool_lernschritte_get_subcontent($chapter->id, $context, 'giportfolio');
     echo $OUTPUT->box_end(); // giportfolio_klassenbuchtrainer
 }
-
 
 if ($contriblist) {
     echo $OUTPUT->box_start('giportfolio_contributions');

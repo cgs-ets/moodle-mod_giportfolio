@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of giportfolio module for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,12 +17,12 @@
 
 require_once("../../config.php");
 require_once("lib.php");
-require_once(dirname(__FILE__).'/locallib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
 global $CFG, $DB, $USER, $DB, $OUTPUT, $PAGE;
 
-require_once($CFG->libdir.'/plagiarismlib.php');
-require_once($CFG->libdir.'/gradelib.php');
+require_once($CFG->libdir . '/plagiarismlib.php');
+require_once($CFG->libdir . '/gradelib.php');
 require_once("search_form.php");
 
 $id = optional_param('id', 0, PARAM_INT); // Course module ID.
@@ -73,13 +74,11 @@ echo $OUTPUT->tabtree($tabs, $currenttab);
 echo get_string('filterlist', 'mod_giportfolio');
 
 $tabindex = 1; // Tabindex for quick grading tabbing; Not working for dropdowns yet.
-
 // Check to see if groups are being used in this assignment.
-
 // Find out current groups mode.
 $groupmode = groups_get_activity_groupmode($cm);
 $currentgroup = groups_get_activity_group($cm, true);
-groups_print_activity_menu($cm, $CFG->wwwroot.'/mod/giportfolio/submissions.php?id='.$cm->id);
+groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id);
 
 $updatepref = optional_param('updatepref', 0, PARAM_BOOL);
 
@@ -130,19 +129,19 @@ if ($quickgrade) {
 }
 
 $allusers = get_users_by_capability($context, 'mod/giportfolio:submitportfolio', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
-                                    'u.firstname ASC', '', '', $currentgroup, '', false, true);
+    'u.firstname ASC', '', '', $currentgroup, '', false, true);
 
 $alluserids = array();
 foreach ($allusers as $user) {
     array_push($alluserids, $user->id);
 }
 
-$listusersids = "'".implode("', '", $alluserids)."'";
+$listusersids = "'" . implode("', '", $alluserids) . "'";
 // Generate table.
 
 $extrafields = get_extra_user_fields($context);
 $tablecolumns = array_merge(array('picture', 'fullname'), $extrafields,
-                            array('lastupdate', 'viewgiportfolio', 'grade', 'feedback'));
+    array('lastupdate', 'viewgiportfolio', 'chaptersupdated', 'grade', 'feedback'));
 
 $extrafieldnames = array();
 foreach ($extrafields as $field) {
@@ -152,13 +151,14 @@ $tableheaders = array_merge(
     array('', get_string('fullnameuser')),
     $extrafieldnames,
     array(
-         get_string('lastupdated', 'giportfolio'),
-         get_string('viewgiportfolio', 'giportfolio'),
-         get_string('grade'),
-         get_string('feedback'),
+        get_string('lastupdated', 'giportfolio'),
+        get_string('viewgiportfolio', 'giportfolio'),
+        get_string('chaptersupdated', 'giportfolio'),
+        get_string('grade'),
+        get_string('feedback'),
     ));
 
-require_once($CFG->libdir.'/tablelib.php');
+require_once($CFG->libdir . '/tablelib.php');
 $table = new flexible_table('mod-giportfolio-submissions');
 
 $table->define_columns($tablecolumns);
@@ -171,6 +171,7 @@ $table->initialbars(true);
 
 $table->column_suppress('picture');
 $table->column_suppress('fullname');
+$table->column_suppress('chaptersupdated');
 
 $table->column_class('picture', 'picture');
 $table->column_class('fullname', 'fullname');
@@ -180,6 +181,7 @@ foreach ($extrafields as $field) {
 
 $table->column_class('lastupdate', 'lastupdate');
 $table->column_class('viewgiportfolio', 'viewgiportfolio');
+$table->column_class('chaptersupdated', 'chaptersupdated');
 $table->column_class('grade', 'grade');
 $table->column_class('feedback', 'feedback');
 
@@ -189,6 +191,7 @@ $table->set_attribute('class', 'submissions');
 $table->set_attribute('width', '100%');
 
 $table->no_sorting('lastupdate');
+$table->no_sorting('chaptersupdated');
 $table->no_sorting('feedback');
 $table->no_sorting('grade');
 $table->no_sorting('viewgiportfolio');
@@ -205,13 +208,14 @@ if ($where) {
 }
 
 if ($username) {
-    $where .= ' (u.lastname like \'%'.$username.'%\' OR u.firstname like \'%'.$username.'%\' ) AND ';
+    $where .= ' (u.lastname like \'%' . $username . '%\' OR u.firstname like \'%' . $username . '%\' ) AND ';
 }
 
 if ($currenttab == 'sincelastlogin') {
     $extratables = 'JOIN {giportfolio_contributions} c ON c.giportfolioid = :portfolioid
-                                                       AND c.timemodified > :lastlogin
-                                                       AND c.userid = u.id';
+                    AND c.timemodified > :lastlogin
+                    AND c.userid = u.id';
+
     $params['portfolioid'] = $giportfolio->id;
     $params['lastlogin'] = $USER->lastlogin;
 } else if ($currenttab == 'nocomments') {
@@ -219,15 +223,15 @@ if ($currenttab == 'sincelastlogin') {
     $extratables = 'JOIN {giportfolio_contributions} c ON c.giportfolioid = :portfolioid AND c.userid = u.id
                     LEFT JOIN {grade_grades} g ON g.itemid = :gradeid AND g.userid = u.id';
     $params['gradeid'] = $DB->get_field('grade_items', 'id', array(
-                                                                  'itemtype' => 'mod', 'itemmodule' => 'giportfolio',
-                                                                  'iteminstance' => $giportfolio->id
-                                                             ));
+        'itemtype' => 'mod', 'itemmodule' => 'giportfolio',
+        'iteminstance' => $giportfolio->id
+    ));
     $params['portfolioid'] = $giportfolio->id;
     $where .= "(g.feedback IS null OR g.feedback = '') AND ";
 }
 
 if ($sort = $table->get_sql_sort()) {
-    $sort = ' ORDER BY '.$sort;
+    $sort = ' ORDER BY ' . $sort;
 }
 
 $ufields = user_picture::fields('u', $extrafields);
@@ -235,10 +239,11 @@ $ufields = user_picture::fields('u', $extrafields);
 if (!empty($allusers)) {
     $select = "SELECT DISTINCT $ufields ";
 
-    $sql = 'FROM {user} u '.$extratables.
-        ' WHERE '.$where.'u.id IN ('.$listusersids.') ';
+    $sql = 'FROM {user} u ' . $extratables .
+        ' WHERE ' . $where . 'u.id IN (' . $listusersids . ') ';
 
-    $pusers = $DB->get_records_sql($select.$sql.$sort, $params, $table->get_page_start(), $table->get_page_size());
+    $pusers = $DB->get_records_sql($select . $sql . $sort, $params, $table->get_page_start(), $table->get_page_size());
+
     $table->pagesize($perpage, count($pusers));
 
     $offset = $page * $perpage;
@@ -256,21 +261,23 @@ if (!empty($allusers)) {
     $strcontribute = get_string('contribute', 'mod_giportfolio');
 
     foreach ($pusers as $puser) {
+        $updatedchapters = '-';
         if ($currentposition == $offset && $offset < $endposition) {
             $picture = $OUTPUT->user_picture($puser);
             $usercontribution = giportfolio_get_user_contribution_status($giportfolio->id, $puser->id);
             $private = false;
             if (!$usercontribution) {
                 $private = $DB->record_exists('giportfolio_contributions', array(
-                                                                                'giportfolioid' => $giportfolio->id,
-                                                                                'userid' => $puser->id
-                                                                           ));
+                    'giportfolioid' => $giportfolio->id,
+                    'userid' => $puser->id
+                ));
             }
             $statuspublish = '';
             $userfinalgrade = new stdClass();
             $userfinalgrade->grade = null;
             $userfinalgrade->str_grade = '-';
             if ($usercontribution) {
+                $updatedchapters = get_updated_chapters_since_last_login($giportfolio, $puser->id, $cm);
                 $lastupdated = date('l jS \of F Y ', $usercontribution);
                 $usergrade = grade_get_grades($course->id, 'mod', 'giportfolio', $giportfolio->id, $puser->id);
                 if ($usergrade->items) {
@@ -280,24 +287,25 @@ if (!empty($allusers)) {
                     if ($quickgrade && !$userfinalgrade->locked) {
                         $attributes = array();
                         $attributes['tabindex'] = $tabindex++;
-                        $menu = html_writer::select(make_grades_menu($giportfolio->grade), 'menu['.$puser->id.']',
-                                                    round(($userfinalgrade->grade), 0), array(-1 => get_string('nograde')),
-                                                    $attributes);
-                        $userfinalgrade->grade = '<div id="g'.$puser->id.'">'.$menu.'</div>';
+                        $menu = html_writer::select(make_grades_menu($giportfolio->grade), 'menu[' . $puser->id . ']',
+                                round(($userfinalgrade->grade), 0), array(-1 => get_string('nograde')),
+                                $attributes);
+                        $userfinalgrade->grade = '<div id="g' . $puser->id . '">' . $menu . '</div>';
                     }
 
                     if ($userfinalgrade->feedback && !$quickgrade) {
                         $feedback = $userfinalgrade->feedback;
                     } else if ($quickgrade) {
-                        $feedback = '<div id="feedback'.$puser->id.'">'
-                            .'<textarea tabindex="'.$tabindex++.'" name="submissionfeedback['.$puser->id.']" id="submissionfeedback'
-                            .$puser->id.'" rows="2" cols="20">'.($userfinalgrade->feedback).'</textarea></div>';
+                        $feedback = '<div id="feedback' . $puser->id . '">'
+                            . '<textarea tabindex="' . $tabindex++ . '" name="submissionfeedback[' . $puser->id . ']" id="submissionfeedback'
+                            . $puser->id . '" rows="2" cols="20">' . ($userfinalgrade->feedback) . '</textarea></div>';
                     } else {
                         $feedback = '-';
                     }
                 }
             } else {
                 $lastupdated = '-';
+                $updatedChapters = '-';
                 $feedback = '-';
                 $rowclass = '';
             }
@@ -310,8 +318,8 @@ if (!empty($allusers)) {
                 $gradeurl = new moodle_url('/mod/giportfolio/updategrade.php', $params);
                 $contribute = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $paramscontrib);
                 $statuspublish = html_writer::link($viewurl, $strview);
-                $statuspublish .= ' | '.html_writer::link($gradeurl, $strgrade);
-                $statuspublish .= ' | '.html_writer::link($contribute, $strcontribute);
+                $statuspublish .= ' | ' . html_writer::link($gradeurl, $strgrade);
+                $statuspublish .= ' | ' . html_writer::link($contribute, $strcontribute);
                 $rowclass = '';
             } else if ($private) {
                 $statuspublish = $strprivate;
@@ -321,17 +329,17 @@ if (!empty($allusers)) {
                 $rowclass = 'late';
                 $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id);
                 $contribute = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $paramscontrib);
-                $statuspublish .= ' | '.html_writer::link($contribute, $strcontribute);
+                $statuspublish .= ' | ' . html_writer::link($contribute, $strcontribute);
             }
 
-            $userlink = '<a href="'.$CFG->wwwroot.'/user/view.php?id='.$puser->id.'&amp;course='.$course->id.'">'.
-                fullname($puser, has_capability('moodle/site:viewfullnames', $context)).'</a>';
+            $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $puser->id . '&amp;course=' . $course->id . '">' .
+                fullname($puser, has_capability('moodle/site:viewfullnames', $context)) . '</a>';
             $extradata = array();
             foreach ($extrafields as $field) {
                 $extradata[] = $puser->{$field};
             }
             $row = array_merge(array($picture, $userlink), $extradata,
-                               array($lastupdated, $statuspublish, $userfinalgrade->str_grade, $feedback));
+                array($lastupdated, $statuspublish, $updatedchapters, $userfinalgrade->str_grade, $feedback));
             $offset++;
             $table->add_data($row, $rowclass);
         }
@@ -346,9 +354,9 @@ if (!empty($allusers)) {
 if ($quickgrade && $table->started_output && !empty($allusers)) {
 
     $savefeedback = html_writer::empty_tag('input', array(
-                                                         'type' => 'submit', 'name' => 'fastg',
-                                                         'value' => get_string('saveallfeedback', 'mod_giportfolio')
-                                                    ));
+            'type' => 'submit', 'name' => 'fastg',
+            'value' => get_string('saveallfeedback', 'mod_giportfolio')
+    ));
     echo html_writer::tag('div', $savefeedback, array('class' => 'fastgbutton'));
 
     echo html_writer::end_tag('form');
@@ -397,4 +405,56 @@ function quickgrade_mode_allowed($cmid) {
         return false;
     }
     return true;
+}
+
+// Part of CGS customisation.  List chapters with new contribution.
+function get_updated_chapters_since_last_login($giportfolio, $contributorid, $cm) {
+    global $DB, $USER, $PAGE;
+
+    $q = 'SELECT ch.id, ch.title
+           FROM mdl_giportfolio_chapters  AS ch
+           WHERE id IN (SELECT c.chapterid
+                        FROM mdl_giportfolio_contributions AS c
+                        JOIN mdl_user as u ON  c.userid = :contributorid
+                        WHERE c.timemodified > :lastlogin AND  c.giportfolioid = :portfolioid);';
+
+    $params = ['contributorid' => $contributorid, 'lastlogin' => $USER->lastlogin, 'portfolioid' => $giportfolio->id];
+
+    $chapters = $DB->get_records_sql($q, $params);
+    $links = '';
+    $morethanthree = count($chapters) > 3;
+    $index = 0;
+
+    foreach ($chapters as $chapter) {
+
+        $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'chapterid' => $chapter->id,
+            'userid' => $contributorid));
+        if ($index >= 3) {
+            $params =  ['href' => $url,
+                        'target' => '_blank',
+                        'class' => 'giportfolio-updatedch' . ' contributor_'.$contributorid,
+                        'id' => 'contributor_'.$contributorid];
+            $links .= html_writer::tag("a", $chapter->title, $params);
+        } else {
+            $links .= html_writer::tag('a', $chapter->title, ['href' => $url, 'target' => '_blank']) . '<br>';
+        }
+
+        $index++;
+    }
+
+    if ($morethanthree) {
+        $params = ["class" => "giportfolio-more", "id" => $contributorid, 'title' => 'Show More'];
+        $icon = '<i class = "fa">&#xf067;</i>'; //minus: &#xf068;
+        $links .=  html_writer::span($icon,'', $params);
+        $jsmodule = array(
+            'name' => 'mod_giportfolio_morechapters',
+            'fullpath' => new moodle_url('/mod/giportfolio/morechapters.js'),
+            'contributorid' => $contributorid
+        );
+        $PAGE->requires->js_init_call('M.mod_giportfolio_showMore.init', array($contributorid), true, $jsmodule);
+
+    }
+
+
+    return $links;
 }
