@@ -378,9 +378,11 @@ if ($contriblist) {
                 }
                 $shareicon = html_writer::link($shareurl, $shareicon);
             }
-            if (!$mentor && !isset($contrib->mentorid)) {
+
+          
+            if (!$mentor && $contrib->mentorid == 0) {
                 $actions = array($editicon, $delicon, $showicon, $shareicon);
-            } else if ($mentor && isset($contrib->mentorid) && $contrib->mentorid == $USER->id){
+            } else if ($mentor &&  $contrib->mentorid == $USER->id){
                 $actions = array($editicon, $delicon);
             } else {
                 $actions = array();

@@ -868,7 +868,7 @@ function giportfolio_get_user_default_chapter($giportfolioid, $userid) { // Part
     global $DB;
     $sql = "SELECT chapterid  FROM mdl_giportfolio_contributions
             WHERE userid = {$userid} and  giportfolioid = {$giportfolioid}
-            LIMIT 1 ";
+            LIMIT 1; ";
 
     return  $DB->get_record_sql($sql);
 }
