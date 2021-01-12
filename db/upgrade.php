@@ -551,7 +551,7 @@ function xmldb_giportfolio_upgrade($oldversion) {
         // Define field mentorid to be added to giportfolio_contributions.
         $table_gc = new xmldb_table('giportfolio_contributions');
         $mentorid_field = new xmldb_field('mentorid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'userid');
-        $teacher_field = new xmldb_field('teacherid', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'mentorid');
+        $teacher_field = new xmldb_field('teacherid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0', 'mentorid');
 
         // Conditionally launch add field mentorid.
         if (!$dbman->field_exists($table_gc, $mentorid_field)) {

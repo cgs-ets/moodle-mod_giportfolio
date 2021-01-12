@@ -71,7 +71,7 @@
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="timemodified"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="stores the contributor id"/>
         <FIELD NAME="mentorid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="stores the id of a contributor that is a mentor"/>
-        <FIELD NAME="teacherid" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Id of the teacher that does a contribution on behalf of a student"/>
+        <FIELD NAME="teacherid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Id of the teacher that does a contribution on behalf of a student"/>
         <FIELD NAME="shared" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Is this contribution visible to other students"/>
       </FIELDS>
       <KEYS>
