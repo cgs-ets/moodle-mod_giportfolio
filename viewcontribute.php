@@ -287,10 +287,14 @@ if ($contriblist) {
                         .date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified)
                    .'</span></span>';
                 }
+               $hidementortag = ($contrib->mentorid == 0) ? 'hidden' : '';
+               $hideteachertag =($contrib->teacherid == 0) ? 'hidden' : '';
 
                 $contribution_outline .= html_writer::tag('tr',
                     '<td><a href="#contribution'.$contribution_count.'">'.format_string($contrib->title).'</a></td>'.
-                    '<td class="contribdate">'.$date_display.'</td>',
+                    '<td class="contribdate">'.$date_display.'</td>'.
+                    '<td class="badge badge-info"'.$hidementortag.' ><strong>'.format_string(get_string('mentorcontribution', 'mod_giportfolio')).'</td>'.
+                    '<td class="badge badge-success"'.$hideteachertag.' ><strong>'.format_string(get_string('teachercontribution', 'mod_giportfolio')).'</td>',
                     array('class' => ($ismine ? 'mine' : 'notmine'))
                 );
             }

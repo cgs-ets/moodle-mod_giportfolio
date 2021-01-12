@@ -62,6 +62,8 @@ class mod_giportfolio_contribution_edit_form extends moodleform {
         $mform->setType('mentor', PARAM_INT);
         $mform->addElement('hidden', 'mentee');
         $mform->setType('mentee', PARAM_INT);
+        $mform->addElement('hidden', 'teacherid');
+        $mform->setType('teacherid', PARAM_INT);
 
         $this->add_action_buttons(true, get_string('updatecontrib', 'giportfolio'));
     }

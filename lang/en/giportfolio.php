@@ -196,3 +196,5 @@ $string['allowmentorcontrib'] = 'Allow Mentor contribution';
 $string['onbehalf'] = 'Contribute on behalf of {$a->name}';
 $string['contribute'] = 'Contribute';
 $string['chaptersupdated'] = 'Updated Chapters';
+$string['mentorcontribution'] = 'Mentor\'s contribution';
+$string['teachercontribution'] = 'Teacher\'s contribution';

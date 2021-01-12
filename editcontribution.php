@@ -103,6 +103,7 @@ $formdata->id = $cm->id;
 $formdata->chapterid = $chapter->id;
 $formdata->mentor = $mentor;
 $formdata->mentee = $mentee;
+$formdata->teacherid = ($mentor == 0 && $mentee != 0 && $USER->id != $mentee) ? $USER->id : 0; // Teacher on behalf of the student
 
 // Header and strings.
 $PAGE->set_title(format_string($giportfolio->name));
@@ -203,7 +204,9 @@ if ($mform->is_cancelled()) {
             'timemodified' => 0, // Updated later.
             'userid' => $formdata->mentee == 0 ? $USER->id : $formdata->mentee,
             'mentorid' => $formdata->mentor,
+            'teacherid' => $formdata->teacherid
         );
+        #var_dump($ins); exit;
         $contributionid = $DB->insert_record('giportfolio_contributions', $ins);
 
         if ($giportfolio->notifyaddentry) {
