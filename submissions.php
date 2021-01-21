@@ -277,7 +277,7 @@ if (!empty($allusers)) {
             $userfinalgrade->grade = null;
             $userfinalgrade->str_grade = '-';
             if ($usercontribution) {
-                $updatedchapters = get_updated_chapters_since_last_login($giportfolio, $puser->id, $cm);
+                $updatedchapters = get_updated_chapters_not_seen($giportfolio, $puser->id, $cm);
                 $lastupdated = date('l jS \of F Y ', $usercontribution);
                 $usergrade = grade_get_grades($course->id, 'mod', 'giportfolio', $giportfolio->id, $puser->id);
                 if ($usergrade->items) {
@@ -338,6 +338,7 @@ if (!empty($allusers)) {
             foreach ($extrafields as $field) {
                 $extradata[] = $puser->{$field};
             }
+
             $row = array_merge(array($picture, $userlink), $extradata,
                 array($lastupdated, $statuspublish, $updatedchapters, $userfinalgrade->str_grade, $feedback));
             $offset++;
@@ -408,19 +409,30 @@ function quickgrade_mode_allowed($cmid) {
 }
 
 // Part of CGS customisation.  List chapters with new contribution.
-function get_updated_chapters_since_last_login($giportfolio, $contributorid, $cm) {
+function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
     global $DB, $USER, $PAGE;
 
-    $q = 'SELECT ch.id, ch.title
-           FROM mdl_giportfolio_chapters  AS ch
-           WHERE id IN (SELECT c.chapterid
-                        FROM mdl_giportfolio_contributions AS c
-                        JOIN mdl_user as u ON  c.userid = :contributorid
-                        WHERE c.timemodified > :lastlogin AND  c.giportfolioid = :portfolioid);';
+    // Get contribution ids done by the contributor.
+    $select = "giportfolioid = $giportfolio->id AND userid = $contributorid";
+    $contribids = $DB->get_fieldset_select('giportfolio_contributions', 'id', $select);
+    $contributionids = implode(',', $contribids);
 
-    $params = ['contributorid' => $contributorid, 'lastlogin' => $USER->lastlogin, 'portfolioid' => $giportfolio->id];
+    // Get the ids of the contributions seen.
+    $select = "contributionid  IN ($contributionids) AND  userid = $USER->id AND giportfolioid = $giportfolio->id";
+    $contribseen = $DB->get_fieldset_select('giportfolio_follow_updates', 'contributionid', $select);
 
-    $chapters = $DB->get_records_sql($q, $params);
+    // Filter the contribution ids to only have the ids not seen.
+    $contribnotseenids = implode(',', array_diff($contribids, $contribseen));
+    if (empty ($contribnotseenids)) {
+        return '';
+    } else {
+        $q = "SELECT DISTINCT chapterid FROM mdl_giportfolio_contributions WHERE id IN ($contribnotseenids);";
+        $chids = array_keys($DB->get_records_sql($q));
+        $chids = implode(',', $chids);
+        $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id in ($chids)";
+    }
+
+    $chapters = $DB->get_records_sql($sql);
     $links = '';
     $morethanthree = count($chapters) > 3;
     $index = 0;
@@ -454,7 +466,6 @@ function get_updated_chapters_since_last_login($giportfolio, $contributorid, $cm
         $PAGE->requires->js_init_call('M.mod_giportfolio_showMore.init', array($contributorid), true, $jsmodule);
 
     }
-
-
+   
     return $links;
 }

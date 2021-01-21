@@ -167,6 +167,7 @@ function giportfolio_delete_instance($id) {
 
     $DB->delete_records('giportfolio_contributions', array('giportfolioid' => $giportfolio->id));
     $DB->delete_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id));
+    $DB->delete_records('giportfolio_follow_updates', array('giportfolioid' => $giportfolio->id));
     $DB->delete_records('giportfolio', array('id' => $giportfolio->id));
 
     if ($giportfolio->klassenbuchtrainer && giportfolio_include_klassenbuchtrainer()) {
@@ -774,8 +775,8 @@ function giportfolio_pluginfile($course, $cm, $context, $filearea, $args, $force
 
     if ($filearea === 'contribution') {
         if (!$contribution = $DB->get_record('giportfolio_contributions', array(
-                                                                               'id' => $chid, 'giportfolioid' => $giportfolio->id
-                                                                          ))
+            'id' => $chid, 'giportfolioid' => $giportfolio->id
+            ))
         ) {
             return false;
         }

@@ -1293,9 +1293,34 @@ function giportfolio_get_mentees_mentor($menteeid) {
         $ids [] = $mentor->mentorid;
     }
 
-    $ids = implode ( ',',$ids);
-    return $ids;
+    $ids = implode(',', $ids);
 
+    return $ids;
+}
+//Part of Portfolios Updated chapters list.
+function has_seen_contribution($contributionid) {
+    global $DB, $USER;
+
+    $sql = "SELECT chapterid
+            FROM mdl_giportfolio_follow_updates
+            WHERE contributionid = $contributionid and userid = $USER->id;";
+    $r = $DB->get_records_sql($sql);
+
+    return $r;
+}
+
+function follow_updates_entry($contribution) {
+    global $DB, $USER;
+
+    $data = new \stdClass();
+    $data->giportfolioid = $contribution->giportfolioid;
+    $data->chapterid = $contribution->chapterid;
+    $data->contributionid = $contribution->id;
+    $data->userid = $USER->id;
+
+    $id = $DB->insert_record('giportfolio_follow_updates', $data, true);
+
+    return $id;
 
 }
 

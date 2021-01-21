@@ -566,6 +566,36 @@ function xmldb_giportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020032200, 'giportfolio');
     }
 
+    if ($oldversion < 2020032201) {
+
+        // Define table giportfolio_follow_updates to be created.
+        $table = new xmldb_table('giportfolio_follow_updates');
+
+        // Adding fields to table giportfolio_follow_updates.
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('giportfolioid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('chapterid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('contributionid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+
+        // Adding keys to table giportfolio_follow_updates.
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+        // Conditionally launch create table for giportfolio_follow_updates.
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2020032201, 'giportfolio');
+    }
+
+
+
+
+
+
+
 
     return true;
 }

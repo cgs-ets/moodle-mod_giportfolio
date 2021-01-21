@@ -298,6 +298,11 @@ if ($contriblist) {
                     array('class' => ($ismine ? 'mine' : 'notmine'))
                 );
             }
+
+            if (empty(has_seen_contribution($contrib->id))) { // First time the user sees the contrib.
+                follow_updates_entry($contrib);
+            }
+
         }
     }
 
