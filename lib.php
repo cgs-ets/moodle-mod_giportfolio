@@ -558,7 +558,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
 
 
     // Turn student editing on.
-    if (!empty($params['id']) && !empty($params['chapterid']) && (giportfolio_get_collaborative_status($giportfolio))
+    if ((!empty($params['id']) && !empty($params['chapterid']) && (giportfolio_get_collaborative_status($giportfolio)))
         && ( has_capability('mod/giportfolio:submitportfolio', $context) || (!empty($params['mentor']) && $params['mentor']!= 0)
             || (!empty($params['cont']) && $params['cont'] != 'no'))) {
 
@@ -588,7 +588,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
             $urlparams['mentee'] = $params['mentee'];
         }
 
-        if ($params['cont'] != 'no') {
+        if (!empty($params['cont'])) {
             $urlparams['cont'] = $params['cont'];
         }
 
@@ -601,8 +601,8 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
 
     // SYNERGY.
     if (!empty($params['id']) and !empty($params['chapterid'])
-        and (has_capability('mod/giportfolio:gradegiportfolios', $context))
-            and empty($params['cont'])) { // Control the teacher is not contributing on behalf of a student. CGS customisation
+        and (has_capability('mod/giportfolio:edit', $context))
+            and $params['cont'] == 'no') { // Control the teacher is not contributing on behalf of a student. CGS customisation
         if (!empty($USER->editing)) {
             $string = get_string("turneditingoff");
             $edit = '0';
@@ -612,13 +612,14 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
         }
         $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array(
             'id' => $params['id'],
-            'chapterid' => $params['chapterid'], 'edit' => $edit,
+            'chapterid' => $params['chapterid'],
+            'edit' => $edit,
             'sesskey' => sesskey(),
         ));
+
         $giportfolionode->add($string, $url, navigation_node::TYPE_SETTING);
     }
 
-    //var_dump($url); exit;
 }
 
 /**

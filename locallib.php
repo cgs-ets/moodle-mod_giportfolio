@@ -279,7 +279,7 @@ function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edi
     if ((giportfolio_get_collaborative_status($giportfolio) && !$edit ) || $mentee != 0 ) {
         $toc = giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $userdit, $mentor, $mentee, $contribute);
     } else {
-        $toc = giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $mentee, $mentor);
+        $toc = giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $mentee);
     }
 
     if ($edit) {
@@ -387,6 +387,7 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $men
             $toc .= '<div class="giportfolio_toc_indented" '.$tocid.'>';
             break;
     }
+
     // SYNERGY - add 'giportfolio-toc' ID.
 
     if ($edit) { // Teacher's TOC.
@@ -567,7 +568,7 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
     // SYNERGY - add 'giportfolio-toc' ID.
 
     $allowuser = giportfolio_get_collaborative_status($giportfolio);
-    
+
     if ($allowuser && $useredit) { // Edit students view.
         $toc .= '<ul>';
         $i = 0;
@@ -872,9 +873,9 @@ function giportfolio_set_mentor_info($contributions, $menteeid) {
 function giportfolio_get_user_default_chapter($giportfolioid, $userid) { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT chapterid  FROM mdl_giportfolio_contributions
+    $sql = "SELECT TOP(1) chapterid  FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = {$giportfolioid}
-            LIMIT 1; ";
+            --LIMIT 1; ";
 
     return  $DB->get_record_sql($sql);
 }
