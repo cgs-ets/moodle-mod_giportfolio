@@ -30,6 +30,10 @@ $id = required_param('id', PARAM_INT); // Course Module ID.
 $chapterid = required_param('chapterid', PARAM_INT); // Chapter ID.
 $up = optional_param('up', 0, PARAM_BOOL);
 
+$mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID
+$mentee = optional_param('mentee', 0, PARAM_INT);
+$contribute = optional_param('cont', 'no', PARAM_RAW); // When teacher is contributing.
+
 $cm = get_coursemodule_from_id('giportfolio', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
@@ -38,15 +42,16 @@ require_login($course, false, $cm);
 require_sesskey();
 
 $context = context_module::instance($cm->id);
+$userid = $mentee != 0 ? $mentee : $USER->id;
 
 $chapter = $DB->get_record('giportfolio_chapters', array(
-                                                            'id' => $chapterid, 'giportfolioid' => $giportfolio->id,
-                                                            'userid' => $USER->id
-                                                       ), '*', MUST_EXIST);
+    'id' => $chapterid, 'giportfolioid' => $giportfolio->id,
+    'userid' => $userid
+    ), '*', MUST_EXIST);
 
 $oldchapters = $DB->get_records('giportfolio_chapters', array(
-                                                                 'giportfolioid' => $giportfolio->id, 'userid' => $USER->id
-                                                            ), 'pagenum', 'id, pagenum, subchapter');
+    'giportfolioid' => $giportfolio->id, 'userid' => $userid
+    ), 'pagenum', 'id, pagenum, subchapter');
 
 $lastpage = giportfolio_get_last_chapter($giportfolio->id);
 
@@ -186,5 +191,5 @@ if (!$nothing) {
 
 giportfolio_preload_userchapters($giportfolio); // Fix structure.
 
-redirect('viewgiportfolio.php?id='.$cm->id.'&chapterid='.$chapter->id.'&useredit=1');
+redirect('viewgiportfolio.php?id='.$cm->id.'&chapterid='.$chapter->id.'&useredit=1&mentor='.$mentor.'&mentee='.$mentee.'&cont=' . $contribute);
 

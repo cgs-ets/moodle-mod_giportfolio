@@ -32,6 +32,9 @@ $cmid = required_param('cmid', PARAM_INT); // Giportfolio Course Module ID.
 $chapterid = optional_param('id', 0, PARAM_INT); // Chapter ID.
 $pagenum = optional_param('pagenum', 0, PARAM_INT);
 $subchapter = optional_param('subchapter', 0, PARAM_BOOL);
+$mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID
+$mentee = optional_param('mentee', 0, PARAM_INT);
+$contribute = optional_param('cont', 'no', PARAM_RAW);
 
 $cm = get_coursemodule_from_id('giportfolio', $cmid, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
@@ -40,14 +43,16 @@ $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*',
 require_login($course, false, $cm);
 
 $context = context_module::instance($cm->id);
+$userid = ($mentor != 0 || has_capability('mod/giportfolio:gradegiportfolios', $context))? $mentee : $USER->id;
 
 $PAGE->set_url('/mod/giportfolio/editstudent.php', array(
                                                         'cmid' => $cmid, 'id' => $chapterid, 'pagenum' => $pagenum,
-                                                        'subchapter' => $subchapter, 'userid' => $USER->id
-                                                   ));
+                                                        'subchapter' => $subchapter, 'userid' => $userid, 'cont' => $contribute
+                                                    ));
 $PAGE->set_pagelayout('admin'); // This is a bloody hack!
 
 $allowuser = giportfolio_get_collaborative_status($giportfolio);
+
 if (!$allowuser) {
     require_capability('mod/giportfolio:edit', $context);
 } else {
@@ -56,7 +61,7 @@ if (!$allowuser) {
 
     if ($chapterid) {
         $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id,
-                                                                 'userid' => $USER->id), '*', MUST_EXIST);
+                                                                 'userid' => $userid), '*', MUST_EXIST);
     } else {
         $chapter = new stdClass();
         $chapter->id = null;
@@ -64,6 +69,10 @@ if (!$allowuser) {
         $chapter->pagenum = $pagenum + 1;
     }
     $chapter->cmid = $cm->id;
+    $chapter->mentor = $mentor;
+    $chapter->mentee = $mentee;
+    $chapter->cont = $contribute;
+
 
     $options = array('noclean' => true, 'subdirs' => true, 'maxfiles' => -1, 'maxbytes' => 0, 'context' => $context);
     $chapter = file_prepare_standard_editor($chapter, 'content', $options, $context, 'mod_giportfolio', 'chapter', $chapter->id);
@@ -75,12 +84,13 @@ if (!$allowuser) {
         if (empty($chapter->id)) {
             redirect("viewgiportfolio.php?id=$cm->id");
         } else {
-            redirect("viewgiportfolio.php?id=$cm->id&chapterid=$chapter->id");
+            redirect("viewgiportfolio.php?id=$cm->id&chapterid=$chapter->id&mentor=$mentor&mentee=$mentee&cont=$chapter->cont");
         }
 
     } else if ($data = $mform->get_data()) {
 
         if ($data->id) {
+            $data->userid = $userid;
             // Store the files.
             $data = file_postupdate_standard_editor($data, 'content', $options, $context, 'mod_giportfolio', 'chapter', $data->id);
             $DB->update_record('giportfolio_chapters', $data);
@@ -94,8 +104,7 @@ if (!$allowuser) {
             $data->importsrc = '';
             $data->content = ''; // Updated later.
             $data->contentformat = FORMAT_HTML; // Updated later.
-            $data->userid = $USER->id;
-
+            $data->userid = $userid;
             // Make room for new page.
             $sql = "UPDATE {giportfolio_chapters}
                    SET pagenum = pagenum + 1
@@ -110,7 +119,7 @@ if (!$allowuser) {
         }
 
         giportfolio_preload_userchapters($giportfolio); // Fix structure.
-        redirect("viewgiportfolio.php?id=$cm->id&chapterid=$data->id&useredit=1");
+        redirect("viewgiportfolio.php?id=$cm->id&chapterid=$data->id&useredit=1&mentor=$mentor&mentee=$mentee&cont=$chapter->cont");
     }
 
     // Otherwise fill and print the form.

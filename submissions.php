@@ -29,8 +29,8 @@ $id = optional_param('id', 0, PARAM_INT); // Course module ID.
 $p = optional_param('p', 0, PARAM_INT); // Giportfolio ID.
 $currenttab = optional_param('tab', 'all', PARAM_ALPHA); // What tab are we in?
 $username = optional_param('username', '', PARAM_ALPHA); // Giportfolio ID.
-
 $url = new moodle_url('/mod/giportfolio/submissions.php');
+
 if ($id) {
     $cm = get_coursemodule_from_id('giportfolio', $id, 0, false, MUST_EXIST);
     $giportfolio = $DB->get_record("giportfolio", array("id" => $cm->instance), '*', MUST_EXIST);
@@ -313,7 +313,8 @@ if (!empty($allusers)) {
             if ($usercontribution) {
                 $params = array('id' => $cm->id, 'userid' => $puser->id);
                 $cid = giportfolio_get_user_default_chapter($giportfolio->id, $puser->id);
-                $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id, 'chapterid' => $cid->chapterid);
+                $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id, 'chapterid' => $cid->chapterid, 'cont' => 'yes');
+
                 $viewurl = new moodle_url('/mod/giportfolio/viewcontribute.php', $params);
                 $gradeurl = new moodle_url('/mod/giportfolio/updategrade.php', $params);
                 $contribute = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $paramscontrib);
@@ -327,8 +328,9 @@ if (!empty($allusers)) {
             } else {
                 $statuspublish = $strnotstarted;
                 $rowclass = 'late';
-                $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id);
+                $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id, 'cont' => 'contribution');
                 $contribute = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $paramscontrib);
+                $url->param('cont','contribution');
                 $statuspublish .= ' | ' . html_writer::link($contribute, $strcontribute);
             }
 
@@ -412,60 +414,74 @@ function quickgrade_mode_allowed($cmid) {
 function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
     global $DB, $USER, $PAGE;
 
-    // Get contribution ids done by the contributor.
-    $select = "giportfolioid = $giportfolio->id AND userid = $contributorid";
-    $contribids = $DB->get_fieldset_select('giportfolio_contributions', 'id', $select);
-    $contributionids = implode(',', $contribids);
+    // In case a student creates a chapter without content, by pass it
+    $conditions = array ('giportfolioid' => $giportfolio->id, 'userid' => $contributorid);
+    $countcontributions = $DB->count_records('giportfolio_contributions', $conditions);
+    if ($countcontributions > 0 ) {
 
-    // Get the ids of the contributions seen.
-    $select = "contributionid  IN ($contributionids) AND  userid = $USER->id AND giportfolioid = $giportfolio->id";
-    $contribseen = $DB->get_fieldset_select('giportfolio_follow_updates', 'contributionid', $select);
+        // Get contribution ids done by the contributor.
+        $select = "giportfolioid = $giportfolio->id AND userid = $contributorid";
+        $contribids = $DB->get_fieldset_select('giportfolio_contributions', 'id', $select);
+        $contributionids = implode(',', $contribids);
 
-    // Filter the contribution ids to only have the ids not seen.
-    $contribnotseenids = implode(',', array_diff($contribids, $contribseen));
-    if (empty ($contribnotseenids)) {
-        return '';
-    } else {
-        $q = "SELECT DISTINCT chapterid FROM mdl_giportfolio_contributions WHERE id IN ($contribnotseenids);";
-        $chids = array_keys($DB->get_records_sql($q));
-        $chids = implode(',', $chids);
-        $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id in ($chids)";
-    }
+        // Get the ids of the contributions seen.
+        $select = "contributionid  IN ($contributionids)
+                   AND userid IN ($USER->id, $contributorid)
+                   AND giportfolioid = $giportfolio->id";
+        $contribseen = $DB->get_fieldset_select('giportfolio_follow_updates', 'contributionid', $select);
 
-    $chapters = $DB->get_records_sql($sql);
-    $links = '';
-    $morethanthree = count($chapters) > 3;
-    $index = 0;
+        // Filter the contribution ids to only have the ids not seen.
+        $contribnotseenids = implode(',', array_diff($contribids, $contribseen));
 
-    foreach ($chapters as $chapter) {
-
-        $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'chapterid' => $chapter->id,
-            'userid' => $contributorid));
-        if ($index >= 3) {
-            $params =  ['href' => $url,
-                        'target' => '_blank',
-                        'class' => 'giportfolio-updatedch' . ' contributor_'.$contributorid,
-                        'id' => 'contributor_'.$contributorid];
-            $links .= html_writer::tag("a", $chapter->title, $params);
+        if (empty ($contribnotseenids) || empty($contribids)) {
+            return '';
         } else {
-            $links .= html_writer::tag('a', $chapter->title, ['href' => $url, 'target' => '_blank']) . '<br>';
+
+            $q = "SELECT DISTINCT chapterid FROM mdl_giportfolio_contributions WHERE id IN ($contribnotseenids);";
+            $chids = array_keys($DB->get_records_sql($q));
+            $chids = implode(',', $chids);
+            $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id in ($chids)";
         }
 
-        $index++;
-    }
+        $chapters = $DB->get_records_sql($sql);
 
-    if ($morethanthree) {
-        $params = ["class" => "giportfolio-more", "id" => $contributorid, 'title' => 'Show More'];
-        $icon = '<i class = "fa">&#xf067;</i>'; //minus: &#xf068;
-        $links .=  html_writer::span($icon,'', $params);
-        $jsmodule = array(
-            'name' => 'mod_giportfolio_morechapters',
-            'fullpath' => new moodle_url('/mod/giportfolio/morechapters.js'),
-            'contributorid' => $contributorid
-        );
-        $PAGE->requires->js_init_call('M.mod_giportfolio_showMore.init', array($contributorid), true, $jsmodule);
+        $links = '';
+        $morethanthree = count($chapters) > 3;
+        $index = 0;
 
+        foreach ($chapters as $chapter) {
+
+            $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'chapterid' => $chapter->id,
+                'userid' => $contributorid, 'cont' => 'no'));
+            if ($index >= 3) {
+                $params =  ['href' => $url,
+                            'target' => '_blank',
+                            'class' => 'giportfolio-updatedch' . ' contributor_'.$contributorid,
+                            'id' => 'contributor_'.$contributorid];
+                $links .= html_writer::tag("a", $chapter->title, $params);
+            } else {
+                $links .= html_writer::tag('a', $chapter->title, ['href' => $url, 'target' => '_blank']) . '<br>';
+            }
+
+            $index++;
+        }
+
+        if ($morethanthree) {
+            $params = ["class" => "giportfolio-more", "id" => $contributorid, 'title' => 'Show More'];
+            $icon = '<i class = "fa">&#xf067;</i>'; //minus: &#xf068;
+            $links .=  html_writer::span($icon,'', $params);
+            $jsmodule = array(
+                'name' => 'mod_giportfolio_morechapters',
+                'fullpath' => new moodle_url('/mod/giportfolio/morechapters.js'),
+                'contributorid' => $contributorid
+            );
+            $PAGE->requires->js_init_call('M.mod_giportfolio_showMore.init', array($contributorid), true, $jsmodule);
+
+        }
+
+
+        return $links;
+    } else {
+        return '';
     }
-   
-    return $links;
 }

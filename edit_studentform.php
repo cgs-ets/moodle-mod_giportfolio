@@ -56,6 +56,16 @@ class giportfolio_chapter_editstudent_form extends moodleform {
         $mform->addElement('hidden', 'pagenum');
         $mform->setType('pagenum', PARAM_INT);
 
+        // Parent view of own child's activity functionality.
+        $mform->addElement('hidden', 'mentor');
+        $mform->setType('mentor', PARAM_INT);
+
+        $mform->addElement('hidden', 'mentee');
+        $mform->setType('mentee', PARAM_INT);
+        // Keep track i this is a contribution on behalf of the student. CGS customisation.
+        $mform->addElement('hidden', 'cont');
+        $mform->setType('cont', PARAM_RAW);
+
         $this->add_action_buttons(true);
 
         // Set the defaults.

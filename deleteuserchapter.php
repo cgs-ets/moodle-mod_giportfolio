@@ -30,9 +30,13 @@ $id = required_param('id', PARAM_INT); // Course Module ID.
 $chapterid = required_param('chapterid', PARAM_INT); // Chapter ID.
 $confirm = optional_param('confirm', 0, PARAM_BOOL);
 
+$mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID
+$mentee = optional_param('mentee', 0, PARAM_INT);
+
 $cm = get_coursemodule_from_id('giportfolio', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
+$contribute = optional_param('cont', 'no', PARAM_RAW); // When teacher is contributing.
 
 require_login($course, false, $cm);
 require_sesskey();
@@ -40,9 +44,10 @@ require_sesskey();
 $context = context_module::instance($cm->id);
 
 $PAGE->set_url('/mod/giportfolio/deleteuserchapter.php', array('id' => $id, 'chapterid' => $chapterid));
+$userid = ($mentor != 0 && $mentee!= 0 || has_capability('mod/giportfolio:gradegiportfolios', $context))? $mentee : $USER->id;
 
-$chapter = $DB->get_record('giportfolio_chapters', array( 'id' => $chapterid, 'giportfolioid' => $giportfolio->id,
-                                                          'userid' => $USER->id ), '*', MUST_EXIST);
+$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id,
+    'userid' => $userid), '*', MUST_EXIST);
 
 // Header and strings.
 $PAGE->set_title(format_string($giportfolio->name));
@@ -52,17 +57,18 @@ $PAGE->set_heading(format_string($course->fullname));
 // Form processing.
 if ($confirm) { // The operation was confirmed.
     $fs = get_file_storage();
+
     if (!$chapter->subchapter) { // Delete all its subchapters if any.
-        $chapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
-                                     'pagenum', 'id, subchapter');
+        $params =  array('giportfolioid' => $giportfolio->id, 'userid' => $userid);
+        $chapters = $DB->get_records('giportfolio_chapters', $params, 'pagenum', 'id, subchapter');
         $found = false;
         foreach ($chapters as $ch) {
             if ($ch->id == $chapter->id) {
                 $found = true;
             } else if ($found and $ch->subchapter) {
                 // Here I should delete contributions first.
-                giportfolio_delete_user_contributions($ch->id, $USER->id, $giportfolio->id);
-                $DB->delete_records('giportfolio_chapters', array('id' => $ch->id, 'userid' => $USER->id));
+                giportfolio_delete_user_contributions($ch->id, $userid, $giportfolio->id);
+               $DB->delete_records('giportfolio_chapters', array('id' => $ch->id, 'userid' => $userid));
             } else if ($found) {
                 break;
             }
@@ -70,12 +76,13 @@ if ($confirm) { // The operation was confirmed.
     }
 
     // Here I should delete contributions first.
-    giportfolio_delete_user_contributions($chapter->id, $USER->id, $giportfolio->id);
-    $DB->delete_records('giportfolio_chapters', array('id' => $chapter->id, 'userid' => $USER->id));
+    giportfolio_delete_user_contributions($chapter->id, $chapter->userid, $giportfolio->id);
+
+    $DB->delete_records('giportfolio_chapters', array('id' => $chapter->id, 'userid' => $userid));
 
     giportfolio_preload_userchapters($giportfolio); // Fix structure.
 
-    redirect('viewgiportfolio.php?id='.$cm->id.'&useredit=1');
+    redirect('viewgiportfolio.php?id='.$cm->id.'&useredit=1&mentor='.$mentor.'&mentee='.$mentee);
 }
 
 echo $OUTPUT->header();
@@ -90,9 +97,15 @@ if ($chapter->subchapter) {
 echo '<br />';
 $continue = new moodle_url('/mod/giportfolio/deleteuserchapter.php', array(
                                                                           'id' => $cm->id, 'chapterid' => $chapter->id,
-                                                                          'confirm' => 1
+                                                                          'confirm' => 1,
+                                                                          'mentor' => $mentor,
+                                                                          'mentee' => $mentee,
+                                                                          'cont' => $contribute
                                                                      ));
-$cancel = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'chapterid' => $chapter->id));
+$cancel = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'chapterid' => $chapter->id,
+    'mentor' => $mentor,
+    'mentee' => $mentee,
+    'cont' => $contribute));
 echo $OUTPUT->confirm("<strong>$chapter->title</strong><p>$strconfirm</p>", $continue, $cancel);
 
 echo $OUTPUT->footer();

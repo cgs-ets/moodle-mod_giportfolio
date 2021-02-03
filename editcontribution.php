@@ -33,12 +33,15 @@ $chapterid = required_param('chapterid', PARAM_INT); // Chapter ID.
 $action = optional_param('action', null, PARAM_ALPHA);
 $mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID
 $mentee = optional_param('mentee', 0, PARAM_INT); // Mentor ID
+// Contribution  means the teacher is contributing on behalf of a student. Help on navigation
+// when teacher can add chapters on behalf of the student.
+$contribute = optional_param('cont', 'no', PARAM_RAW);
 
 $cm = get_coursemodule_from_id('giportfolio', $cmid, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
 
-$url = new moodle_url('/mod/giportfolio/editcontribution.php', array('id' => $cm->id, 'chapterid' => $chapterid, 'mentor' => $mentor, 'mentee' => $mentee));
+$url = new moodle_url('/mod/giportfolio/editcontribution.php', array('id' => $cm->id, 'chapterid' => $chapterid, 'mentor' => $mentor, 'mentee' => $mentee, 'cont' => $contribute));
 
 if ($action) {
     $url->param('action', $action);
@@ -51,9 +54,10 @@ $PAGE->set_url($url);
 require_login($course, false, $cm);
 
 $context = context_module::instance($cm->id);
-
+$cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Allow a teacher to make a contrib on behalf of a student.
 $mentorcancontribute = giportfolio_mentor_allowed_to_contribute($giportfolio->id);
-if ($mentor == 0 && !$mentorcancontribute) {
+
+if (($mentor == 0 && !$mentorcancontribute) && !$cangrade) {
     require_capability('mod/giportfolio:submitportfolio', $context);
 }
 
@@ -64,14 +68,18 @@ $maxbytes = $course->maxbytes; // TODO: add some setting.
 // Read chapters.
 $chapters = giportfolio_preload_chapters($giportfolio);
 // Add fake user chapters.
-$additionalchapters = giportfolio_preload_userchapters($giportfolio);
+$additionalchapters = $mentee != 0 ? giportfolio_preload_userchapters($giportfolio, $mentee) : giportfolio_preload_userchapters($giportfolio);
 if ($additionalchapters) {
     $chapters = $chapters + $additionalchapters;
 }
 
 $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id));
-if ($chapter->userid && $chapter->userid != $USER->id) {
-    throw new moodle_exception('notyourchapter', 'mod_giportfolio');
+$cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Allow a teacher to make a contrib on behalf of a student.
+
+if (!$cangrade) {
+    if ($chapter->userid && $chapter->userid != $USER->id && $mentor == 0) {
+        throw new moodle_exception('notyourchapter', 'mod_giportfolio');
+    }
 }
 
 // Chapter is hidden for students.
@@ -104,13 +112,15 @@ $formdata->chapterid = $chapter->id;
 $formdata->mentor = $mentor;
 $formdata->mentee = $mentee;
 $formdata->teacherid = ($mentor == 0 && $mentee != 0 && $USER->id != $mentee) ? $USER->id : 0; // Teacher on behalf of the student
+$formdata->cont = $contribute;
 
 // Header and strings.
 $PAGE->set_title(format_string($giportfolio->name));
 $PAGE->add_body_class('mod_giportfolio');
 $PAGE->set_heading(format_string($course->fullname));
 
-$redir = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'chapterid' => $chapter->id, 'mentor' => $mentor, 'mentee' => $mentee));
+$params = array('id' => $cm->id, 'chapterid' => $chapter->id, 'mentor' => $mentor, 'mentee' => $mentee, 'cont' => $contribute);
+$redir = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $params);
 
 // Handle delete / show / hide actions.
 if ($action) {
@@ -206,7 +216,7 @@ if ($mform->is_cancelled()) {
             'mentorid' => $formdata->mentor,
             'teacherid' => $formdata->teacherid
         );
-        #var_dump($ins); exit;
+
         $contributionid = $DB->insert_record('giportfolio_contributions', $ins);
 
         if ($giportfolio->notifyaddentry) {

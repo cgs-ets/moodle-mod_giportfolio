@@ -268,17 +268,18 @@ function giportfolio_log($str1, $str2, $level = 0) {
     }
 }
 
-function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edit, $userdit, $mentor = 0, $mentee = 0) {
+function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edit, $userdit, $mentor = 0, $mentee = 0, $contribute ='no') {
     global $OUTPUT, $PAGE, $USER, $COURSE;
 
     $context = context_module::instance($cm->id);
     $context = $context->get_course_context();
     $allowreport = has_capability('report/outline:view', $context);
+    $userid = ($mentor != 0 && $mentee!= 0 || has_capability('mod/giportfolio:gradegiportfolios', $context))? $mentee : $USER->id;
 
-    if (giportfolio_get_collaborative_status($giportfolio) && !$edit) {
-        $toc = giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, $USER->id, $userdit, $mentor, $mentee);
+    if ((giportfolio_get_collaborative_status($giportfolio) && !$edit ) || $mentee != 0 ) {
+        $toc = giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $userdit, $mentor, $mentee, $contribute);
     } else {
-        $toc = giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $mentee);
+        $toc = giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $mentee, $mentor);
     }
 
     if ($edit) {
@@ -532,9 +533,12 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $men
  * @param bool $edit
  * @param $userid
  * @param $useredit
+ * @param $mentor
+ * @param $mentee
+ * @param $contribute
  * @return string
  */
-function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $useredit, $mentor = 0, $mentee = 0) {
+function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $useredit, $mentor = 0, $mentee = 0, $contribute = 'no') {
     global $USER, $OUTPUT;
 
     $toc = ''; // Representation of toc (HTML).
@@ -563,6 +567,7 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
     // SYNERGY - add 'giportfolio-toc' ID.
 
     $allowuser = giportfolio_get_collaborative_status($giportfolio);
+    
     if ($allowuser && $useredit) { // Edit students view.
         $toc .= '<ul>';
         $i = 0;
@@ -620,36 +625,38 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
             }
 
             if ($ch->id == $chapter->id) {
-                $toc .= '<strong>'.$title.'</strong>';
+                $toc .= '<strong>' . $title . '</strong>';
             } else {
-                $toc .= '<a title="'.s($title).'" href="viewgiportfolio.php?id='.$cm->id.'&amp;chapterid='.$ch->id.
-                    '&amp;useredit=1'.'">'.$title.'</a>';
+                $toc .= '<a title="' . s($title) . '" href="viewgiportfolio.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id .
+                    '&amp;useredit=1' . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">' . $title . '</a>';
             }
             $toc .= '&nbsp;&nbsp;';
+            $userid = ($USER->id == $mentor) ? $mentee : $userid;
+
             if (giportfolio_check_user_chapter($ch, $userid)) {
                 if ($i != 1) {
                     if (!giportfolio_get_first_userchapter($giportfolio->id, $ch->id, $userid)) {
-                        $toc .= ' <a title="'.get_string('up').'" href="moveuserchapter.php?id='.$cm->id.
-                            '&amp;chapterid='.$ch->id.'&amp;up=1&amp;sesskey='.$USER->sesskey.'">
-                            <img src="'.$OUTPUT->image_url('t/up').'" class="iconsmall" alt="'.get_string('up').'" /></a>';
-
+                        $toc .= ' <a title="' . get_string('up') . '" href="moveuserchapter.php?id=' . $cm->id .
+                            '&amp;chapterid=' . $ch->id . '&amp;up=1&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee .'&amp;cont=' .$contribute .'">
+                            <img src="' . $OUTPUT->image_url('t/up') . '" class="iconsmall" alt="' . get_string('up') . '" /></a>';
                     }
                 }
                 if ($i != count($chapters)) {
                     $toc .= ' <a title="'.get_string('down').'" href="moveuserchapter.php?id='.$cm->id.
-                        '&amp;chapterid='.$ch->id.'&amp;up=0&amp;sesskey='.$USER->sesskey.'">
+                        '&amp;chapterid='.$ch->id.'&amp;up=0&amp;sesskey='.$USER->sesskey.'&amp;mentor='.$mentor.'&amp;mentee='.$mentee.'">
                         <img src="'.$OUTPUT->image_url('t/down').'" class="iconsmall" alt="'.get_string('down').'" /></a>';
                 }
             }
 
             if (giportfolio_check_user_chapter($ch, $userid)) {
-                $toc .= ' <a title="'.get_string('edit').'" href="editstudent.php?cmid='.$cm->id.'&amp;id='.$ch->id.'">
-                <img src="'.$OUTPUT->image_url('t/edit').'" class="iconsmall" alt="'.get_string('edit').'" /></a>';
+                $toc .= '<a title="' . get_string('edit')
+                    . '" href="editstudent.php?cmid=' . $cm->id . '&amp;id='
+                    . $ch->id . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '"> '
+                    . '<img src="' . $OUTPUT->image_url('t/edit') . '" class="iconsmall" alt="' . get_string('edit') . '" /></a>';
             }
 
             if (giportfolio_check_user_chapter($ch, $userid)) {
-                $toc .= ' <a title="'.get_string('delete').'" href="deleteuserchapter.php?id='.$cm->id.'&amp;chapterid='.$ch->id.
-                    '&amp;sesskey='.$USER->sesskey.'">
+                $toc .= ' <a title="' . get_string('delete') . '" href="deleteuserchapter.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id .'&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' .$contribute .'">
                     <img src="'.$OUTPUT->image_url('t/delete').'" class="iconsmall" alt="'.get_string('delete').'" /></a>';
             }
 
@@ -657,7 +664,7 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
                 giportfolio_get_last_chapter($giportfolio->id, $ch->id)) {
 
                 $toc .= ' <a title="'.get_string('addafter', 'mod_giportfolio').'" href="editstudent.php?cmid='.$cm->id.
-                    '&amp;pagenum='.$ch->pagenum.'&amp;subchapter='.$ch->subchapter.'">
+                    '&amp;pagenum='.$ch->pagenum.'&amp;subchapter='.$ch->subchapter.'&amp;mentor='.$mentor.'&amp;mentee='.$mentee.'&amp;cont='.$contribute.'">
                     <img src="'.$OUTPUT->image_url('add', 'mod_giportfolio').'" class="iconsmall" alt="'.
                     get_string('addafter', 'mod_giportfolio').'" /></a>';
             }
@@ -666,7 +673,7 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
         }
         $toc .= '</ul></li></ul>';
     } else {
-        // Normal stdent nonediting view.
+        // Normal student nonediting view.
         $toc .= '<ul>';
         // SYNERGY - Find the open chapter.
         $currentch = 0;
@@ -707,10 +714,8 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
                 if ($ch->id == $chapter->id) {
                     $toc .= '<strong>'.$title.'</strong>';
                 } else {
-                   # var_dump($mentee); exit;
                     $toc .= '<a title="'.s($title).'" href="viewgiportfolio.php?id='.$cm->id.'&amp;chapterid='.$ch->id
-                        .'&amp;mentor='.$mentor.'&amp;mentee='.$mentee.
-                    '">'.
+                        .'&amp;mentor='.$mentor.'&amp;mentee='.$mentee.'&amp;cont='.$contribute.'">'.
                     $title.'</a>';
 
                 }
@@ -866,8 +871,9 @@ function giportfolio_set_mentor_info($contributions, $menteeid) {
 
 function giportfolio_get_user_default_chapter($giportfolioid, $userid) { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
+
     $sql = "SELECT chapterid  FROM mdl_giportfolio_contributions
-            WHERE userid = {$userid} and  giportfolioid = {$giportfolioid}
+            WHERE  giportfolioid = {$giportfolioid}
             LIMIT 1; ";
 
     return  $DB->get_record_sql($sql);

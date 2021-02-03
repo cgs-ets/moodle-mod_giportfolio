@@ -36,6 +36,7 @@ $useredit = optional_param('useredit', 0, PARAM_BOOL); // Edit mode.
 $showshared = optional_param('showshared', null, PARAM_BOOL);
 $mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID
 $mentee = optional_param('mentee', 0, PARAM_INT);
+$contribute = optional_param('cont', 'no', PARAM_RAW); // When teacher is contributing.
 
 // Security checks START - teachers edit; students view.
 
@@ -73,6 +74,7 @@ if ($allowedit) {
 } else {
     $edit = 0;
 }
+
 if ($showshared === null) {
     $showshared = false;
     if (isset($SESSION->giportfolio_show_shared)) {
@@ -85,15 +87,16 @@ if ($showshared === null) {
 // Read chapters.
 $chapters = giportfolio_preload_chapters($giportfolio);
 // SYNERGY - add fake user chapters.
-$additionalchapters = giportfolio_preload_userchapters($giportfolio);
+$additionalchapters = $mentee != 0 ? giportfolio_preload_userchapters($giportfolio, $mentee) : giportfolio_preload_userchapters($giportfolio);
 if ($additionalchapters) {
     $chapters = $chapters + $additionalchapters;
 }
-// SYNERGY.
 
-if ($allowedit and!$chapters) {
+// SYNERGY.
+if ($allowedit and !$chapters) {
     redirect('edit.php?cmid=' . $cm->id); // No chapters - add new one.
 }
+
 // Check chapterid and read chapter data.
 if ($chapterid == '0') { // Go to first chapter if no given.
     foreach ($chapters as $ch) {
@@ -109,6 +112,11 @@ if ($chapterid == '0') { // Go to first chapter if no given.
 }
 // SYNERGY.
 
+// Display the Mentee info to make it clear which portfolio is the teacher or mentor contributing to. CGS customisation.
+if ($mentee != 0) {
+    giportfolio_adduser_fake_block($mentee, $giportfolio, $cm, $course->id, $mentor);
+}
+
 if (!$chapterid) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
 }
@@ -116,17 +124,21 @@ if (!$chapterid) {
 if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id))) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
 }
-$isuserchapter = (bool) $chapter->userid || $mentor != 0;
-if ($isuserchapter && ($chapter->userid != $USER->id && $mentor == 0)) {
+
+$isuserchapter = (bool) $chapter->userid || $mentor != 0 || $chapter->userid == $USER->id;
+
+if ($isuserchapter && !$allowcontribute  && !$cangrade) {
     throw new moodle_exception('notyourchapter', 'mod_giportfolio');
 }
 
 // Chapter is hidden for students.
-if ($chapter->hidden and!$viewhidden) {
+if ($chapter->hidden and !$viewhidden) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
 }
+$params = array('id' => $id, 'chapterid' => $chapterid, 'mentor' => $mentor, 'mentee' => $mentee, 'cont' => $contribute);
 
-$PAGE->set_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $id, 'chapterid' => $chapterid, 'mentor' => $mentor, 'mentee' => $mentee));
+$PAGE->set_url('/mod/giportfolio/viewgiportfolio.php', $params);
+
 
 // Unset all page parameters.
 unset($id);
@@ -149,7 +161,7 @@ $PAGE->add_body_class('mod_giportfolio');
 $PAGE->set_heading(format_string($course->fullname));
 
 // Synergy add $useredit.
-giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edit, $useredit, $mentor, $mentee);
+giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edit, $useredit, $mentor, $mentee, $contribute);
 
 // Prepare chapter navigation icons.
 $previd = null;
@@ -172,9 +184,10 @@ foreach ($chapters as $ch) {
 $chnavigation = '';
 $mentorid = '&amp;mentor=' . $mentor;
 $menteeid = '&amp;mentee=' . $mentee;
+$contribute  = '&amp;cont=' . $contribute;
 if ($previd) {
     $chnavigation .= '<a title="' . get_string('navprev', 'giportfolio') . '" href="viewgiportfolio.php?id=' . $cm->id .
-        '&amp;chapterid=' . $previd . $mentorid . $menteeid . '">
+        '&amp;chapterid=' . $previd . $mentorid . $menteeid . $contribute . '">
         <img src="' . $OUTPUT->image_url('nav_prev', 'mod_giportfolio') . '" class="bigicon" alt="' .
         get_string('navprev', 'giportfolio') . $menteeid . '"/></a>';
 } else {
@@ -182,7 +195,7 @@ if ($previd) {
 }
 if ($nextid) {
     $chnavigation .= '<a title="' . get_string('navnext', 'giportfolio') . '" href="viewgiportfolio.php?id=' . $cm->id .
-        '&amp;chapterid=' . $nextid . $mentorid . $menteeid . '">
+        '&amp;chapterid=' . $nextid . $mentorid . $menteeid .$contribute .'">
         <img src="' . $OUTPUT->image_url('nav_next', 'mod_giportfolio') . '" class="bigicon" alt="' .
         get_string('navnext', 'giportfolio') . '" /></a>';
 } else {
@@ -238,6 +251,7 @@ echo $extralinks;
 
 // Chapter itself.
 echo $OUTPUT->box_start('generalbox giportfolio_content');
+
 if (!$giportfolio->customtitles) {
     $hidden = $chapter->hidden ? 'dimmed_text' : '';
     if (!$chapter->subchapter) {
@@ -254,24 +268,28 @@ if (!$giportfolio->customtitles) {
 global $USER;
 $pixpath = "$CFG->wwwroot/pix";
 
-// Parent view of own child's activity functionality
+// Parent view of own child's activity functionality. CGS
 $userid = $mentee == 0 ? $USER->id : $mentee;
 $menteesmentorsid = giportfolio_get_mentees_mentor($userid);
 $ids = ($mentee == 0) ? $userid : ((!empty($menteesmentorsid)) ? $menteesmentorsid . ',' . $userid : $userid);
 $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $ids, $showshared);
+
 if (count($contriblist) > 0) {
     giportfolio_set_mentor_info($contriblist, $userid);
 }
 
-$chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
-    'chapter', $chapter->id);
+$chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php', $context->id, 'mod_giportfolio', 'chapter', $chapter->id);
 echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
 
 echo $OUTPUT->box_start('giportfolio_actions');
 
 if (!$allowedit || $cangrade && $mentee != 0) {
-    $addurl = new moodle_url('/mod/giportfolio/editcontribution.php',
-        array('id' => $cm->id, 'chapterid' => $chapter->id, 'mentor' => $mentor, 'mentee' => $mentee));
+    $params = array('id' => $cm->id, 'chapterid' => $chapter->id, 'mentor' => $mentor, 'mentee' => $mentee);
+    if (!empty($contribution)) {
+        $params['cont'] = $contribute;
+    }
+    $addurl = new moodle_url('/mod/giportfolio/editcontribution.php', $params);
+
     echo $OUTPUT->single_button($addurl, get_string('addcontrib', 'mod_giportfolio'), 'GET');
 }
 $otherusers = array();
@@ -327,6 +345,7 @@ if ($contriblist) {
             . '<span id="toggleshow">' . get_string('outline_show', 'mod_giportfolio') . '</span> ]'
             . '</span></p><table id="giportfolio_outline" class="contents">';
     }
+
     $contribution_count = 0;
 
     comment::init();

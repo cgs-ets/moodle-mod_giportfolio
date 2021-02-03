@@ -60,6 +60,7 @@ $string['deletecontribwarningsub'] = 'This chapter and subchapters have {$a} con
 $string['editingchapter'] = 'Editing chapter';
 $string['editinguserchapter'] = 'Edit chapter';
 $string['edityourchapters'] = 'Edit your chapters';
+$string['edityourmenteechapters'] = 'Edit {$a->name}\'s chapters';
 $string['emailmessagecourse'] = 'inside the course:  ';
 $string['emailmessageuser'] = 'A portfolio has been published by the user:  ';
 $string['emailsubject'] = 'Portfolio published on your course';

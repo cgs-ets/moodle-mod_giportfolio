@@ -211,7 +211,8 @@ if ($allowedit) {
 
                 echo $OUTPUT->single_button($form->url, $form->text, '', array());
             } else {
-                $addurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'mentor' => $USER->id, 'mentee' => $mentee->id));
+                $addurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id,
+                    'mentor' => $USER->id, 'mentee' => $mentee->id));
                 echo $OUTPUT->single_button($addurl, get_string('onbehalf', 'mod_giportfolio',
                         ['name' => $mentee->firstname]), 'GET');
             }

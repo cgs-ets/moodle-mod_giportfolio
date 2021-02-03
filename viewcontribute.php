@@ -33,6 +33,7 @@ $id = optional_param('id', 0, PARAM_INT); // Course Module ID.
 $bid = optional_param('b', 0, PARAM_INT); // Giportfolio id.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
 $mentor = optional_param('mentor', 0, PARAM_INT);
+$contribute = optional_param('cont', 'no', PARAM_RAW);
 
 // Security checks START - teachers edit; students view.
 
@@ -100,7 +101,7 @@ if ($chapter->hidden and !$viewhidden) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewcontribute.php', array('id' => $course->id)));
 }
 
-$PAGE->set_url('/mod/giportfolio/viewcontribute.php', array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid));
+$PAGE->set_url('/mod/giportfolio/viewcontribute.php', array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid, 'cont' => $contribute));
 
 // Unset all page parameters.
 unset($id);

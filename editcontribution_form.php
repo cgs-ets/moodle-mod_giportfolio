@@ -64,6 +64,9 @@ class mod_giportfolio_contribution_edit_form extends moodleform {
         $mform->setType('mentee', PARAM_INT);
         $mform->addElement('hidden', 'teacherid');
         $mform->setType('teacherid', PARAM_INT);
+        // Track if the update is being done from a contribution on behalf of the student.
+        $mform->addElement('hidden', 'cont');
+        $mform->setType('cont', PARAM_RAW);
 
         $this->add_action_buttons(true, get_string('updatecontrib', 'giportfolio'));
     }
