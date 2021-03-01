@@ -245,3 +245,8 @@ p.alert.alert-info.giportfolio-restricted-access {
     padding-left: 9px;
 }
 
+.giportfolio-legend {
+    font-size: 1.2em;
+    color: #1177d1;
+}
+
