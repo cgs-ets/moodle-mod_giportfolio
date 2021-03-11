@@ -895,9 +895,9 @@ function giportfolio_get_user_default_chapter($giportfolioid, $userid)
 { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT chapterid  FROM mdl_giportfolio_contributions
+    $sql = "SELECT  TOP(1)chapterid  FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = {$giportfolioid}
-            LIMIT 1; ";
+            -- LIMIT 1; ";
 
     return  $DB->get_record_sql($sql);
 }
@@ -1462,14 +1462,13 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $table->sortable(false);
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
-
-    //$table->column_style['supercalifragilisticexpialidocious'] = ['color:red'];
+    
     foreach ($table->column_class as $name => $column) {
-        if (!in_array($name, ['picture', 'fullname'])) {  // These are the columns for the chapter titles
-          
+        if (!in_array($name, ['picture', 'fullname', get_string('additionstitle', 'giportfolio')])) {  // These are the columns for the chapter titles          
             $table->column_class($name, 'truncate');
         }
     }
+
     $table->set_attribute('cellspacing', '0');
     $table->set_attribute('id', 'attempts');
     $table->set_attribute('class', 'graphofcontributors');
