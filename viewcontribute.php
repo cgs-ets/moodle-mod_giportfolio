@@ -35,6 +35,7 @@ $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
 $mentor = optional_param('mentor', 0, PARAM_INT);
 $contribute = optional_param('cont', 'no', PARAM_RAW);
 
+
 // Security checks START - teachers edit; students view.
 
 if ($id) {
@@ -183,8 +184,8 @@ if ($nextid) {
 // Giportfolio display HTML code.
 
 $realuser = $DB->get_record('user', array('id' => $userid));
-
-$PAGE->navbar->add(get_string('studentgiportfolio', 'mod_giportfolio'),
+$alias = get_student_alias($COURSE);
+$PAGE->navbar->add(get_string('studentgiportfolio', 'mod_giportfolio', $alias),
                    new moodle_url('submissions.php?=', array('id' => $cm->id)));
 $PAGE->navbar->add(fullname($realuser));
 

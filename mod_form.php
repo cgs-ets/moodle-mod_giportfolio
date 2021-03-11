@@ -122,9 +122,14 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->addElement('selectyesno', 'myactivitylink', get_string('myactivitylink', 'giportfolio'));
         $mform->setDefault('myactivitylink', 1);
 
-        //
+        // Allow mentor to contribute on behalf of their mentee
         $mform->addElement('selectyesno', 'allowmentorcontrib', get_string('allowmentorcontrib', 'giportfolio'));
         $mform->setDefault('myactivitylink', 0);
+        
+        //Allow Non-editing teachers to contribute
+        $mform->addElement('selectyesno', 'allownetcontribute', get_string('allownetcontribute', 'giportfolio'));
+        $mform->setDefault('myactivitylink', 0);
+
 
         if (giportfolio_include_klassenbuchtrainer()) {
             $mform->addElement('selectyesno', 'klassenbuchtrainer', get_string('klassenbuchtrainer', 'giportfolio'));

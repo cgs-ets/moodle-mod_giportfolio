@@ -92,6 +92,9 @@ if ($additionalchapters) {
     $chapters = $chapters + $additionalchapters;
 }
 
+// Get the alias given to student role. CGS
+$alias = get_student_alias($course);
+
 // SYNERGY.
 if ($allowedit and !$chapters) {
     redirect('edit.php?cmid=' . $cm->id); // No chapters - add new one.
@@ -232,7 +235,7 @@ if (has_capability('giportfoliotool/print:print', $context)) {
 if (has_capability('mod/giportfolio:viewgiportfolios', $context)) {
     // Grading link.
     $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id));
-    $extralinks .= html_writer::link($url, get_string('studentgiportfolio', 'mod_giportfolio'));
+    $extralinks .= html_writer::link($url, get_string('studentgiportfolio', 'mod_giportfolio', $alias));
     $extralinks .= html_writer::empty_tag('br');
 }
 $url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array('id' => $cm->id));
@@ -292,7 +295,11 @@ if (!$allowedit || $cangrade && $mentee != 0) {
 
     echo $OUTPUT->single_button($addurl, get_string('addcontrib', 'mod_giportfolio'), 'GET');
 }
+
+
+
 $otherusers = array();
+
 if ($giportfolio->peersharing && $showshared) {
     $userids = array();
     foreach ($contriblist as $contrib) {
@@ -309,7 +316,7 @@ if ($giportfolio->peersharing && $showshared) {
             $otherusers[$user->id] = html_writer::link($profile, $fullname);
         }
     } else {
-        echo html_writer::tag('p', get_string('noshared', 'mod_giportfolio'));
+        echo html_writer::tag('p', get_string('noshared', 'mod_giportfolio', $alias));
     }
 }
 
@@ -318,10 +325,10 @@ if (!$isuserchapter && $giportfolio->peersharing) {
     // as long as peersharing is enabled.
     if ($showshared) {
         $hidesharedurl = new moodle_url($PAGE->url, array('showshared' => 0, 'mentee' => $mentee));
-        echo $OUTPUT->single_button($hidesharedurl, get_string('hideshared', 'mod_giportfolio'), 'GET');
+        echo $OUTPUT->single_button($hidesharedurl, get_string('hideshared', 'mod_giportfolio', $alias), 'GET');
     } else {
         $showsharedurl = new moodle_url($PAGE->url, array('showshared' => 1, 'mentee' => $mentee));
-        echo $OUTPUT->single_button($showsharedurl, get_string('showshared', 'mod_giportfolio'), 'GET');
+        echo $OUTPUT->single_button($showsharedurl, get_string('showshared', 'mod_giportfolio', $alias), 'GET');
     }
 }
 echo $OUTPUT->box_end(); // giportfolio_actions
@@ -389,10 +396,10 @@ if ($contriblist) {
             if (!$isuserchapter && $giportfolio->peersharing) { // Only for chapters without a userid and if peersharing is enabled.
                 if ($contrib->shared) {
                     $shareurl = new moodle_url($baseurl, array('action' => 'unshare', 'sesskey' => sesskey()));
-                    $shareicon = $OUTPUT->pix_icon('unshare', get_string('unshare', 'mod_giportfolio'), 'mod_giportfolio');
+                    $shareicon = $OUTPUT->pix_icon('unshare', get_string('unshare', 'mod_giportfolio', $alias), 'mod_giportfolio');
                 } else {
                     $shareurl = new moodle_url($baseurl, array('action' => 'share', 'sesskey' => sesskey()));
-                    $shareicon = $OUTPUT->pix_icon('share', get_string('share', 'mod_giportfolio'), 'mod_giportfolio');
+                    $shareicon = $OUTPUT->pix_icon('share', get_string('share', 'mod_giportfolio', $alias), 'mod_giportfolio');
                 }
                 $shareicon = html_writer::link($shareurl, $shareicon);
             }

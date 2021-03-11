@@ -590,6 +590,21 @@ function xmldb_giportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2020032201, 'giportfolio');
     }
 
+    if ($oldversion < 2021031000) {
+
+        // Define field allownetcontribute to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('allownetcontribute', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'allownetcontribute');
+
+        // Conditionally launch add field allownetcontribute.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2021031000, 'giportfolio');
+    }
+
 
 
 

@@ -63,7 +63,7 @@ list($mentees, $mentor) = giportfolio_user_is_mentor($context, $USER);
 $courseuserroles = enrol_get_course_users_roles($course->id);
 $userswithaccesstoportofolio = giportfolio_users_with_access($courseuserroles, $course, $cm->id);
 $mentorcancontribute = giportfolio_mentor_allowed_to_contribute($giportfolio->id);
-
+$noneditingteachercancontribute = giportfolio_non_editing_teacher_allowed_to_contribute($giportfolio->id);
 $allowedit = has_capability('mod/giportfolio:edit', $context);
 
 $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context);
@@ -121,8 +121,8 @@ echo $OUTPUT->box_start('generalbox giportfolio_content');
 
 $intro = file_rewrite_pluginfile_urls($giportfolio->intro, 'pluginfile.php', $context->id, 'mod_giportfolio', 'intro', '');
 echo format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
-
 $usercontribution = 0;
+
 if ($allowedit) {
     $usersgiportfolios = giportfolio_get_giportfolios_number($giportfolio->id, $cm->id);
     echo html_writer::start_tag('div', array('class' => 'giportfolioteacher'));
@@ -134,8 +134,10 @@ if ($allowedit) {
     echo $OUTPUT->single_button($form->url, $form->text, '', array());
 
     echo '</br>';
-    echo html_writer::link(new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id)),
-        get_string('submitedporto', 'mod_giportfolio') . ' ' . $usersgiportfolios);
+    echo html_writer::link(
+        new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id)),
+        get_string('submitedporto', 'mod_giportfolio') . ' ' . $usersgiportfolios
+    );
     echo html_writer::end_tag('div');
 } else if ($allowcontribute) {
     $usercontribution = giportfolio_get_user_contribution_status($giportfolio->id, $USER->id);
@@ -149,23 +151,38 @@ if ($allowedit) {
 
         echo html_writer::start_tag('div', array('class' => 'giportfolioupdated'));
         echo '</br>';
-        echo $OUTPUT->single_button(new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id)),
-            get_string('continuecontrib', 'mod_giportfolio'), '', array());
+        echo $OUTPUT->single_button(
+            new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id)),
+            get_string('continuecontrib', 'mod_giportfolio'),
+            '',
+            array()
+        );
         if ($allowreport && $giportfolio->myactivitylink) {
-            $reporturl = new moodle_url('/report/outline/user.php',
-                array('id' => $USER->id, 'course' => $course->id, 'mode' => 'outline'));
+            $reporturl = new moodle_url(
+                '/report/outline/user.php',
+                array('id' => $USER->id, 'course' => $course->id, 'mode' => 'outline')
+            );
             echo $OUTPUT->single_button($reporturl, get_string('courseoverview', 'mod_giportfolio'), 'get');
         }
         echo '</br>';
         echo get_string('lastupdated', 'mod_giportfolio') . date('l jS \of F Y h:i:s A', $usercontribution);
         echo '</br>';
-        echo get_string('chapternumber', 'mod_giportfolio') . count($chapters);
+        //is_non_editing_teacher
+        if (is_non_editing_teacher() && $noneditingteachercancontribute) {
+            echo html_writer::link(
+                new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id)),
+                get_string('submitedporto', 'mod_giportfolio') . ' ' . count($chapters)
+            );
+        } else {
+            echo get_string('chapternumber', 'mod_giportfolio') . count($chapters);
+        }
+
         echo '</br>';
         echo '</br>';
         if ($usergrade->items && $userfinalgrade->grade) {
             $percentage = explode("/", $userfinalgrade->str_long_grade);
             echo get_string('usergraded', 'mod_giportfolio') . number_format($userfinalgrade->grade, 2) .
-            '  (' . $userfinalgrade->str_long_grade . ') - ' . round(($percentage[0] / $percentage[1]) * 100, 4) . '%';
+                '  (' . $userfinalgrade->str_long_grade . ') - ' . round(($percentage[0] / $percentage[1]) * 100, 4) . '%';
             echo '</br>';
             if ($userfinalgrade->feedback) {
                 echo get_string('usergradefeedback', 'mod_giportfolio') . $userfinalgrade->feedback;
@@ -176,10 +193,22 @@ if ($allowedit) {
     } else {
         echo html_writer::start_tag('div', array('class' => 'giportfolioupdated'));
         echo '</br>';
-        echo $OUTPUT->single_button(new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id)),
-            get_string('startcontrib', 'mod_giportfolio'), '', array());
+        echo $OUTPUT->single_button(
+            new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id)),
+            get_string('startcontrib', 'mod_giportfolio'),
+            '',
+            array()
+        );
         echo '</br>';
-        echo get_string('chapternumber', 'mod_giportfolio') . '  ' . count($chapters);
+        if (is_non_editing_teacher() && $noneditingteachercancontribute) {
+            echo html_writer::link(
+                new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id)),
+                get_string('submitedporto', 'mod_giportfolio') . ' ' . count($chapters)
+            );
+        } else {
+
+            echo get_string('chapternumber', 'mod_giportfolio') . '  ' . count($chapters);
+        }
         echo '</br>';
         echo html_writer::end_tag('div');
     }
@@ -205,16 +234,23 @@ if ($allowedit) {
             $form = new stdClass();
 
             if (!$mentorcancontribute) {
-                $form->url = new moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id,
-                    'userid' => $mentee->id, 'mentor' => $USER->id));
+                $form->url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
+                    'id' => $cm->id,
+                    'userid' => $mentee->id, 'mentor' => $USER->id
+                ));
                 $form->text = get_string('viewmenteeportfolio', 'mod_giportfolio', ['name' => $mentee->firstname]);
 
                 echo $OUTPUT->single_button($form->url, $form->text, '', array());
             } else {
-                $addurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id,
-                    'mentor' => $USER->id, 'mentee' => $mentee->id));
-                echo $OUTPUT->single_button($addurl, get_string('onbehalf', 'mod_giportfolio',
-                        ['name' => $mentee->firstname]), 'GET');
+                $addurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array(
+                    'id' => $cm->id,
+                    'mentor' => $USER->id, 'mentee' => $mentee->id
+                ));
+                echo $OUTPUT->single_button($addurl, get_string(
+                    'onbehalf',
+                    'mod_giportfolio',
+                    ['name' => $mentee->firstname]
+                ), 'GET');
             }
 
             echo '<br><br>';
@@ -225,14 +261,17 @@ if ($allowedit) {
 }
 
 // To show the parent perspective.
-if (is_role_switched($course->id)) {
-    $f = new stdClass();
-    $f->url = new moodle_url('/mod/giportfolio/view.php', array('id' => $cm->id));
-    $text = get_string('viewmenteeportfolio', 'mod_giportfolio', ['name' => 'Mentee\'s name']);
-    $assumedrole = $USER->access['rsw'][$context->path];
-    $roles[0] = get_string('switchrolereturn');
-    echo $OUTPUT->single_button($f->url, $text, '', array());
-}
+// if (is_role_switched($course->id) ) {
+//     $f = new stdClass();
+//     $f->url = new moodle_url('/mod/giportfolio/view.php', array('id' => $cm->id));
+//     $text = get_string('viewmenteeportfolio', 'mod_giportfolio', ['name' => 'Mentee\'s name']);
+//     $assumedrole = $USER->access['rsw'][$context->path];
+//     $roles[0] = get_string('switchrolereturn');
+//     var_dump($assumedrole);
+//     var_dump($USER->access['rsw']); 
+
+//     echo $OUTPUT->single_button($f->url, $text, '', array());
+// }
 
 echo $OUTPUT->box_end();
 echo $OUTPUT->footer();

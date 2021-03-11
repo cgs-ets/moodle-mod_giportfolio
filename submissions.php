@@ -57,6 +57,8 @@ $PAGE->set_title(format_string($giportfolio->name));
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($giportfolio->name));
 
+$alias = get_student_alias($COURSE); // Pick the alias given to the students
+
 // Set up the list of tabs.
 $allurl = new moodle_url($PAGE->url);
 $allurl->remove_params('tab');
@@ -64,13 +66,13 @@ $sincelastloginurl = new moodle_url($PAGE->url, array('tab' => 'sincelastlogin')
 $nocommentsurl = new moodle_url($PAGE->url, array('tab' => 'nocomments'));
 $graphcontributorsurl = new moodle_url($PAGE->url, array('tab' => 'graphcontributors'));
 $tabs = array(
-    new tabobject('all', $allurl, get_string('allusers', 'mod_giportfolio')),
+    new tabobject('all', $allurl, get_string('allusers', 'mod_giportfolio', $alias)),
     new tabobject('sincelastlogin', $sincelastloginurl, get_string('sincelastlogin', 'mod_giportfolio')),
     new tabobject('nocomments', $nocommentsurl, get_string('nocomments', 'mod_giportfolio')),
     new tabobject('nocomments', $graphcontributorsurl, get_string('graphofcontributors', 'mod_giportfolio')),
 );
 
-echo get_string('studentgiportfolios', 'mod_giportfolio');
+echo get_string('studentgiportfolios', 'mod_giportfolio', $alias);
 echo '</br>';
 echo $OUTPUT->tabtree($tabs, $currenttab);
 echo get_string('filterlist', 'mod_giportfolio');
@@ -118,7 +120,7 @@ $mform = new giportfolio_search_form(null, array('id' => $id, 'tab' => $currentt
 $mform->display();
 
 // Print quickgrade form around the table.
-if ($quickgrade) {
+if ($quickgrade && $currenttab != 'graphcontributors') {
 
     $formattrs = array();
     $formattrs['action'] = new moodle_url('/mod/giportfolio/submissions.php');
@@ -147,11 +149,11 @@ if ($currenttab == 'graphcontributors') {
     giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm);
 
     $iconunseen = html_writer::span(' <i class = "fa">&#xf096;</i>', '', ['class' => 'giportfolio-legend']);
-    $iconseen = html_writer::span('<i class = "fa">&#xf00c;</i>', '', ['class' => 'giportfolio-legend']);
+    $iconseen = html_writer::span('<i class = "fa">&#xf046;</i>', '', ['class' => 'giportfolio-legend']);
 
     $out .= html_writer::start_div();
     $out .= html_writer::tag('p', '<strong>' .get_string('legends', 'mod_giportfolio' ).'</strong>');
-    $out .= get_string('nocontrib', 'mod_giportfolio' ). ': ' . html_writer::span( '<i class = "fa">&#xf068;</i>', '', ['class' => 'giportfolio-legend']) . '<br>';
+    $out .= get_string('nocontrib', 'mod_giportfolio' ). ': ' . html_writer::span( '<i class = "fa">&#xf147;</i>', '', ['class' => 'giportfolio-legend']) . '<br>';
     $out .= get_string('unseencontrib', 'mod_giportfolio' ). ': '  .$iconunseen . '<br>';
     $out .= get_string('multipleunseen', 'mod_giportfolio' ) . ': ' ."$iconunseen $iconunseen". '<br>';
     $out .= get_string('seencontrib', 'mod_giportfolio' ) . ': ' . $iconseen . '<br>';
@@ -236,7 +238,7 @@ function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
 
         // Get the ids of the contributions seen.
         $select = "contributionid  IN ($contributionids)
-                   AND userid IN ($USER->id, $contributorid)
+                   AND userid = $USER->id
                    AND giportfolioid = $giportfolio->id";
         $contribseen = $DB->get_fieldset_select('giportfolio_follow_updates', 'contributionid', $select);
 
@@ -258,29 +260,30 @@ function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
 
 }
 
-function display_chapters_not_seen( $giportfolio, $contributorid, $cm, $fromgraph = false) {
-    global $DB;
+function display_chapters_not_seen( $giportfolio, $contributorid, $cm) {
+    global $DB, $PAGE;
 
-     $chapters = $fromgraph ?  giportfolio_get_user_generated_chapters($giportfolio->id, $contributorid)
-         : get_updated_chapters_not_seen($giportfolio, $contributorid, $cm);
-    $links = '';
+    $chapters =  get_updated_chapters_not_seen($giportfolio, $contributorid, $cm);
     $morethanthree = count($chapters) > 3;
-
+    $links = '';
     $index = 0;
 
-    // In case a student creates a chapter without content, by pass it
+    // In case the chapter has no content, by pass it
     $conditions = array ('giportfolioid' => $giportfolio->id, 'userid' => $contributorid);
     $countcontributions = $DB->count_records('giportfolio_contributions', $conditions);
+ 
     if ($countcontributions > 0 ) {
         foreach ($chapters as $chapter) {
 
             $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'chapterid' => $chapter->id,
                 'userid' => $contributorid, 'cont' => 'no'));
             if ($index >= 3) {
-                $params = ['href' => $url,
+                $params = [
+                    'href' => $url,
                     'target' => '_blank',
                     'class' => 'giportfolio-updatedch' . ' contributor_' . $contributorid,
-                    'id' => 'contributor_' . $contributorid];
+                    'id' => 'contributor_' . $contributorid
+                ];
                 $links .= html_writer::tag("a", $chapter->title, $params);
             } else {
                 $links .= html_writer::tag('a', $chapter->title, ['href' => $url, 'target' => '_blank']) . '<br>';

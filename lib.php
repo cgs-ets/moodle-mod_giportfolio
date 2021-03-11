@@ -501,8 +501,7 @@ function giportfolio_supports($feature) {
  * @return void
  */
 function giportfolio_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $giportfolionode) {
-    global $USER, $PAGE, $DB;
-
+    global $USER, $PAGE, $DB, $COURSE; 
     if ($PAGE->cm->modname !== 'giportfolio') {
         return;
     }
@@ -521,12 +520,12 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     }
 
     $params = $PAGE->url->params();
-
+    $alias = get_student_alias($COURSE);
     // SYNERGY - add grade console link.
     if (!empty($params['id']) and!empty($params['chapterid']) and
         has_capability('mod/giportfolio:viewgiportfolios', $context)) {
 
-        $gradeconsole = get_string('studentgiportfolio', 'mod_giportfolio');
+        $gradeconsole = get_string('studentgiportfolio', 'mod_giportfolio', $alias);
         $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $params['id']));
         $giportfolionode->add($gradeconsole, $url, navigation_node::TYPE_SETTING, null, null,
             new pix_icon('console', '', 'giportfoliotool_print', array('class' => 'icon')));
