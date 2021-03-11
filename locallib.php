@@ -895,7 +895,7 @@ function giportfolio_get_user_default_chapter($giportfolioid, $userid)
 { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT  TOP(1)chapterid  FROM mdl_giportfolio_contributions
+    $sql = "SELECT TOP(1) chapterid  FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = {$giportfolioid}
             -- LIMIT 1; ";
 
@@ -1603,7 +1603,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             // The chapter has been seen before and there are new contributions.
             if (giportfolio_in_array($chapterid, $cnotseen)) {
                 $link = array_pop($links);               
-                array_push($links, $link . html_writer::tag('a',"$link $unseencontribution", ['href' => $url, 'target' => '_blank']));
+                array_push($links, $link . html_writer::tag('a',"$unseencontribution", ['href' => $url, 'target' => '_blank']));
             }
         } else if (giportfolio_in_array($chapterid, $cnotseen)) {
 
