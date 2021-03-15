@@ -273,9 +273,9 @@ if ($contriblist) {
                 $cout .= '<br>';
             }
 
-            $commentopts->itemid = $contrib->id;
+            $commentopts->itemid = $contrib->id;            
             $commentbox = new comment($commentopts);
-            $cout .= html_writer::tag('contribcomment', $commentbox->output());
+            $cout .= html_writer::tag('contribcomment', $commentbox->output(), array('id' => "commentforcontribution_$contrib->id _chapterid_$chapter->id"));
 
             // Wrap contribution and make entry in the contents
             $contribution_count++;

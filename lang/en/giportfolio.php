@@ -202,10 +202,14 @@ $string['mentorcontribution'] = 'Mentor\'s contribution';
 $string['teachercontribution'] = 'Teacher\'s contribution';
 $string['graphofcontributors'] = 'Graph of contributors';
 $string['additionstitle'] = 'Additions';
-$string['legends'] = 'Legend';
 
-$string['nocontrib'] = 'No Contribution';
-$string['unseencontrib'] = 'Unseen Contribution';
+$string['legends'] = 'Legends';
+$string['nocontrib'] = 'No contribution';
+$string['unseencontrib'] = 'Unseen contribution';
 $string['multipleunseen'] = 'Multiple unseen';
 $string['seencontrib'] = 'Seen contribution';
 $string['multipleseen'] = 'Multiple seen';
+$string['contrcomment'] = 'Commented';
+$string['contrnocomment'] = ' Not commented ';
+$string['contrcomments'] = 'Multiple comments';
+$string['additionlegend'] = 'Name of chapters created by {$a}';

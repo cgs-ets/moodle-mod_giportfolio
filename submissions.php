@@ -148,18 +148,73 @@ if ($currenttab == 'graphcontributors') {
 
     giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm);
 
-    $iconunseen = html_writer::span(' <i class = "fa">&#xf096;</i>', '', ['class' => 'giportfolio-legend']);
+    $iconunseen = html_writer::span('<i class = "fa">&#xf096;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('unseencontrib', 'mod_giportfolio')]);
     $iconseen = html_writer::span('<i class = "fa">&#xf046;</i>', '', ['class' => 'giportfolio-legend']);
+    $iconnocontrib = html_writer::span('<i class = "fa">&#xf068;</i>', '', ['class' => 'giportfolio-legend']);
+    $iconcomment =  html_writer::span('<i class = "fa">&#xf075;</i>', '', ['class' => 'giportfolio-legend']);
+    $iconnocomment = html_writer::span('<i class = "fa">&#xf0e5;</i>', '', ['class' => 'giportfolio-legend']);
+    $iconcomments = html_writer::span('<i class = "fa">&#xf086</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrcomments', 'mod_giportfolio')]);
 
     $out .= html_writer::start_div();
-    $out .= html_writer::tag('p', '<strong>' .get_string('legends', 'mod_giportfolio' ).'</strong>');
-    $out .= get_string('nocontrib', 'mod_giportfolio' ). ': ' . html_writer::span( '<i class = "fa">&#xf147;</i>', '', ['class' => 'giportfolio-legend']) . '<br>';
-    $out .= get_string('unseencontrib', 'mod_giportfolio' ). ': '  .$iconunseen . '<br>';
-    $out .= get_string('multipleunseen', 'mod_giportfolio' ) . ': ' ."$iconunseen $iconunseen". '<br>';
-    $out .= get_string('seencontrib', 'mod_giportfolio' ) . ': ' . $iconseen . '<br>';
-    $out .= get_string('multipleseen', 'mod_giportfolio' ) . ': ' ."$iconseen $iconseen". '<br>';
-    $out .= html_writer::end_div();
+    // $out .= html_writer::tag('p', '<strong>' .get_string('legends', 'mod_giportfolio' ).'</strong>');
 
+   
+    // $out .= get_string('nocontrib', 'mod_giportfolio' ). ': ' . $iconnocontrib . '<br>';
+    // $out .= get_string('unseencontrib', 'mod_giportfolio' ). ': '  .$iconunseen . '<br>';
+    // $out .= get_string('multipleunseen', 'mod_giportfolio' ) . ': ' ."$iconunseen $iconunseen". '<br>';
+    // $out .= get_string('seencontrib', 'mod_giportfolio' ) . ': ' . $iconseen . '<br>';
+    // $out .= get_string('multipleseen', 'mod_giportfolio' ) . ': ' ."$iconseen $iconseen". '<br>';
+    // $out .= get_string('contrcomment', 'mod_giportfolio' ) . ': ' ."$iconcomment". '<br>';
+    // $out .= get_string('contrnocomment', 'mod_giportfolio' ) . ': ' ."$iconnocomment". '<br>';
+    // $out .= get_string('contrcomments', 'mod_giportfolio' ) . ': ' ."$iconcomments". '<br>';
+    // $out .= get_string('additionstitle', 'mod_giportfolio' ) . ': '.get_string('additionlegend', 'mod_giportfolio', $alias ). '<br>';
+
+    $out .= "<table>
+             <tr>
+                <th>".get_string('legends', 'mod_giportfolio' )."</th>
+                <th></th>  
+            </tr>".
+            "<tr>
+                <td>".get_string('nocontrib', 'mod_giportfolio') ." </td>
+                <td>".$iconnocontrib ." </td>
+            </tr>".
+            "<tr>
+                <td>".get_string('unseencontrib', 'mod_giportfolio' )."</td>
+                <td>".$iconunseen. "</td>
+            </tr>".
+            "<tr>
+                <td>".get_string('multipleunseen', 'mod_giportfolio' )."</td>
+                <td>". $iconunseen.' '.$iconunseen. "</td>
+            </tr>".
+            "<tr>
+                <td>".get_string('seencontrib', 'mod_giportfolio' )."</td>
+                <td>". $iconseen. "</td>
+            </tr>".
+            "<tr>
+                <td>".get_string('multipleseen', 'mod_giportfolio' )."</td>
+                <td>". $iconseen.' '.$iconseen. "</td>
+            </tr>".
+            "<tr>
+                <td>".get_string('contrcomment', 'mod_giportfolio' )."</td>
+                <td>". $iconcomment. "</td>
+             </tr>".
+            "<tr>
+                <td>".get_string('contrnocomment', 'mod_giportfolio' )."</td>
+                <td>". $iconnocomment. "</td>
+            </tr>".
+            "<tr>
+                <td>".get_string('contrcomments', 'mod_giportfolio' )."</td>
+                <td>". $iconcomments. "</td>
+            </tr>".
+            "<tr>
+                <td>".get_string('additionstitle', 'mod_giportfolio' )."</td>
+                <td>". get_string('additionlegend', 'mod_giportfolio', $alias ). "</td>               
+            </tr>".
+
+    
+    "</table>";
+    $out .= html_writer::end_div();
+   
     echo $out;
 
 } else {

@@ -895,7 +895,7 @@ function giportfolio_get_user_default_chapter($giportfolioid, $userid)
 { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT TOP(1) chapterid  FROM mdl_giportfolio_contributions
+    $sql = "SELECT TOP(1)  chapterid  FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = {$giportfolioid}
             -- LIMIT 1; ";
 
@@ -1462,7 +1462,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $table->sortable(false);
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
-    
+
     foreach ($table->column_class as $name => $column) {
         if (!in_array($name, ['picture', 'fullname', get_string('additionstitle', 'giportfolio')])) {  // These are the columns for the chapter titles          
             $table->column_class($name, 'truncate');
@@ -1477,7 +1477,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     // Start working -- this is necessary as soon as the niceties are over.
     $table->setup();
 
-    $ufields = user_picture::fields('u', $extrafields);   
+    $ufields = user_picture::fields('u', $extrafields);
 
     if ($where) {
         $where .= ' AND ';
@@ -1539,11 +1539,15 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
 
     // Get all the contributions done by this user.
     $sql = "SELECT id as 'contribid', chapterid FROM {giportfolio_contributions} WHERE chapterid $insql AND userid = $user->id";
-    $contributions = $DB->get_records_sql($sql, $inparams);    
+    $contributions = $DB->get_records_sql($sql, $inparams);
 
-    $nocontribution = html_writer::span('<i class = "fa">&#xf147;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('nocontrib', 'mod_giportfolio')]);
+    $nocontribution = html_writer::span('<i class = "fa">&#xf068;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('nocontrib', 'mod_giportfolio')]);
     $unseencontribution = html_writer::span('<i class = "fa">&#xf096;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('unseencontrib', 'mod_giportfolio')]);
     $seencontribution = html_writer::span('<i class = "fa">&#xf046;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('seencontrib', 'mod_giportfolio')]);
+    $iconcomment =  html_writer::span('<i class = "fa">&#xf075;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrcomment', 'mod_giportfolio')]);
+    $iconnocomment = html_writer::span('<i class = "fa">&#xf0e5;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrnocomment', 'mod_giportfolio')]);
+    $iconcomments = html_writer::span('<i class = "fa">&#xf086</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrcomments', 'mod_giportfolio')]);
+
 
 
     // Filter the chapter ids.
@@ -1575,45 +1579,71 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             if (in_array($contribution->contribid, $contributionsnotseen)) {
                 $contr->chapterid = $contribution->chapterid;
                 $contr->contribid = $contribution->contribid;
+                $contr->totalcomment = giportfolio_count_contributions_comments($contribution->contribid);
                 $cnotseen[] = $contr;
             }
+        }
+
+        foreach ($contributionsseen as $cseen) {
+            $cseen->totalcomment = giportfolio_count_contributions_comments($cseen->contributionid);
         }
     }
 
     foreach ($chaptersid as $chapterid) {
 
-        if ($usercontrib == '') {          
-            $links [] = $nocontribution;
+        if ($usercontrib == '') {
+            $links[] = $nocontribution;
             continue;
         }
-       
+
         $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
             'id' => $cm->id, 'chapterid' => $chapterid,
             'userid' => $user->id, 'cont' => 'no'
-        ));       
-      
+        ));
+
 
         if (giportfolio_in_array($chapterid, $contributionsseen)) {
-           
-            if (giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributionsseen) > 1) {
-                $links [] = html_writer::tag('a',"$seencontribution $seencontribution", ['href' => $url, 'target' => '_blank']);
+            list($countseen, $countcomments) = giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributionsseen);
+            if ($countseen > 1) {
+                $links[] = html_writer::tag('a', "$seencontribution $seencontribution", ['href' => $url, 'target' => '_blank']);
             } else {
-                $links [] = html_writer::tag('a'," $seencontribution", ['href' => $url, 'target' => '_blank']);
+                $links[] = html_writer::tag('a', " $seencontribution", ['href' => $url, 'target' => '_blank']);
             }
             // The chapter has been seen before and there are new contributions.
             if (giportfolio_in_array($chapterid, $cnotseen)) {
-                $link = array_pop($links);               
-                array_push($links, $link . html_writer::tag('a',"$unseencontribution", ['href' => $url, 'target' => '_blank']));
+                $link = array_pop($links);
+                array_push($links, $link . html_writer::tag('a', "$unseencontribution", ['href' => $url, 'target' => '_blank']));
+            }
+
+            $link = array_pop($links);
+
+            if ($countcomments == 0) {
+                array_push($links, $link . html_writer::tag('a', "$iconnocomment", ['href' => $url, 'target' => '_blank']));
+            } else if ($countcomments == 1) {
+                array_push($links, $link . html_writer::tag('a', "$iconcomment", ['href' => $url, 'target' => '_blank']));
+            } else if ($countcomments > 1) {
+                array_push($links, $link . html_writer::tag('a', "$iconcomments", ['href' => $url, 'target' => '_blank']));
             }
         } else if (giportfolio_in_array($chapterid, $cnotseen)) {
-
-            if (giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributions) > 1) {
-                $links [] = html_writer::tag('a', "$unseencontribution $unseencontribution", ['href' => $url, 'target' => '_blank']);
+            list($countseen, $countcomments) = giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributions);
+            if ($countseen > 1) {
+                $links[] = html_writer::tag('a', "$unseencontribution $unseencontribution", ['href' => $url, 'target' => '_blank']);
             } else {
-                $links [] = html_writer::tag('a', "$unseencontribution", ['href' => $url, 'target' => '_blank']);
+                $links[] = html_writer::tag('a', "$unseencontribution", ['href' => $url, 'target' => '_blank']);
+            }
+
+            $link = array_pop($links);
+      
+
+            if ($countcomments == 0) {
+                array_push($links, $link . html_writer::tag('a', "$iconnocomment", ['href' => $url, 'target' => '_blank']));
+            } else if ($countcomments == 1) {
+                array_push($links, $link . html_writer::tag('a', "$iconcomment", ['href' => $url, 'target' => '_blank']));
+            } else if ($countcomments > 1) {
+                array_push($links, $link . html_writer::tag('a', "$iconcomments", ['href' => $url, 'target' => '_blank']));
             }
         } else {
-            $links [] =  $nocontribution;
+            $links[] =  $nocontribution;
         }
     }
 
@@ -1668,9 +1698,9 @@ function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $useri
                 'userid' => $userid, 'cont' => 'no'
             ));
 
-            $chaptercontributions[$contribution->chapterid] = ['url' => $url, 'title' => $contribution->title];        
+            $chaptercontributions[$contribution->chapterid] = ['url' => $url, 'title' => $contribution->title];
         }
-        
+
         foreach ($chaptercontributions as $i => $chapter) {
 
             if (in_array($i, $contributionsseen)) {
@@ -1678,24 +1708,24 @@ function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $useri
             }
 
             if ($index >= 3) {
-                 
+
                 $params = [
                     'href' => $chapter['url'],
                     'target' => '_blank',
                     'class' => 'giportfolio-updatedch' . ' contributor_' . $userid,
                     'id' => 'contributor_' . $userid
                 ];
-              
+
                 $links .= html_writer::tag("a", $chapter['title'],  $params);
             } else {
                 $links .= html_writer::tag('a', $chapter['title'], ['href' => $chapter['url'], 'target' => '_blank']) . '<br>';
             }
-            
+
             $index++;
         }
 
         $morethanthree = count($chaptercontributions) > 3;
-      
+
         if ($morethanthree) {
 
             $params = ["class" => "giportfolio-more", "id" => $userid, 'title' => 'Show More'];
@@ -1729,13 +1759,26 @@ function giportfolio_in_array($chapterid, $contributions)
 
 function giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributions)
 {
-    $count = 0;
+    $countseen = 0;
+    $countcomments = 0;
     foreach ($contributions as $contribution) {
         if ($contribution->chapterid == $chapterid) {
-            $count++;
+            $countseen++;
+            $countcomments += $contribution->totalcomment;
         }
     }
-    return $count;
+
+    return array($countseen, $countcomments);
+}
+
+function giportfolio_count_contributions_comments($contributionid)
+{
+    global $DB;
+
+    $sql = "SELECT * FROM mdl_comments WHERE itemid = $contributionid;";
+    $total = count($DB->get_records_sql($sql));
+
+    return $total;
 }
 
 
