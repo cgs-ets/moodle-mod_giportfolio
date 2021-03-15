@@ -1603,7 +1603,9 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
 
 
         if (giportfolio_in_array($chapterid, $contributionsseen)) {
-            list($countseen, $countcomments) = giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributionsseen);
+            
+            list($countseen, $countcomments, $countnocomments) = giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributionsseen);
+            
             if ($countseen > 1) {
                 $links[] = html_writer::tag('a', "$seencontribution $seencontribution", ['href' => $url, 'target' => '_blank']);
             } else {
@@ -1612,7 +1614,12 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             // The chapter has been seen before and there are new contributions.
             if (giportfolio_in_array($chapterid, $cnotseen)) {
                 $link = array_pop($links);
-                array_push($links, $link . html_writer::tag('a', "$unseencontribution", ['href' => $url, 'target' => '_blank']));
+                if ($countnocomments == 0) {
+                    array_push($links, $link . html_writer::tag('a', " $unseencontribution $iconnocomment", ['href' => $url, 'target' => '_blank']));
+                } else {
+                    array_push($links, $link . html_writer::tag('a', "$unseencontribution", ['href' => $url, 'target' => '_blank']));
+                }
+                
             }
 
             $link = array_pop($links);
@@ -1624,16 +1631,18 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             } else if ($countcomments > 1) {
                 array_push($links, $link . html_writer::tag('a', "$iconcomments", ['href' => $url, 'target' => '_blank']));
             }
+
         } else if (giportfolio_in_array($chapterid, $cnotseen)) {
-            list($countseen, $countcomments) = giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributions);
+            list($countseen, $countcomments, $countnocomments) = giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributions);
+            if ($chapterid == 119) {var_dump($countseen);}
+            
             if ($countseen > 1) {
                 $links[] = html_writer::tag('a', "$unseencontribution $unseencontribution", ['href' => $url, 'target' => '_blank']);
             } else {
                 $links[] = html_writer::tag('a', "$unseencontribution", ['href' => $url, 'target' => '_blank']);
             }
 
-            $link = array_pop($links);
-      
+            $link = array_pop($links);      
 
             if ($countcomments == 0) {
                 array_push($links, $link . html_writer::tag('a', "$iconnocomment", ['href' => $url, 'target' => '_blank']));
@@ -1643,8 +1652,11 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
                 array_push($links, $link . html_writer::tag('a', "$iconcomments", ['href' => $url, 'target' => '_blank']));
             }
         } else {
+            
             $links[] =  $nocontribution;
         }
+
+       
     }
 
     $additions[] = giportfolio_get_user_generated_chapters_not_seen($giportfolio->id, $user->id, $cm, $usercontrib);
@@ -1761,14 +1773,20 @@ function giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $con
 {
     $countseen = 0;
     $countcomments = 0;
+    $countnocomments = 0;
+
     foreach ($contributions as $contribution) {
         if ($contribution->chapterid == $chapterid) {
             $countseen++;
             $countcomments += $contribution->totalcomment;
+           
+            if ($contribution->totalcomment == 0) {              
+                $countnocomments++;
+            }
         }
     }
-
-    return array($countseen, $countcomments);
+  
+    return array($countseen, $countcomments, $countnocomments);
 }
 
 function giportfolio_count_contributions_comments($contributionid)
