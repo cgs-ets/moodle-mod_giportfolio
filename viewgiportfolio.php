@@ -382,14 +382,18 @@ if ($contriblist) {
             $delurl = new moodle_url($baseurl, array('action' => 'delete'));
             $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
             $delicon = html_writer::link($delurl, $delicon);
-
-            if ($contrib->hidden) {
-                $showurl = new moodle_url($baseurl, array('action' => 'show', 'sesskey' => sesskey()));
-                $showicon = $OUTPUT->pix_icon('t/show', get_string('show', 'mod_giportfolio'));
-            } else {
-                $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
-                $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
+            // Check if the show hide option is available for students.
+            if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) {
+                
+                if ($contrib->hidden) {
+                    $showurl = new moodle_url($baseurl, array('action' => 'show', 'sesskey' => sesskey()));
+                    $showicon = $OUTPUT->pix_icon('t/show', get_string('show', 'mod_giportfolio'));
+                } else {
+                    $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
+                    $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
+                }
             }
+
             $showicon = html_writer::link($showurl, $showicon);
 
             $shareicon = '';

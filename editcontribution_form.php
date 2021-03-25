@@ -30,8 +30,13 @@ require_once('lib.php');
 
 class mod_giportfolio_contribution_edit_form extends moodleform {
     public function definition() {
+        global $DB, $COURSE;
         $editoroptions = $this->_customdata['editoroptions'];
         $attachmentoptions = $this->_customdata['attachmentoptions'];
+
+        $id = optional_param('id', 0, PARAM_INT); // Course Module ID.
+        $cm = get_coursemodule_from_id('giportfolio', $id, 0, false, MUST_EXIST);
+        $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
 
         $mform = $this->_form;
 
@@ -46,10 +51,14 @@ class mod_giportfolio_contribution_edit_form extends moodleform {
         $mform->addElement('text', 'title', get_string('contributiontitle', 'giportfolio'));
         $mform->addRule('title', get_string('required'), 'required', null, 'client');
         $mform->setType('title', PARAM_TEXT);
-
-        $opts = array(0 => get_string('show'), 1 => get_string('hide'));
-        $mform->addElement('select', 'hidden', get_string('visibility', 'giportfolio'), $opts, 0);
-        $mform->addHelpButton('hidden', 'visibilityexplain', 'giportfolio');
+        
+        $context = context_course::instance($COURSE->id);
+        // Teachers can always see the view/hide option. 
+        if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) {
+            $opts = array(0 => get_string('show'), 1 => get_string('hide'));
+            $mform->addElement('select', 'hidden', get_string('visibility', 'giportfolio'), $opts, 0);
+            $mform->addHelpButton('hidden', 'visibilityexplain', 'giportfolio');
+        }
 
         $mform->addElement('editor', 'content_editor', get_string('content', 'mod_giportfolio'), null, $editoroptions);
         $mform->addRule('content_editor', get_string('required'), 'required', null, 'client');

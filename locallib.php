@@ -895,9 +895,9 @@ function giportfolio_get_user_default_chapter($giportfolioid, $userid)
 { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT TOP(1)  chapterid  FROM mdl_giportfolio_contributions
+    $sql = "SELECT  chapterid  FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = {$giportfolioid}
-            -- LIMIT 1; ";
+            LIMIT 1; ";
 
     return  $DB->get_record_sql($sql);
 }
@@ -1341,6 +1341,11 @@ function giportfolio_non_editing_teacher_allowed_to_contribute($instanceid)
 {
     global $DB;
     return $DB->get_field('giportfolio', 'allownetcontribute', ['id' => $instanceid], IGNORE_MISSING);
+}
+
+function giportfolio_hide_show_contribution($instanceid) {
+    global $DB;
+    return $DB->get_field('giportfolio', 'hideshowcontribution', ['id' => $instanceid], IGNORE_MISSING);
 }
 
 

@@ -87,6 +87,10 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->addElement('selectyesno', 'peersharing', get_string('peersharing', 'giportfolio'));
         $mform->setDefault('peersharing', 1);
 
+        // add enable/disable visibility option.
+        $mform->addElement('selectyesno', 'hideshowcontribution', get_string('hideshow', 'giportfolio'));
+        $mform->setDefault('hideshow', 0);
+
         // add display hour/minute to dates
         $mform->addElement('selectyesno', 'timeofday', get_string('showtimeofday', 'giportfolio'));
         $mform->setDefault('timeofday', 0);

@@ -604,6 +604,21 @@ function xmldb_giportfolio_upgrade($oldversion) {
         // Giportfolio savepoint reached.
         upgrade_mod_savepoint(true, 2021031000, 'giportfolio');
     }
+    
+    if ($oldversion < 2021032501) { //2021031001
+
+        // Define field hideshowcontribution to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('hideshowcontribution', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'peersharing');
+
+        // Conditionally launch add field hideshowcontribution.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2021032501, 'giportfolio');
+    }
 
 
 

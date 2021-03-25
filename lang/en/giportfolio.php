@@ -147,6 +147,7 @@ $string['pagesize'] = 'Submissions shown per page';
 $string['participantadd'] = 'Participants can add Chapters';
 $string['peersharing'] = 'Participants can share contributions with other participants';
 $string['peersharing_help'] = 'If enabled, participants can share contributions with others';
+$string['hideshow'] = 'Participants can hide or show their contributions';
 $string['pluginadministration'] = 'Portfolio administration';
 $string['pluginname'] = 'Portfolio';
 $string['printing'] = 'Disable Printing';
