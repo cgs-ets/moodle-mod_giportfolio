@@ -69,9 +69,16 @@ Intentionally omitted features:
 * Allow mentors to view mentee's portfolios contributions
 * Allow mentors to contribute on behalf of a mentee.
 * Allow teachers to contribute on behalf of a student.
+* Allow non-editing teachers to contribute on behalf of a student.
+
+> New Functionalities
+>>
+* Graph of contributors.
+* Display student role name by alias (if set)
 
 > Settings
 >>
-* Change on students skip intro page default to true. 
+* Change on students skip intro page default to true.
+* Enable/Disable students to hide their contributions.
 
 
