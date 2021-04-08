@@ -69,7 +69,7 @@ $tabs = array(
     new tabobject('all', $allurl, get_string('allusers', 'mod_giportfolio', $alias)),
     new tabobject('sincelastlogin', $sincelastloginurl, get_string('sincelastlogin', 'mod_giportfolio')),
     new tabobject('nocomments', $nocommentsurl, get_string('nocomments', 'mod_giportfolio')),
-    new tabobject('nocomments', $graphcontributorsurl, get_string('graphofcontributors', 'mod_giportfolio')),
+    new tabobject('graphcontributors', $graphcontributorsurl, get_string('graphofcontributors', 'mod_giportfolio')),
 );
 
 echo get_string('studentgiportfolios', 'mod_giportfolio', $alias);
