@@ -82,7 +82,8 @@ $tabindex = 1; // Tabindex for quick grading tabbing; Not working for dropdowns 
 // Find out current groups mode.
 $groupmode = groups_get_activity_groupmode($cm);
 $currentgroup = groups_get_activity_group($cm, true);
-groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id);
+
+groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab);
 
 $updatepref = optional_param('updatepref', 0, PARAM_BOOL);
 
@@ -156,18 +157,7 @@ if ($currenttab == 'graphcontributors') {
     $iconcomments = html_writer::span('<i class = "fa">&#xf086</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrcomments', 'mod_giportfolio')]);
 
     $out .= html_writer::start_div();
-    // $out .= html_writer::tag('p', '<strong>' .get_string('legends', 'mod_giportfolio' ).'</strong>');
-
    
-    // $out .= get_string('nocontrib', 'mod_giportfolio' ). ': ' . $iconnocontrib . '<br>';
-    // $out .= get_string('unseencontrib', 'mod_giportfolio' ). ': '  .$iconunseen . '<br>';
-    // $out .= get_string('multipleunseen', 'mod_giportfolio' ) . ': ' ."$iconunseen $iconunseen". '<br>';
-    // $out .= get_string('seencontrib', 'mod_giportfolio' ) . ': ' . $iconseen . '<br>';
-    // $out .= get_string('multipleseen', 'mod_giportfolio' ) . ': ' ."$iconseen $iconseen". '<br>';
-    // $out .= get_string('contrcomment', 'mod_giportfolio' ) . ': ' ."$iconcomment". '<br>';
-    // $out .= get_string('contrnocomment', 'mod_giportfolio' ) . ': ' ."$iconnocomment". '<br>';
-    // $out .= get_string('contrcomments', 'mod_giportfolio' ) . ': ' ."$iconcomments". '<br>';
-    // $out .= get_string('additionstitle', 'mod_giportfolio' ) . ': '.get_string('additionlegend', 'mod_giportfolio', $alias ). '<br>';
 
     $out .= "<table>
              <tr>
