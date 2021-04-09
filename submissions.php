@@ -105,6 +105,8 @@ $strsaveallfeedback = get_string('saveallfeedback', 'mod_giportfolio');
 $fastg = optional_param('fastg', 0, PARAM_BOOL);
 
 if ($fastg) { // Update the grade and the feedback.
+
+    //print_object($_POST); exit;
     if (isset($_POST["menu"])) {
         $menu = $_POST["menu"];
         giportfolio_quick_update_grades($cm->id, $menu, $currentgroup, $giportfolio->id);

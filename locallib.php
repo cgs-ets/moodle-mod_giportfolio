@@ -1938,7 +1938,7 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                     if ($usergrade->items) {
                         $gradeitemgrademax = $usergrade->items[0]->grademax;
                         $userfinalgrade = $usergrade->items[0]->grades[$puser->id];
-
+                       
                         if ($quickgrade && !$userfinalgrade->locked) {
                             $attributes = array();
                             $attributes['tabindex'] = $tabindex++;
@@ -1999,7 +1999,7 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                 foreach ($extrafields as $field) {
                     $extradata[] = $puser->{$field};
                 }
-                $aux = $showgradecol ? array($lastupdated, $statuspublish, $updatedchapters, $userfinalgrade->str_grade, $feedback) : 
+                $aux = $showgradecol ? array($lastupdated, $statuspublish, $updatedchapters, $userfinalgrade->grade, $feedback) : 
                 array($lastupdated, $statuspublish, $updatedchapters, $feedback);
               
                 $row = array_merge(
