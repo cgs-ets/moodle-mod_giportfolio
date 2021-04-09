@@ -1807,33 +1807,14 @@ function giportfolio_count_contributions_comments($contributionid)
 
 // End helper functions.
 
-function giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers, $listusersids, $perpage, $page, $cm, $url, $course)
+function giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers, $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade)
 {
     global $CFG, $PAGE, $USER, $DB, $OUTPUT;
+    $tabindex = 1; // Tabindex for quick grading tabbing; Not working for dropdowns yet.
     $extrafields = get_extra_user_fields($context);
-    $tablecolumns = array_merge(
-        array('picture', 'fullname'),
-        $extrafields,
-        array('lastupdate', 'viewgiportfolio', 'chaptersupdated', 'grade', 'feedback')
-    );
 
-    $extrafieldnames = array();
-
-    foreach ($extrafields as $field) {
-        $extrafieldnames[] = get_user_field_name($field);
-    }
-    $tableheaders = array_merge(
-        array('', get_string('fullnameuser')),
-        $extrafieldnames,
-        array(
-            get_string('lastupdated', 'giportfolio'),
-            get_string('viewgiportfolio', 'giportfolio'),
-            get_string('chaptersupdated', 'giportfolio'),
-            get_string('grade'),
-            get_string('feedback'),
-        )
-    );
-
+    list($tablecolumns, $tableheaders, $showgradecol) = giportfolio_table_columns($giportfolio->id, $context);
+        
     require_once($CFG->libdir . '/tablelib.php');
     $table = new flexible_table('mod-giportfolio-submissions');
 
@@ -1851,16 +1832,15 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
 
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
-    foreach ($extrafields as $field) {
-        $table->column_class($field, $field);
-    }
-
     $table->column_class('lastupdate', 'lastupdate');
     $table->column_class('viewgiportfolio', 'viewgiportfolio');
     $table->column_class('chaptersupdated', 'chaptersupdated');
-    $table->column_class('grade', 'grade');
-    $table->column_class('feedback', 'feedback');
 
+    if ( $showgradecol) {
+        $table->column_class('grade', 'grade');
+    }
+
+    $table->column_class('feedback', 'feedback');
     $table->set_attribute('cellspacing', '0');
     $table->set_attribute('id', 'attempts');
     $table->set_attribute('class', 'submissions');
@@ -1984,7 +1964,7 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                     }
                 } else {
                     $lastupdated = '-';
-                    $updatedChapters = '-';
+                    $updatedchapters = '-';
                     $feedback = '-';
                     $rowclass = '';
                 }
@@ -2019,11 +1999,13 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                 foreach ($extrafields as $field) {
                     $extradata[] = $puser->{$field};
                 }
-
+                $aux = $showgradecol ? array($lastupdated, $statuspublish, $updatedchapters, $userfinalgrade->str_grade, $feedback) : 
+                array($lastupdated, $statuspublish, $updatedchapters, $feedback);
+              
                 $row = array_merge(
                     array($picture, $userlink),
                     $extradata,
-                    array($lastupdated, $statuspublish, $updatedchapters, $userfinalgrade->str_grade, $feedback)
+                    $aux
                 );
                 $offset++;
                 $table->add_data($row, $rowclass);
@@ -2033,6 +2015,43 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
         $table->print_html();
     } else {
         echo html_writer::tag('div', get_string('nosubmisson', 'mod_giportfolio'), array('class' => 'nosubmisson'));
+    }
+
+     // Print quickgrade form around the table.
+     if ($quickgrade && $table->started_output && !empty($allusers)) {
+        $savefeedback = html_writer::empty_tag('input', array(
+                'type' => 'submit', 'name' => 'fastg',
+                'value' => get_string('saveallfeedback', 'mod_giportfolio')
+        ));
+        echo html_writer::tag('div', $savefeedback, array('class' => 'fastgbutton'));
+        echo html_writer::end_tag('form');
+
+    } else if ($quickgrade) {
+        echo html_writer::end_tag('form');
+    }
+    // Only give the optional settings if the grading setting is not none.
+    if ($showgradecol) {
+
+        // Mini form for setting user preference.
+        $formaction = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id));
+        $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', array('class' => 'optionspref'));
+    
+        $mform->addElement('hidden', 'updatepref');
+        $mform->setDefault('updatepref', 1);
+        $mform->addElement('header', 'qgprefs', get_string('optionalsettings', 'giportfolio'));
+    
+        $mform->setDefault('filter', $filter);
+    
+        $mform->addElement('text', 'perpage', get_string('pagesize', 'giportfolio'), array('size' => 1));
+        $mform->setDefault('perpage', $perpage);
+    
+        $mform->addElement('checkbox', 'quickgrade', get_string('quickgrade', 'giportfolio'));
+        $mform->setDefault('quickgrade', $quickgrade);
+        $mform->addHelpButton('quickgrade', 'quickgrade', 'giportfolio');
+    
+        $mform->addElement('submit', 'savepreferences', get_string('savepreferences'));
+        // End table.
+        $mform->display();
     }
 }
 /**
@@ -2160,4 +2179,39 @@ function is_non_editing_teacher()
     }
 
     return false;
+}
+
+// CGS costumisation. If grading is set to none, then  hide all grade references.
+function giportfolio_table_columns($giportfolioid, $context) {
+    global $DB;
+
+    $grade = $DB->get_field('giportfolio', 'grade', array('id' => $giportfolioid));
+    $extrafields = get_extra_user_fields($context);
+    $tablecolumns = [];
+    $extrafieldnames = array();
+    $showgradecol = false;
+
+    foreach ($extrafields as $field) {
+        $extrafieldnames[] = get_user_field_name($field);
+    }
+
+    if ($grade != 0) {
+        $colums = array('lastupdate', 'viewgiportfolio', 'chaptersupdated', 'grade', 'feedback');
+        $columntitles =   array(
+            get_string('lastupdated', 'giportfolio'), get_string('viewgiportfolio', 'giportfolio'),
+            get_string('chaptersupdated', 'giportfolio'), get_string('grade'), get_string('feedback')
+        );
+        $showgradecol = true;
+    } else {
+        $colums = array('lastupdate', 'viewgiportfolio', 'chaptersupdated', 'feedback');
+        $columntitles = array(
+            get_string('lastupdated', 'giportfolio'), get_string('viewgiportfolio', 'giportfolio'),
+            get_string('chaptersupdated', 'giportfolio'), get_string('feedback')
+        );
+    }
+
+    $tablecolumns = array_merge(array('picture', 'fullname'), $extrafields,  $colums);
+    $tableheaders = array_merge(array('', get_string('fullnameuser')), $extrafieldnames, $columntitles);
+      
+    return array($tablecolumns, $tableheaders, $showgradecol);
 }

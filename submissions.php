@@ -77,7 +77,7 @@ echo '</br>';
 echo $OUTPUT->tabtree($tabs, $currenttab);
 echo get_string('filterlist', 'mod_giportfolio');
 
-$tabindex = 1; // Tabindex for quick grading tabbing; Not working for dropdowns yet.
+
 // Check to see if groups are being used in this assignment.
 // Find out current groups mode.
 $groupmode = groups_get_activity_groupmode($cm);
@@ -157,8 +157,6 @@ if ($currenttab == 'graphcontributors') {
     $iconcomments = html_writer::span('<i class = "fa">&#xf086</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrcomments', 'mod_giportfolio')]);
 
     $out .= html_writer::start_div();
-   
-
     $out .= "<table>
              <tr>
                 <th>".get_string('legends', 'mod_giportfolio' )."</th>
@@ -199,9 +197,7 @@ if ($currenttab == 'graphcontributors') {
             "<tr>
                 <td>".get_string('additionstitle', 'mod_giportfolio' )."</td>
                 <td>". get_string('additionlegend', 'mod_giportfolio', $alias ). "</td>               
-            </tr>".
-
-    
+            </tr>".    
     "</table>";
     $out .= html_writer::end_div();
    
@@ -209,40 +205,8 @@ if ($currenttab == 'graphcontributors') {
 
 } else {
     giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers,
-        $listusersids, $perpage, $page, $cm, $url, $course);
-    // Print quickgrade form around the table.
-    if ($quickgrade && $table->started_output && !empty($allusers)) {
-        $savefeedback = html_writer::empty_tag('input', array(
-                'type' => 'submit', 'name' => 'fastg',
-                'value' => get_string('saveallfeedback', 'mod_giportfolio')
-        ));
-        echo html_writer::tag('div', $savefeedback, array('class' => 'fastgbutton'));
-        echo html_writer::end_tag('form');
-
-    } else if ($quickgrade) {
-        echo html_writer::end_tag('form');
-    }
-
-    // Mini form for setting user preference.
-    $formaction = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id));
-    $mform = new MoodleQuickForm('optionspref', 'post', $formaction, '', array('class' => 'optionspref'));
-
-    $mform->addElement('hidden', 'updatepref');
-    $mform->setDefault('updatepref', 1);
-    $mform->addElement('header', 'qgprefs', get_string('optionalsettings', 'giportfolio'));
-
-    $mform->setDefault('filter', $filter);
-
-    $mform->addElement('text', 'perpage', get_string('pagesize', 'giportfolio'), array('size' => 1));
-    $mform->setDefault('perpage', $perpage);
-
-    $mform->addElement('checkbox', 'quickgrade', get_string('quickgrade', 'giportfolio'));
-    $mform->setDefault('quickgrade', $quickgrade);
-    $mform->addHelpButton('quickgrade', 'quickgrade', 'giportfolio');
-
-    $mform->addElement('submit', 'savepreferences', get_string('savepreferences'));
-    // End table.
-    $mform->display();
+        $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade);
+   
 }
 
 
@@ -356,3 +320,4 @@ function display_chapters_not_seen( $giportfolio, $contributorid, $cm) {
     }
 
 }
+
