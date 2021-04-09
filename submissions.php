@@ -205,7 +205,7 @@ if ($currenttab == 'graphcontributors') {
 
 } else {
     giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers,
-        $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade);
+        $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter);
    
 }
 

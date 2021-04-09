@@ -1807,7 +1807,7 @@ function giportfolio_count_contributions_comments($contributionid)
 
 // End helper functions.
 
-function giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers, $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade)
+function giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers, $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter)
 {
     global $CFG, $PAGE, $USER, $DB, $OUTPUT;
     $tabindex = 1; // Tabindex for quick grading tabbing; Not working for dropdowns yet.
