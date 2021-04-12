@@ -374,7 +374,7 @@ if ($contriblist) {
         if ($ismine) {
             $baseurl = new moodle_url('/mod/giportfolio/editcontribution.php',
                 array('id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid,
-                    'mentee'=> $userid
+                    'mentee'=> $userid, 'mentor' => $contrib->mentorid
                 ));
 
             $editurl = new moodle_url($baseurl);
@@ -409,9 +409,8 @@ if ($contriblist) {
                 }
                 $shareicon = html_writer::link($shareurl, $shareicon);
             }
-
-
-            if (!$mentor && $contrib->mentorid == 0) {
+          
+            if ((!$mentor && $contrib->mentorid == 0) || $contrib->userid = $USER->id) {
                 $actions = array($editicon, $delicon, $showicon, $shareicon);
             } else if ($mentor && $contrib->mentorid == $USER->id) {
                 $actions = array($editicon, $delicon);

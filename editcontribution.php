@@ -131,6 +131,7 @@ if ($contributionid) {
 } else {
     $formdata = new stdClass();
 }
+
 $formdata->mentor = $mentor;
 $formdata->mentee = $mentee;
 $formdata->teacherid = ($mentor == 0 && $mentee != 0 && $USER->id != $mentee) ? $USER->id : 0; // Teacher on behalf of the student
@@ -273,6 +274,7 @@ if ($mform->is_cancelled()) {
         'attachment',
         $contributionid
     );
+    
     $DB->update_record('giportfolio_contributions', $data);
 
     giportfolio_automatic_grading($giportfolio, $userid);
