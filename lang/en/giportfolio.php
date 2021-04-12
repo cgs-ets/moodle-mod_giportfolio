@@ -125,7 +125,7 @@ $string['notifyaddentry_body'] = 'Hi,
 You can view this contribution at: {$a->link}';
 $string['notstarted'] = 'Not started';
 $string['notyourchapter'] = 'This user chapter does not belong to you';
-$string['actionnotallowed'] = 'This contribution was made by a student. Teachers or mentors can only edit contributions done by them on behalf of the student';
+$string['actionnotallowed'] = 'This contribution was made by a student. Teachers and mentors can only edit contributions done by them on behalf of the student';
 $string['numbering'] = 'Chapter numbering';
 $string['numbering_help'] = '* None - chapter and subchapter titles are not formatted at all, use if you want to define special numbering styles. For example letters: in chapter title type "A First Chapter", "A.1 Some Subchapter",...
 * Numbers - chapters and subchapters are numbered (1, 1.1, 1.2, 2, ...)
