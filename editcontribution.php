@@ -76,7 +76,7 @@ if ($additionalchapters) {
 $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id));
 $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Allow a teacher to make a contrib on behalf of a student.
 
-if (!$cangrade) {
+if (!$cangrade ) {
     if ($chapter->userid && $chapter->userid != $USER->id && $mentor == 0) {
         throw new moodle_exception('notyourchapter', 'mod_giportfolio');
     }
@@ -94,25 +94,50 @@ $attachmentoptions = array('subdirs' => false, 'maxfiles' => $maxfiles, 'maxbyte
 
 $contribution = null;
 if ($contributionid) {
+
     $contribution = $DB->get_record('giportfolio_contributions', array(
-                                                                      'id' => $contributionid, 'chapterid' => $chapterid,
-                                                                      'userid' => $USER->id
-                                                                 ), '*', MUST_EXIST);
-    $formdata = clone($contribution);
-    $formdata = file_prepare_standard_editor($formdata, 'content', $editoroptions, $context, 'mod_giportfolio',
-                                             'contribution', $formdata->id);
-    $formdata = file_prepare_standard_filemanager($formdata, 'attachment', $attachmentoptions, $context, 'mod_giportfolio',
-                                                  'attachment', $formdata->id);
+        'id' => $contributionid, 'chapterid' => $chapterid,
+        //   'userid' => $USER->id
+    ), '*', MUST_EXIST);
+
+    if ($contribution->mentorid == 0 && $contribution->teacherid == 0 && $contribution->userid != $USER->id) {
+        throw new moodle_exception('actionnotallowed', 'mod_giportfolio');
+    } else {
+        $formdata->mentor = $contribution->mentorid;
+        $formdata->mentee = $contribution->userid;
+        $formdata->teacherid =  $contribution->teacherid;
+    }
+    $formdata = clone ($contribution);
+    $formdata = file_prepare_standard_editor(
+        $formdata,
+        'content',
+        $editoroptions,
+        $context,
+        'mod_giportfolio',
+        'contribution',
+        $formdata->id
+    );
+    $formdata = file_prepare_standard_filemanager(
+        $formdata,
+        'attachment',
+        $attachmentoptions,
+        $context,
+        'mod_giportfolio',
+        'attachment',
+        $formdata->id
+    );
     $formdata->contributionid = $formdata->id;
+
 } else {
     $formdata = new stdClass();
 }
-$formdata->id = $cm->id;
-$formdata->chapterid = $chapter->id;
 $formdata->mentor = $mentor;
 $formdata->mentee = $mentee;
 $formdata->teacherid = ($mentor == 0 && $mentee != 0 && $USER->id != $mentee) ? $USER->id : 0; // Teacher on behalf of the student
 $formdata->cont = $contribute;
+
+$formdata->id = $cm->id;
+$formdata->chapterid = $chapter->id;
 
 // Header and strings.
 $PAGE->set_title(format_string($giportfolio->name));
@@ -129,6 +154,7 @@ if ($action) {
     }
 
     if ($action == 'delete') {
+       
         if (optional_param('confirm', false, PARAM_BOOL)) {
             require_sesskey();
 
@@ -170,6 +196,7 @@ if ($action) {
         if (!$contribution->hidden) {
             $DB->set_field('giportfolio_contributions', 'hidden', 1, array('id' => $contribution->id));
         }
+
         redirect($redir);
 
     } else if ($action == 'share') {
@@ -192,6 +219,7 @@ if ($action) {
 $custom = array('editoroptions' => $editoroptions, 'attachmentoptions' => $attachmentoptions);
 $mform = new mod_giportfolio_contribution_edit_form(null, $custom);
 $mform->set_data($formdata);
+$userid = $formdata->mentee == 0 ? $USER->id : $formdata->mentee;
 
 if ($mform->is_cancelled()) {
     redirect($redir);
@@ -212,7 +240,7 @@ if ($mform->is_cancelled()) {
             'hidden' => 0, // Updated later.
             'timecreated' => time(),
             'timemodified' => 0, // Updated later.
-            'userid' => $formdata->mentee == 0 ? $USER->id : $formdata->mentee,
+            'userid' =>  $userid, //$formdata->mentee == 0 ? $USER->id : $formdata->mentee,
             'mentorid' => $formdata->mentor,
             'teacherid' => $formdata->teacherid
         );
@@ -226,21 +254,36 @@ if ($mform->is_cancelled()) {
 
     $data->id = $contributionid;
     $data->timemodified = time();
-    $data = file_postupdate_standard_editor($data, 'content', $editoroptions, $context, 'mod_giportfolio',
-                                            'contribution', $contributionid);
-    $data = file_postupdate_standard_filemanager($data, 'attachment', $attachmentoptions, $context, 'mod_giportfolio',
-                                                 'attachment', $contributionid);
+
+    $data = file_postupdate_standard_editor(
+        $data,
+        'content',
+        $editoroptions,
+        $context,
+        'mod_giportfolio',
+        'contribution',
+        $contributionid
+    );
+    $data = file_postupdate_standard_filemanager(
+        $data,
+        'attachment',
+        $attachmentoptions,
+        $context,
+        'mod_giportfolio',
+        'attachment',
+        $contributionid
+    );
     $DB->update_record('giportfolio_contributions', $data);
 
-    giportfolio_automatic_grading($giportfolio, $USER->id);
+    giportfolio_automatic_grading($giportfolio, $userid);
 
     if ($sendnotification) {
         $graders =  giportfolio_filter_graders(get_users_by_capability($context, 'mod/giportfolio:gradegiportfolios'));
         if ($graders) {
             $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
-                                                                              'id' => $cm->id, 'chapterid' => $chapter->id,
-                                                                              'userid' => $USER->id
-                                                                         ));
+                'id' => $cm->id, 'chapterid' => $chapter->id,
+                'userid' => $userid
+            ));
             $subj = get_string('notifyaddentry_subject', 'mod_giportfolio', fullname($USER));
             $info = (object)array(
                 'course' => format_string($course->fullname),
@@ -290,8 +333,14 @@ if (!$giportfolio->customtitles) {
     }
 }
 
-$chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
-                                            'chapter', $chapter->id);
+$chaptertext = file_rewrite_pluginfile_urls(
+    $chapter->content,
+    'pluginfile.php',
+    $context->id,
+    'mod_giportfolio',
+    'chapter',
+    $chapter->id
+);
 echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
 echo '</br>';
 echo $OUTPUT->box_end();

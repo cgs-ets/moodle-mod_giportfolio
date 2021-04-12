@@ -373,7 +373,9 @@ if ($contriblist) {
 
         if ($ismine) {
             $baseurl = new moodle_url('/mod/giportfolio/editcontribution.php',
-                array('id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid));
+                array('id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid,
+                    'mentee'=> $userid
+                ));
 
             $editurl = new moodle_url($baseurl);
             $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'));
@@ -395,8 +397,8 @@ if ($contriblist) {
             }
 
             $showicon = html_writer::link($showurl, $showicon);
-
             $shareicon = '';
+
             if (!$isuserchapter && $giportfolio->peersharing) { // Only for chapters without a userid and if peersharing is enabled.
                 if ($contrib->shared) {
                     $shareurl = new moodle_url($baseurl, array('action' => 'unshare', 'sesskey' => sesskey()));
