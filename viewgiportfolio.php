@@ -374,7 +374,7 @@ if ($contriblist) {
         if ($ismine) {
             $baseurl = new moodle_url('/mod/giportfolio/editcontribution.php',
                 array('id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid,
-                    'mentee'=> $userid, 'mentor' => $contrib->mentorid
+                    'mentee'=> $userid, 'mentor' => $contrib->mentorid, 'teacher' => $contrib->teacherid
                 ));
 
             $editurl = new moodle_url($baseurl);

@@ -22,10 +22,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(__FILE__).'/../../config.php');
+require_once(dirname(__FILE__) . '/../../config.php');
 global $CFG, $DB, $PAGE, $OUTPUT, $USER;
-require_once($CFG->dirroot.'/mod/giportfolio/locallib.php');
-require_once($CFG->dirroot.'/mod/giportfolio/editcontribution_form.php');
+require_once($CFG->dirroot . '/mod/giportfolio/locallib.php');
+require_once($CFG->dirroot . '/mod/giportfolio/editcontribution_form.php');
 
 $cmid = required_param('id', PARAM_INT); // CMID.
 $contributionid = optional_param('contributionid', 0, PARAM_INT);
@@ -33,6 +33,7 @@ $chapterid = required_param('chapterid', PARAM_INT); // Chapter ID.
 $action = optional_param('action', null, PARAM_ALPHA);
 $mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID
 $mentee = optional_param('mentee', 0, PARAM_INT); // Mentor ID
+$tid = optional_param('teacherid', 0, PARAM_INT); // Mentor ID
 // Contribution  means the teacher is contributing on behalf of a student. Help on navigation
 // when teacher can add chapters on behalf of the student.
 $contribute = optional_param('cont', 'no', PARAM_RAW);
@@ -41,7 +42,10 @@ $cm = get_coursemodule_from_id('giportfolio', $cmid, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
 
-$url = new moodle_url('/mod/giportfolio/editcontribution.php', array('id' => $cm->id, 'chapterid' => $chapterid, 'mentor' => $mentor, 'mentee' => $mentee, 'cont' => $contribute));
+$url = new moodle_url('/mod/giportfolio/editcontribution.php', array(
+    'id' => $cm->id, 'chapterid' => $chapterid, 'mentor' => $mentor, 'mentee' => $mentee,
+    'teacherid' => $tid, 'cont' => $contribute
+));
 
 if ($action) {
     $url->param('action', $action);
@@ -76,7 +80,7 @@ if ($additionalchapters) {
 $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id));
 $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Allow a teacher to make a contrib on behalf of a student.
 
-if (!$cangrade ) {
+if (!$cangrade) {
     if ($chapter->userid && $chapter->userid != $USER->id && $mentor == 0) {
         throw new moodle_exception('notyourchapter', 'mod_giportfolio');
     }
@@ -87,7 +91,7 @@ if ($chapter->hidden) {
     require_capability('mod/giportfolio:viewhiddenchapters', $context);
 }
 
-giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, 0, 0, $mentor, $mentee ); // Add TOC.
+giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, 0, 0, $mentor, $mentee); // Add TOC.
 
 $editoroptions = array('noclean' => true, 'subdirs' => true, 'maxfiles' => -1, 'maxbytes' => 0, 'context' => $context);
 $attachmentoptions = array('subdirs' => false, 'maxfiles' => $maxfiles, 'maxbytes' => $maxbytes);
@@ -127,14 +131,14 @@ if ($contributionid) {
         $formdata->id
     );
     $formdata->contributionid = $formdata->id;
-
+    $formdata->teacherid = $contribution->teacherid;
 } else {
     $formdata = new stdClass();
+    $formdata->teacherid = ($mentor == 0 && $mentee != 0 && $USER->id != $mentee) ? $USER->id : 0; // Teacher on behalf of the student
 }
 
 $formdata->mentor = $mentor;
 $formdata->mentee = $mentee;
-$formdata->teacherid = ($mentor == 0 && $mentee != 0 && $USER->id != $mentee) ? $USER->id : 0; // Teacher on behalf of the student
 $formdata->cont = $contribute;
 
 $formdata->id = $cm->id;
@@ -155,7 +159,7 @@ if ($action) {
     }
 
     if ($action == 'delete') {
-       
+
         if (optional_param('confirm', false, PARAM_BOOL)) {
             require_sesskey();
 
@@ -170,7 +174,6 @@ if ($action) {
             giportfolio_automatic_grading($giportfolio, $contribution->userid);
 
             redirect($redir);
-
         } else {
             $title = format_string($contribution->title);
             $msg = get_string('confcontribdelete', 'mod_giportfolio');
@@ -184,14 +187,12 @@ if ($action) {
 
             die();
         }
-
     } else if ($action == 'show') {
         require_sesskey();
         if ($contribution->hidden) {
             $DB->set_field('giportfolio_contributions', 'hidden', 0, array('id' => $contribution->id));
         }
         redirect($redir);
-
     } else if ($action == 'hide') {
         require_sesskey();
         if (!$contribution->hidden) {
@@ -199,14 +200,12 @@ if ($action) {
         }
 
         redirect($redir);
-
     } else if ($action == 'share') {
         require_sesskey();
         if (!$contribution->shared) {
             $DB->set_field('giportfolio_contributions', 'shared', 1, array('id' => $contribution->id));
         }
         redirect($redir);
-
     } else if ($action == 'unshare') {
         require_sesskey();
         if ($contribution->shared) {
@@ -224,7 +223,6 @@ $userid = $formdata->mentee == 0 ? $USER->id : $formdata->mentee;
 
 if ($mform->is_cancelled()) {
     redirect($redir);
-
 } else if ($data = $mform->get_data()) {
 
     $sendnotification = false;
@@ -274,7 +272,7 @@ if ($mform->is_cancelled()) {
         'attachment',
         $contributionid
     );
-    
+
     $DB->update_record('giportfolio_contributions', $data);
 
     giportfolio_automatic_grading($giportfolio, $userid);
@@ -327,11 +325,11 @@ if (!$giportfolio->customtitles) {
     $hidden = $chapter->hidden ? 'dimmed_text' : '';
     if (!$chapter->subchapter) {
         $currtitle = giportfolio_get_chapter_title($chapter->id, $chapters, $giportfolio, $context);
-        echo '<p class="giportfolio_chapter_title '.$hidden.'">'.$currtitle.'</p>';
+        echo '<p class="giportfolio_chapter_title ' . $hidden . '">' . $currtitle . '</p>';
     } else {
         $currtitle = giportfolio_get_chapter_title($chapters[$chapter->id]->parent, $chapters, $giportfolio, $context);
         $currsubtitle = giportfolio_get_chapter_title($chapter->id, $chapters, $giportfolio, $context);
-        echo '<p class="giportfolio_chapter_title '.$hidden.'">'.$currtitle.'<br />'.$currsubtitle.'</p>';
+        echo '<p class="giportfolio_chapter_title ' . $hidden . '">' . $currtitle . '<br />' . $currsubtitle . '</p>';
     }
 }
 
