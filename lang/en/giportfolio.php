@@ -185,6 +185,7 @@ $string['usergraded'] = 'You have been graded for this activity:  ';
 $string['usergradefeedback'] = 'Feedback received:  ';
 $string['usertoc'] = 'User table of contents';
 $string['view'] = 'View';
+$string['showinstructions'] = 'Show/Hide Instructions';
 $string['viewgiportfolio'] = 'View Portfolio:  ';
 $string['viewtemplate'] = 'View/Edit portfolio template';
 $string['viewmenteeportfolio'] = 'View portfolio for {$a->name}';

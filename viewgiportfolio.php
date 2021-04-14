@@ -281,8 +281,11 @@ if (count($contriblist) > 0) {
     giportfolio_set_mentor_info($contriblist, $userid);
 }
 
-$chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php', $context->id, 'mod_giportfolio', 'chapter', $chapter->id);
-echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
+ $chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php', $context->id, 'mod_giportfolio', 'chapter', $chapter->id);
+
+$templatecontext->intro = $chaptertext;
+
+echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', $templatecontext);
 
 echo $OUTPUT->box_start('giportfolio_actions');
 
