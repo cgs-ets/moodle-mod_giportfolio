@@ -897,7 +897,7 @@ function giportfolio_get_user_default_chapter($giportfolioid, $userid)
 
     $sql = "SELECT  TOP(1) chapterid  FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = {$giportfolioid}
-           -- LIMIT 1; ";
+          -- LIMIT 1; ";
 
     return  $DB->get_record_sql($sql);
 }
@@ -2181,6 +2181,16 @@ function is_non_editing_teacher()
     return false;
 }
 
+function giportfolio_is_student_in_this_course() {
+    global $COURSE, $USER;
+    $contextcourse = \context_course::instance($COURSE->id);
+    $coursestudents = array_keys(get_role_users('5', $contextcourse, false, 'u.id'));
+    if (in_array(intval($USER->id), $coursestudents)) {
+        return true;
+    }
+
+    return false;
+}
 // CGS costumisation. If grading is set to none, then  hide all grade references.
 function giportfolio_table_columns($giportfolioid, $context) {
     global $DB;

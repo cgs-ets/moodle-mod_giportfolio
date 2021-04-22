@@ -360,17 +360,19 @@ if ($contriblist) {
 
     comment::init();
     $commentopts = (object) array(
-            'context' => $context,
-            'component' => 'mod_giportfolio',
-            'area' => 'giportfolio_contribution',
-            'cm' => $cm,
-            'course' => $course,
-            'autostart' => true,
-            'showcount' => true,
-            'displaycancel' => true
+        'context' => $context,
+        'component' => 'mod_giportfolio',
+        'area' => 'giportfolio_contribution',
+        'cm' => $cm,
+        'course' => $course,
+        'autostart' => true,
+        'showcount' => true,
+        'displaycancel' => true
     );
-
+    
     $align = 'right';
+    $disabledelbtn = $DB->get_field('giportfolio', 'disabledeletebtn', ['id' => $giportfolio->id]);
+  
     foreach ($contriblist as $contrib) {
         $ismine = ($contrib->userid == $userid);
 
@@ -384,9 +386,13 @@ if ($contriblist) {
             $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'));
             $editicon = html_writer::link($editurl, $editicon);
 
-            $delurl = new moodle_url($baseurl, array('action' => 'delete'));
-            $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
-            $delicon = html_writer::link($delurl, $delicon);
+            if ((!$disabledelbtn && !giportfolio_is_student_in_this_course() || $cangrade && !is_non_editing_teacher())) { // Editing teachers can still delete but not non-editing
+                $delurl = new moodle_url($baseurl, array('action' => 'delete'));
+                $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
+                $delicon = html_writer::link($delurl, $delicon);
+            } else { // Hide the delete icon from the comments area.
+                $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/deletecomment.js'));
+            }
             // Check if the show hide option is available for students.
             if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) {
                 

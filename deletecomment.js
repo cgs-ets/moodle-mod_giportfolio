@@ -1,0 +1,1 @@
+$(".comment-delete").css( 'display', 'none');

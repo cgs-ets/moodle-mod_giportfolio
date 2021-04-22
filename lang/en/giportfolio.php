@@ -198,6 +198,7 @@ $string['visibilityexplain_help'] = '
 ';
 $string['allowmentorcontrib'] = 'Allow Mentor contribution';
 $string['allownetcontribute'] = 'Allow Non-editing teachers contribution';
+$string['disabledeletebtn'] = 'Disable delete button from contributions and comments';
 $string['onbehalf'] = 'Contribute on behalf of {$a->name}';
 $string['contribute'] = 'Contribute';
 $string['chaptersupdated'] = 'Updated Chapters';

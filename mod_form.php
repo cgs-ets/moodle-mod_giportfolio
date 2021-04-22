@@ -128,13 +128,17 @@ class mod_giportfolio_mod_form extends moodleform_mod {
 
         // Allow mentor to contribute on behalf of their mentee
         $mform->addElement('selectyesno', 'allowmentorcontrib', get_string('allowmentorcontrib', 'giportfolio'));
-        $mform->setDefault('myactivitylink', 0);
+        $mform->setDefault('allowmentorcontrib', 1);
+
         
         //Allow Non-editing teachers to contribute
         $mform->addElement('selectyesno', 'allownetcontribute', get_string('allownetcontribute', 'giportfolio'));
-        $mform->setDefault('myactivitylink', 0);
+        $mform->setDefault('allownetcontribute', 0);
 
-
+        //Disable delete buttons on contributions.
+        $mform->addElement('selectyesno', 'disabledeletebtn', get_string('disabledeletebtn', 'giportfolio'));
+        $mform->setDefault('disabledeletebtn', 0);
+        
         if (giportfolio_include_klassenbuchtrainer()) {
             $mform->addElement('selectyesno', 'klassenbuchtrainer', get_string('klassenbuchtrainer', 'giportfolio'));
             $mform->addHelpButton('klassenbuchtrainer', 'klassenbuchtrainer', 'mod_giportfolio');

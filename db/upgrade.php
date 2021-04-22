@@ -620,11 +620,20 @@ function xmldb_giportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021032501, 'giportfolio');
     }
 
+    if ($oldversion < 2021042200) {
 
+        // Define field disabledeletebtn to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('disabledeletebtn', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'hideshowcontribution');
 
+        // Conditionally launch add field disabledeletebtn.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
-
-
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2021042200, 'giportfolio');
+    }
 
 
     return true;

@@ -169,7 +169,7 @@ if ($allowedit) {
         echo '</br>';
         echo get_string('lastupdated', 'mod_giportfolio') . date('l jS \of F Y h:i:s A', $usercontribution);
         echo '</br>';
-        //is_non_editing_teacher
+     
         if (is_non_editing_teacher() && $noneditingteachercancontribute) {
             echo html_writer::link(
                 new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id)),
