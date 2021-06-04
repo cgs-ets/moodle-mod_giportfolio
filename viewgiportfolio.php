@@ -418,22 +418,17 @@ if ($contriblist) {
                 $shareicon = html_writer::link($shareurl, $shareicon);
             }
 
-            //Deletion enabled For editing Teachers, on all contributions, do show: Edit, Delete, Hide
-            if ($disabledelbtn && ($cangrade && !is_non_editing_teacher())) {
+            
+            if (!$disabledelbtn ) {
                 $actions = array($editicon, $delicon, $showicon, $shareicon);
-               
             } 
-
-            // For other roles, on OWN contributions that have NO comments, do show: Edit, Delete, Hide.
-            if ($disabledelbtn && ($contrib->userid == $USER->id) && (!$cangrade && (is_non_editing_teacher() || giportfolio_is_student_in_this_course()))) {
-                if (giportfolio_count_contributions_comments($contrib->id) == 0) {
-                    $actions = array($editicon, $delicon, $showicon, $shareicon);
-                } else {
-                    $actions = array();
-                    $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/deletecomment.js'));
-                }
-            } 
-
+            
+            if ($disabledelbtn && giportfolio_count_contributions_comments($contrib->id) > 0) {
+                $actions = array();
+                $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/deletecomment.js'));
+            }
+            
+           
             $userfullname = '';
         } else if ($giportfolio->peersharing) {
             $actions = array(); // No actions when viewing another user's contribution.
