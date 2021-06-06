@@ -102,6 +102,7 @@ if ($chapter->hidden and !$viewhidden) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewcontribute.php', array('id' => $course->id)));
 }
 
+
 $PAGE->set_url('/mod/giportfolio/viewcontribute.php', array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid, 'cont' => $contribute));
 
 // Unset all page parameters.
@@ -212,10 +213,19 @@ if (!$giportfolio->customtitles) {
 $pixpath = "$CFG->wwwroot/pix";
 
 $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $userid);
-$chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
-                                            'chapter', $chapter->id);
+$chaptertext = file_rewrite_pluginfile_urls(
+    $chapter->content,
+    'pluginfile.php',
+    $context->id,
+    'mod_giportfolio',
+    'chapter',
+    $chapter->id
+);
 
-echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
+$templatecontext->intro = $chaptertext;
+
+echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', $templatecontext); // Show/hide instruction button.
+//echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
 
 if ($contriblist) {
     echo $OUTPUT->box_start('giportfolio_contributions');
