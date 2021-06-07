@@ -101,16 +101,11 @@ if ($contributionid) {
 
     $contribution = $DB->get_record('giportfolio_contributions', array(
         'id' => $contributionid, 'chapterid' => $chapterid,
-        //   'userid' => $USER->id
     ), '*', MUST_EXIST);
 
-    if ($contribution->mentorid == 0 && $contribution->teacherid == 0 && $contribution->userid != $USER->id) {
-        throw new moodle_exception('actionnotallowed', 'mod_giportfolio');
-    } else {
-        $formdata->mentor = $contribution->mentorid;
-        $formdata->mentee = $contribution->userid;
-        $formdata->teacherid =  $contribution->teacherid;
-    }
+    $formdata->mentor = $contribution->mentorid;
+    $formdata->mentee = $contribution->userid;
+    $formdata->teacherid =  $contribution->teacherid;
     $formdata = clone ($contribution);
     $formdata = file_prepare_standard_editor(
         $formdata,

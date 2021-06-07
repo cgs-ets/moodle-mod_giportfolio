@@ -223,9 +223,9 @@ $chaptertext = file_rewrite_pluginfile_urls(
 );
 
 $templatecontext->intro = $chaptertext;
+$disabledelbtn = $DB->get_field('giportfolio', 'disabledeletebtn', ['id' => $giportfolio->id]);
 
 echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', $templatecontext); // Show/hide instruction button.
-//echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
 
 if ($contriblist) {
     echo $OUTPUT->box_start('giportfolio_contributions');
@@ -258,23 +258,72 @@ if ($contriblist) {
     $align = 'right';
     foreach ($contriblist as $contrib) {
         $ismine = ($contrib->userid == $USER->id) || $mentor != 0;
+        $baseurl = new moodle_url(
+                '/mod/giportfolio/editcontribution.php',
+                array(
+                    'id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid,
+                    'mentee' => $userid, 'mentor' => $contrib->mentorid, 'teacher' => $contrib->teacherid
+                )
+            );
+  
+      
+        // Check if the show hide option is available for students.
+        if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) {
+                
+            if ($contrib->hidden) {
+                $showurl = new moodle_url($baseurl, array('action' => 'show', 'sesskey' => sesskey()));
+                $showicon = $OUTPUT->pix_icon('t/show', get_string('show', 'mod_giportfolio'));
+            } else {
+                $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
+                $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
+            }
+        }
 
+        
+        $showicon = html_writer::link($showurl, $showicon);
+        $shareicon = '';
+
+      
         if (!$contrib->hidden) {
+           
+            $editurl = new moodle_url($baseurl);
+            $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'));
+            $editicon = html_writer::link($editurl, $editicon);
+            $delurl = new moodle_url($baseurl, array('action' => 'delete'));
+            $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
+            $delicon = html_writer::link($delurl, $delicon);
+
+            if (!$disabledelbtn ) {
+                // Only allow to edit contributions done by the user.
+                if ($contrib->mentorid == 0 && $contrib->teacherid == 0 && $contrib->userid != $USER->id) {
+                    $actions = array($delicon, $showicon, $shareicon);
+                } else {
+                    $actions = array($editicon, $delicon, $showicon, $shareicon);
+                }
+            } 
+
             $cout = '';
             $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                          'contribution', $contrib->id);
-            $cout .='<strong>'.$contribtitle.'</strong></br>';
+            $cout .='<strong>'.$contribtitle.'</strong>'. implode(' ', $actions) . '<br>';
             $cout .= date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
             if ($contrib->timecreated !== $contrib->timemodified) {
                 $cout .= '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
             }
             $cout .= '<br/><br/>';
             $cout = html_writer::tag('contribheader', $cout);
+            
 
             // Print contribution body
             $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                         'contribution', $contrib->id);
-            $cout .= html_writer::tag('contribtext', format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context)));
+            $cout .= html_writer::tag('contribtext', format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context)));      
+            if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) { 
+                $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
+                $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
+                $cout .= html_writer::link($shareurl, $shareicon);
+            }
+            
             $files = giportfolio_print_attachments($contrib, $cm, $type = null, $align = "right");
             if ($files) {
                 $cout .= "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\" nowrap=\"nowrap\">\n";
@@ -310,7 +359,13 @@ if ($contriblist) {
                     array('class' => ($ismine ? 'mine' : 'notmine'))
                 );
             }
-
+          
+            
+            if ($disabledelbtn && giportfolio_count_contributions_comments($contrib->id) > 0) {
+                $actions = array();
+                $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/deletecomment.js'));
+            }
+            
             if (empty(has_seen_contribution($contrib->id))) { // First time the user sees the contrib.
                 follow_updates_entry($contrib);
             }

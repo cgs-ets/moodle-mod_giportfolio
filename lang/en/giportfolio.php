@@ -39,7 +39,7 @@ $string['chaptertitle'] = 'Chapter title';
 $string['collapsesubchapters'] = 'Collapse subchapters';
 $string['confchapterdelete'] = 'Do you really want to delete this chapter?';
 $string['confchapterdeleteall'] = 'Do you really want to delete this chapter and all its subchapters?';
-$string['confcontribdelete'] = 'Are you sure that you want to delete this contribution';
+$string['confcontribdelete'] = 'Are you sure that you want to delete this contribution and its comments?';
 $string['content'] = 'Content';
 $string['continuecontrib'] = 'Continue Contributing';
 $string['contribadded'] = 'Contribution added';
@@ -125,7 +125,7 @@ $string['notifyaddentry_body'] = 'Hi,
 You can view this contribution at: {$a->link}';
 $string['notstarted'] = 'Not started';
 $string['notyourchapter'] = 'This user chapter does not belong to you';
-$string['actionnotallowed'] = 'This contribution was made by a student. Teachers and mentors can only edit contributions done by them on behalf of the student';
+$string['actionnotallowed'] = 'Teachers and mentors can only edit their own contributions.';
 $string['numbering'] = 'Chapter numbering';
 $string['numbering_help'] = '* None - chapter and subchapter titles are not formatted at all, use if you want to define special numbering styles. For example letters: in chapter title type "A First Chapter", "A.1 Some Subchapter",...
 * Numbers - chapters and subchapters are numbered (1, 1.1, 1.2, 2, ...)

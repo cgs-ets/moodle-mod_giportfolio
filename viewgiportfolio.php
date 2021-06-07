@@ -417,10 +417,14 @@ if ($contriblist) {
                 }
                 $shareicon = html_writer::link($shareurl, $shareicon);
             }
-
-            
+           
             if (!$disabledelbtn ) {
-                $actions = array($editicon, $delicon, $showicon, $shareicon);
+                // Only allow to edit contributions done by the user.
+                if ($contrib->mentorid == 0 && $contrib->teacherid == 0 && $contrib->userid != $USER->id) {
+                    $actions = array($delicon, $showicon, $shareicon);
+                } else {
+                    $actions = array($editicon, $delicon, $showicon, $shareicon);
+                }
             } 
             
             if ($disabledelbtn && giportfolio_count_contributions_comments($contrib->id) > 0) {
