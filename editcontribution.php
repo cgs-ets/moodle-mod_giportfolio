@@ -341,8 +341,13 @@ $chaptertext = file_rewrite_pluginfile_urls(
     'chapter',
     $chapter->id
 );
-echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
-echo '</br>';
+
+$templatecontext->intro = $chaptertext;
+
+echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', $templatecontext); // Show/hide instruction button.
+
+//echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
+//echo '</br>';
 echo $OUTPUT->box_end();
 $mform->display();
 echo '<br />';
