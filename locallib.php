@@ -895,7 +895,7 @@ function giportfolio_get_user_default_chapter($giportfolioid, $userid)
 { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT TOP(1_ chapterid  FROM mdl_giportfolio_contributions
+    $sql = "SELECT TOP(1) chapterid  FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = {$giportfolioid}
            --LIMIT 1; ";
 
