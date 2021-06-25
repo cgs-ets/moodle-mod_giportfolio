@@ -895,9 +895,9 @@ function giportfolio_get_user_default_chapter($giportfolioid, $userid)
 { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT  TOP(1) chapterid  FROM mdl_giportfolio_contributions
+    $sql = "SELECT TOP(1_ chapterid  FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = {$giportfolioid}
-          -- LIMIT 1; ";
+           --LIMIT 1; ";
 
     return  $DB->get_record_sql($sql);
 }
@@ -1601,9 +1601,10 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             continue;
         }
 
-        $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
+        $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array(
             'id' => $cm->id, 'chapterid' => $chapterid,
-            'userid' => $user->id, 'cont' => 'no'
+            'mentee' =>  $user->id,
+            'cont' => 'yes'
         ));
 
 
@@ -1794,8 +1795,7 @@ function giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $con
     return array($countseen, $countcomments, $countnocomments);
 }
 
-function giportfolio_count_contributions_comments($contributionid)
-{
+function giportfolio_count_contributions_comments($contributionid){
     global $DB;
 
     $sql = "SELECT * FROM mdl_comments WHERE itemid = $contributionid;";
@@ -2181,6 +2181,7 @@ function is_non_editing_teacher()
     return false;
 }
 
+// Return true if the users role is student.
 function giportfolio_is_student_in_this_course() {
     global $COURSE, $USER;
     $contextcourse = \context_course::instance($COURSE->id);
