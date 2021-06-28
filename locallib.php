@@ -1454,7 +1454,6 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     // Look for chapters created by the student.
 
     $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'.shorten_text( get_string('additionstitle', 'giportfolio')).'</span></div>';
-    print_object( $titles);
     list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
 
     $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
