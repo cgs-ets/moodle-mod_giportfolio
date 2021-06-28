@@ -216,4 +216,4 @@ $string['multipleseen'] = 'Multiple seen';
 $string['contrcomment'] = 'Commented';
 $string['contrnocomment'] = ' Not commented ';
 $string['contrcomments'] = 'Multiple comments';
-$string['additionlegend'] = 'Chapters created by {$a}';
+$string['additionlegend'] = '(by {$a})';

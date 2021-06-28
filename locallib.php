@@ -1431,15 +1431,21 @@ function giportfolio_filter_graders($graders)
  */
 function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm)
 {
-    global $CFG, $DB, $OUTPUT;
+    global $CFG, $DB, $OUTPUT, $COURSE;
 
     $chapters = giportfolio_preload_chapters($giportfolio);
     $chaptersid = [];
     $titles = [];
+ 
+    $studentalias = get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
 
     foreach ($chapters as $chapter) {
         if (!$chapter->subchapter) {
-            $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'. ($chapter->title).'</span></div>';
+            $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'. ($chapter->title).'</span></div>
+                            <div class = "subchapter-icon">
+                            <img class ="icon" alt ="Chapter" title = "Chapter" src="'. $OUTPUT->image_url('chapter', 'mod_giportfolio').'"/>
+                        </div>
+            ';
         } else {
             $titles[] = '<div class="rotated-text-container">
                               <span class="rotated-text">'.  ($chapter->title). '</span>
@@ -1453,7 +1459,11 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
    
     // Look for chapters created by the student.
 
-    $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'.shorten_text( get_string('additionstitle', 'giportfolio')).'</span></div>';
+    $titles[] =  '<div class="rotated-text-container">
+                      <span class="rotated-text">'.shorten_text( get_string('additionstitle', 'giportfolio')).'</span></div>
+                      <div class = "subchapter-icon">
+                            <img class ="icon" alt ="Added by student" title = "Added by student" src="'. $OUTPUT->image_url('addition_icon', 'mod_giportfolio').'"/>
+                        </div>';
     list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
 
     $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
@@ -1750,7 +1760,7 @@ function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $useri
         if ($morethanthree) {
 
             $params = ["class" => "giportfolio-more", "id" => $userid, 'title' => 'Show More'];
-            $icon = '<i class = "fa">&#xf067;</i>'; //minus: &#xf068;
+            $icon = '<i class = "fa">&#xf067;</i>';
             $links .= html_writer::span($icon, '', $params);
             $jsmodule = array(
                 'name' => 'mod_giportfolio_morechapters',

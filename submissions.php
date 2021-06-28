@@ -156,7 +156,12 @@ if ($currenttab == 'graphcontributors') {
     $iconcomment =  html_writer::span('<i class = "fa">&#xf075;</i>', '', ['class' => 'giportfolio-legend']);
     $iconnocomment = html_writer::span('<i class = "fa">&#xf0e5;</i>', '', ['class' => 'giportfolio-legend']);
     $iconcomments = html_writer::span('<i class = "fa">&#xf086</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrcomments', 'mod_giportfolio')]);
-
+    $iconaddition =  html_writer::img($OUTPUT->image_url('addition_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
+    $iconchapter =  html_writer::img($OUTPUT->image_url('chapter', 'mod_giportfolio'), '', ['class' => 'icon']);
+    $iconsubchapter =  html_writer::img($OUTPUT->image_url('subchapter_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
+   
+    // $OUTPUT->image_url('addition_icon', 'mod_giportfolio');
+// <img class ="icon" alt ="Added by student" title = "Added by student" src="'. $OUTPUT->image_url('addition_icon', 'mod_giportfolio').'"/>
     $out .= html_writer::start_div();
     $out .= "<table>
              <tr>
@@ -196,9 +201,17 @@ if ($currenttab == 'graphcontributors') {
                 <td>". $iconcomments. "</td>
             </tr>".
             "<tr>
-                <td>".get_string('additionstitle', 'mod_giportfolio' )."</td>
-                <td>". get_string('additionlegend', 'mod_giportfolio', $alias ). "</td>               
+                <td>".get_string('additionstitle', 'mod_giportfolio' ). get_string('additionlegend', 'mod_giportfolio', $alias )."</td>
+                <td>".$iconaddition. "</td>               
             </tr>".    
+            "<tr>
+                <td> Chapter</td>
+                <td>".$iconchapter.  "</td>               
+            </tr>". 
+            "<tr>
+                <td> Subchapter</td>
+                <td>".$iconsubchapter.  "</td>               
+            </tr>".
     "</table>";
     $out .= html_writer::end_div();
    
