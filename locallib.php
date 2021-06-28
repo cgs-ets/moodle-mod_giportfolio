@@ -1439,17 +1439,19 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
     foreach ($chapters as $chapter) {
         if (!$chapter->subchapter) {
-            $titles[] = trim($chapter->title);
+           
+            $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'.trim($chapter->title).'</span></div>';
         } else {
-            $titles[] = "&#167;  $chapter->title";
+            $titles[] = '<div class="rotated-text-container"><span class="rotated-text">&#167;'.$chapter->title. '</span></div>
+            <div class = "subchapter-icon"><img class ="icon" alt ="Subchapter" title = "Subchapter"
+            src="'. $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio').'"';
         }
-
         $chaptersid[] = $chapter->id;
     }
 
     // Look for chapters created by the student.
 
-    $titles[] = get_string('additionstitle', 'giportfolio');
+    $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'. get_string('additionstitle', 'giportfolio').'</span></div>';
 
     list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
 
@@ -1470,12 +1472,12 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
     foreach ($table->column_class as $name => $column) {
         if (!in_array($name, ['picture', 'fullname', get_string('additionstitle', 'giportfolio')])) {  // These are the columns for the chapter titles          
-            $table->column_class($name, 'truncate');
+            $table->column_class($name, 'completion-header');
         }
     }
 
     $table->set_attribute('cellspacing', '0');
-    $table->set_attribute('id', 'attempts');
+    $table->set_attribute('id', 'graphcontributors');
     $table->set_attribute('class', 'graphofcontributors');
     $table->set_attribute('width', '100%');
 

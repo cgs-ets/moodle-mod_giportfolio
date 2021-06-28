@@ -36,18 +36,22 @@
 .mod_giportfolio .giportfolio_toc_none {
   font-size: 0.8em;
 }
+
 .mod_giportfolio .giportfolio_toc_none ul {
   margin-left: 5px;
   padding-left: 0;
 }
+
 .mod_giportfolio .giportfolio_toc_none ul ul {
   margin-left: 0;
   padding-left: 0;
 }
+
 .mod_giportfolio .giportfolio_toc_none li {
   margin-top: 5px;
   list-style: none;
 }
+
 .mod_giportfolio .giportfolio_toc_none li li {
   margin-top: 0;
   list-style: none;
@@ -57,18 +61,22 @@
 .mod_giportfolio .giportfolio_toc_numbered {
   font-size: 0.8em;
 }
+
 .mod_giportfolio .giportfolio_toc_numbered ul {
   margin-left: 5px;
   padding-left: 0;
 }
+
 .mod_giportfolio .giportfolio_toc_numbered ul ul {
   margin-left: 0;
   padding-left: 0;
 }
+
 .mod_giportfolio .giportfolio_toc_numbered li {
   margin-top: 5px;
   list-style: none;
 }
+
 .mod_giportfolio .giportfolio_toc_numbered li li {
   margin-top: 0;
   list-style: none;
@@ -78,18 +86,22 @@
 .mod_giportfolio .giportfolio_toc_bullets {
   font-size: 0.8em;
 }
+
 .mod_giportfolio .giportfolio_toc_bullets ul {
   margin-left: 5px;
   padding-left: 0;
 }
+
 .mod_giportfolio .giportfolio_toc_bullets ul ul {
   margin-left: 20px;
   padding-left: 0;
 }
+
 .mod_giportfolio .giportfolio_toc_bullets li {
   margin-top: 5px;
   list-style: none;
 }
+
 .mod_giportfolio .giportfolio_toc_bullets li li {
   margin-top: 0;
   list-style: circle;
@@ -99,18 +111,22 @@
 .mod_giportfolio .giportfolio_toc_indented {
   font-size: 0.8em;
 }
+
 .mod_giportfolio .giportfolio_toc_indented ul {
   margin-left: 5px;
   padding-left: 0;
 }
+
 .mod_giportfolio .giportfolio_toc_indented ul ul {
   margin-left: 15px;
   padding-left: 0;
 }
+
 .mod_giportfolio .giportfolio_toc_indented li {
   margin-top: 5px;
   list-style: none;
 }
+
 .mod_giportfolio .giportfolio_toc_indented li li {
   margin-top: 0;
   list-style: none;
@@ -160,6 +176,7 @@ body#page-mod-giportfolio-editcontribution.mod_giportfolio .generalbox {
   border: 2px #d08080 solid;
   padding: 5px;
 }
+
 .mod_giportfolio-extralinks {
   float: right;
   text-align: right;
@@ -184,7 +201,8 @@ p.giportfolio_outline {
   cursor: pointer;
   position: relative;
   display: inline-block;
-  border-bottom: 1px dotted black; /* If you want dots under the hoverable text */
+  border-bottom: 1px dotted black;
+  /* If you want dots under the hoverable text */
 }
 
 /* Tooltip text */
@@ -227,43 +245,61 @@ p.giportfolio_outline {
 p.alert.alert-info.giportfolio-restricted-access {
   max-width: fit-content;
 }
+
 /* Display updates chapters */
 
 .giportfolio-updatedch {
-  display: none;
+    display: none;
 }
+
 .giportfolio-updatedch.giportfolio-visible {
-  display: block;
+   display: block;
 }
 
 .giportfolio-more {
-  cursor: pointer;
-  color: #1177d1;
+    cursor: pointer;
+    color: #1177d1;
 }
 
 .giportfolio-count {
-  padding-left: 9px;
+  
 }
 
 .giportfolio-legend {
-  font-size: 1.2em;
-  color: #1177d1;
+    font-size: 1.2em;
+    color: #1177d1;
 }
 
-/* Graph of contributors table*/
-th.truncate {
-  max-width: 80px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  display: table-cell;
+
+#graphcontributors th,
+#graphcontributors td {
+    padding: 2px 2px;
+    border-right: 1px solid #eee;
+    text-align: center;
 }
 
-.truncate:hover {
-  position: absolute;
-  max-width: none;
-  z-index: 100;
-  background: #f5f5f5;
-  overflow: visible;
-  
+/* Custom CSS for rotated header.. */
+#page-mod-giportfolio-submissions .rotated-text-container {
+    display: inline-block;
+    width: 16px;
+}
+
+/*rtl:begin:ignore*/
+#page-mod-giportfolio-submissions .rotated-text {
+    display: inline-block;
+    white-space: nowrap;
+    transform: translate(0, 100%) rotate(-90deg);
+    transform-origin: 0 0;
+    vertical-align: middle;
+}
+
+#page-mod-giportfolio-submissions .rotated-text:after {
+    content: "";
+    float: left;
+    margin-top: 100%;
+}
+
+/* Icons made by Freepik from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>*/
+#page-mod-giportfolio-submissions .modicon {
+   padding-top: 5px;
 }
