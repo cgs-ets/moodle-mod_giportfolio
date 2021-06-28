@@ -1440,9 +1440,9 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     foreach ($chapters as $chapter) {
         if (!$chapter->subchapter) {
            
-            $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'.trim($chapter->title).'</span></div>';
+            $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'. shorten_text($chapter->title, 20).'</span></div>';
         } else {
-            $titles[] = '<div class="rotated-text-container"><span class="rotated-text">'.$chapter->title. '</span></div>
+            $titles[] = '<div class="rotated-text-container"><span class="rotated-text">'. shorten_text ($chapter->title, 20). '</span></div>
             <div class = "subchapter-icon"><img class ="icon" alt ="Subchapter" title = "Subchapter"
             src="'. $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio').'"';
         }
@@ -1451,7 +1451,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
     // Look for chapters created by the student.
 
-    $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'. get_string('additionstitle', 'giportfolio').'</span></div>';
+    $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'.shorten_text( get_string('additionstitle', 'giportfolio')).'</span></div>';
 
     list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
 
@@ -1478,7 +1478,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
     $table->set_attribute('cellspacing', '0');
     $table->set_attribute('id', 'graphcontributors');
-    $table->set_attribute('class', 'graphofcontributors');
+    $table->set_attribute('class', 'graphofcontributors generaltable flexible boxaligncenter');
     $table->set_attribute('width', '100%');
 
     // Start working -- this is necessary as soon as the niceties are over.
