@@ -1439,20 +1439,22 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
     foreach ($chapters as $chapter) {
         if (!$chapter->subchapter) {
-           
-            $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'. shorten_text($chapter->title, 20).'</span></div>';
+            $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'. ($chapter->title).'</span></div>';
         } else {
-            $titles[] = '<div class="rotated-text-container"><span class="rotated-text">'. shorten_text ($chapter->title, 20). '</span></div>
-            <div class = "subchapter-icon"><img class ="icon" alt ="Subchapter" title = "Subchapter"
-            src="'. $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio').'"';
+            $titles[] = '<div class="rotated-text-container">
+                              <span class="rotated-text">'.  ($chapter->title). '</span>
+                        </div>
+                        <div class = "subchapter-icon">
+                            <img class ="icon" alt ="Subchapter" title = "Subchapter" src="'. $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio').'"/>
+                        </div>';
         }
         $chaptersid[] = $chapter->id;
     }
-
+   
     // Look for chapters created by the student.
 
     $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'.shorten_text( get_string('additionstitle', 'giportfolio')).'</span></div>';
-
+    print_object( $titles);
     list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
 
     $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
