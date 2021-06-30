@@ -122,7 +122,7 @@ echo $OUTPUT->box_start('generalbox giportfolio_content');
 $intro = file_rewrite_pluginfile_urls($giportfolio->intro, 'pluginfile.php', $context->id, 'mod_giportfolio', 'intro', '');
 $templatecontext = new \stdClass();
 
-echo format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
+// echo format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
 $usercontribution = 0;
 
 if ($allowedit) {
@@ -155,9 +155,9 @@ if ($allowedit) {
         echo '</br>';
         echo $OUTPUT->single_button(
             new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id)),
-            get_string('continuecontrib', 'mod_giportfolio'),
-            '',
-            array()
+           '',
+            'POST',
+            array('class' => 'start-btn', 'tooltip' => 'Start')
         );
         if ($allowreport && $giportfolio->myactivitylink) {
             $reporturl = new moodle_url(
@@ -266,6 +266,9 @@ if ($allowedit) {
         get_string('submitedporto', 'mod_giportfolio') . ' ' . count($chapters)
     );
 }
+
+echo '<br><hr><br>';
+echo format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
 
 // To show the parent perspective.
 // if (is_role_switched($course->id) ) {

@@ -1,135 +1,135 @@
 .mod_giportfolio .giportfolio_chapter_title {
-  font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif;
-  text-align: left;
-  font-size: large;
-  font-weight: bold;
+    font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif;
+    text-align: left;
+    font-size: large;
+    font-weight: bold;
 
-  margin-left: 0;
-  margin-bottom: 20px;
+    margin-left: 0;
+    margin-bottom: 20px;
 }
 
 .mod_giportfolio img.bigicon {
-  vertical-align: middle;
-  margin-right: 4px;
-  margin-left: 4px;
-  width: 24px;
-  height: 24px;
-  border: 0;
+    vertical-align: middle;
+    margin-right: 4px;
+    margin-left: 4px;
+    width: 24px;
+    height: 24px;
+    border: 0;
 }
 
 .mod_giportfolio .navtop {
-  text-align: right;
-  margin-bottom: 0.5em;
+    text-align: right;
+    margin-bottom: 0.5em;
 }
 
 .mod_giportfolio .navbottom {
-  text-align: right;
+    text-align: right;
 }
 
 /* == Fake toc block == */
 
 .mod_giportfolio .giportfolio_faq {
-  font-size: 0.7em;
+    font-size: 0.7em;
 }
 
 /* toc style NONE */
 .mod_giportfolio .giportfolio_toc_none {
-  font-size: 0.8em;
+    font-size: 0.8em;
 }
 
 .mod_giportfolio .giportfolio_toc_none ul {
-  margin-left: 5px;
-  padding-left: 0;
+    margin-left: 5px;
+    padding-left: 0;
 }
 
 .mod_giportfolio .giportfolio_toc_none ul ul {
-  margin-left: 0;
-  padding-left: 0;
+    margin-left: 0;
+    padding-left: 0;
 }
 
 .mod_giportfolio .giportfolio_toc_none li {
-  margin-top: 5px;
-  list-style: none;
+    margin-top: 5px;
+    list-style: none;
 }
 
 .mod_giportfolio .giportfolio_toc_none li li {
-  margin-top: 0;
-  list-style: none;
+    margin-top: 0;
+    list-style: none;
 }
 
 /* toc style NUMBERED */
 .mod_giportfolio .giportfolio_toc_numbered {
-  font-size: 0.8em;
+    font-size: 0.8em;
 }
 
 .mod_giportfolio .giportfolio_toc_numbered ul {
-  margin-left: 5px;
-  padding-left: 0;
+    margin-left: 5px;
+    padding-left: 0;
 }
 
 .mod_giportfolio .giportfolio_toc_numbered ul ul {
-  margin-left: 0;
-  padding-left: 0;
+    margin-left: 0;
+    padding-left: 0;
 }
 
 .mod_giportfolio .giportfolio_toc_numbered li {
-  margin-top: 5px;
-  list-style: none;
+    margin-top: 5px;
+    list-style: none;
 }
 
 .mod_giportfolio .giportfolio_toc_numbered li li {
-  margin-top: 0;
-  list-style: none;
+    margin-top: 0;
+    list-style: none;
 }
 
 /*toc style BULLETS */
 .mod_giportfolio .giportfolio_toc_bullets {
-  font-size: 0.8em;
+    font-size: 0.8em;
 }
 
 .mod_giportfolio .giportfolio_toc_bullets ul {
-  margin-left: 5px;
-  padding-left: 0;
+    margin-left: 5px;
+    padding-left: 0;
 }
 
 .mod_giportfolio .giportfolio_toc_bullets ul ul {
-  margin-left: 20px;
-  padding-left: 0;
+    margin-left: 20px;
+    padding-left: 0;
 }
 
 .mod_giportfolio .giportfolio_toc_bullets li {
-  margin-top: 5px;
-  list-style: none;
+    margin-top: 5px;
+    list-style: none;
 }
 
 .mod_giportfolio .giportfolio_toc_bullets li li {
-  margin-top: 0;
-  list-style: circle;
+    margin-top: 0;
+    list-style: circle;
 }
 
 /* toc style INDENTED*/
 .mod_giportfolio .giportfolio_toc_indented {
-  font-size: 0.8em;
+    font-size: 0.8em;
 }
 
 .mod_giportfolio .giportfolio_toc_indented ul {
-  margin-left: 5px;
-  padding-left: 0;
+    margin-left: 5px;
+    padding-left: 0;
 }
 
 .mod_giportfolio .giportfolio_toc_indented ul ul {
-  margin-left: 15px;
-  padding-left: 0;
+    margin-left: 15px;
+    padding-left: 0;
 }
 
 .mod_giportfolio .giportfolio_toc_indented li {
-  margin-top: 5px;
-  list-style: none;
+    margin-top: 5px;
+    list-style: none;
 }
 
 .mod_giportfolio .giportfolio_toc_indented li li {
-  margin-top: 0;
-  list-style: none;
+    margin-top: 0;
+    list-style: none;
 }
 
 /* SYNERGY - added YUI element styling */
@@ -141,109 +141,110 @@
 #giportfolio-toc .ygtvlph,
 #giportfolio-toc .ygtvlmh,
 #giportfolio-toc .ygtvlm {
-  width: 17px;
+    width: 17px;
 }
 
 .path-mod-giportfolio .late {
-  color: red;
+    color: red;
 }
 
 .mod_giportfolio .block .content .userpicture {
-  width: 50px;
-  height: 50px;
-  margin: 4px;
+    width: 50px;
+    height: 50px;
+    margin: 4px;
 }
 
 body#page-mod-giportfolio-viewcontribute.mod_giportfolio #inst5 {
-  display: none;
+    display: none;
 }
 
 body#page-mod-giportfolio-addcontribution.mod_giportfolio .generalbox {
-  border: 2px solid;
-  border-color: #37caf8;
+    border: 2px solid;
+    border-color: #37caf8;
 }
 
 body#page-mod-giportfolio-editcontribution.mod_giportfolio .generalbox {
-  border: 2px solid;
-  border-color: #37caf8;
+    border: 2px solid;
+    border-color: #37caf8;
 }
 
 .path-mod-giportfolio .generalbox ul li {
-  list-style: disc;
+    list-style: disc;
 }
 
 .path-mod-giportfolio #region-main .contribwarning {
-  border: 2px #d08080 solid;
-  padding: 5px;
+    border: 2px #d08080 solid;
+    padding: 5px;
 }
 
 .mod_giportfolio-extralinks {
-  float: right;
-  text-align: right;
+    float: right;
+    text-align: right;
 }
 
 p.giportfolio_outline {
-  font-weight: bold;
-  font-size: large;
+    font-weight: bold;
+    font-size: large;
 }
 
 .path-mod-giportfolio span.toggleoutline {
-  cursor: pointer;
-  font-size: x-small;
-  font-weight: normal;
+    cursor: pointer;
+    color: crimson;
+    font-size: medium;
+    font-weight: bold;
 }
 
 .path-mod-giportfolio td.contribdate {
-  padding-left: 10px;
+    padding-left: 10px;
 }
 
 .path-mod-giportfolio span.timemodified {
-  cursor: pointer;
-  position: relative;
-  display: inline-block;
-  border-bottom: 1px dotted black;
-  /* If you want dots under the hoverable text */
+    cursor: pointer;
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted black;
+    /* If you want dots under the hoverable text */
 }
 
 /* Tooltip text */
 .path-mod-giportfolio span.timemodified_details {
-  visibility: hidden;
-  width: 240px;
-  background-color: #fffbc9;
-  text-align: center;
-  padding: 5px 5px;
-  border-radius: 6px;
+    visibility: hidden;
+    width: 240px;
+    background-color: #fffbc9;
+    text-align: center;
+    padding: 5px 5px;
+    border-radius: 6px;
 
-  /* Position the tooltip text - see examples below! */
-  position: absolute;
-  z-index: 1;
-  top: -5px;
-  left: 105%;
+    /* Position the tooltip text - see examples below! */
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 105%;
 }
 
 /* Show the tooltip text when you mouse over the tooltip container */
 .path-mod-giportfolio span.timemodified:hover span.timemodified_details {
-  visibility: visible;
+    visibility: visible;
 }
 
 .path-mod-giportfolio tr.notmine {
-  background-color: #eef0f1;
+    background-color: #eef0f1;
 }
 
 .path-mod-giportfolio article.giportfolio-contribution.notmine {
-  background-color: #eef0f1;
-  color: #555;
-  padding: 10px;
-  margin-bottom: 5px;
+    background-color: #eef0f1;
+    color: #555;
+    padding: 10px;
+    margin-bottom: 5px;
 }
 
 .path-mod-giportfolio .giportfolio_content .singlebutton {
-  display: inline-block;
+    display: inline-block;
 }
 
 /* Part of Parent view of own child's activity functionality */
 p.alert.alert-info.giportfolio-restricted-access {
-  max-width: fit-content;
+    max-width: fit-content;
 }
 
 /* Display updates chapters */
@@ -253,7 +254,7 @@ p.alert.alert-info.giportfolio-restricted-access {
 }
 
 .giportfolio-updatedch.giportfolio-visible {
-   display: block;
+    display: block;
 }
 
 .giportfolio-more {
@@ -261,15 +262,10 @@ p.alert.alert-info.giportfolio-restricted-access {
     color: #1177d1;
 }
 
-.giportfolio-count {
-  
-}
-
 .giportfolio-legend {
     font-size: 1.2em;
     color: #1177d1;
 }
-
 
 #graphcontributors th,
 #graphcontributors td {
@@ -301,5 +297,83 @@ p.alert.alert-info.giportfolio-restricted-access {
 
 /* Icons made by Freepik from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>*/
 #page-mod-giportfolio-submissions .subchapter-icon {
-   padding-top: 5px;
+    padding-top: 5px;
+}
+
+/* Start button style */
+.start-btn button {
+    background-image: url([[pix:giportfolio|green-play]]);
+    border-radius: 50%;
+    background-repeat: no-repeat;
+    border: none;
+    width: 100px;
+    height: 99px;
+}
+
+/* Remove the border around the start button when clicked */
+.start-btn button:focus {
+    outline: none;
+}
+
+/* Show/hide instructions button */
+
+.show-hide-instructions {
+    background-image: url([[pix:giportfolio|info]]);
+    background-repeat: no-repeat;
+    box-shadow: 1px 1px grey;
+    background-size: 51px;
+    border-radius: 50%;
+    border: none;
+    width: 50px;
+    height: 50px;
+    margin-left: 82%;
+}
+
+.show-hide-instructions:focus {
+    outline: none;
+}
+
+.add-contribution button {
+    background-image: url([[pix:giportfolio|add_contrib]]);
+    background-repeat: no-repeat;
+    box-shadow: 1px 1px grey;
+    background-size: 51px;
+    border-radius: 50%;
+    border: none;
+    width: 50px;
+    height: 50px;
+}
+
+.add-contribution button:focus {
+    outline: none;
+}
+
+hr.outline-separator {
+    border-radius: 5px;
+    border-top: 4px solid #0f6fc5;
+}
+
+/* Media Query: large smartphone (Vertical) */
+/* Any screen that also has amax less than 600px*/
+@media screen and (max-width: 600px) {
+    .box.py-3.giportfolio_contributions {
+        padding-left: 2%;
+        padding-right: 2%;
+    }
+
+    .add-contribution {
+        padding-left: 2%;
+    }
+
+    .show-hide-instructions {
+        padding-right: 2%;
+    }
+
+    div#intro-container {
+        padding-right: 2%;
+    }
+
+    .mod_giportfolio-extralinks {
+        padding-right: 2%;
+    }
 }

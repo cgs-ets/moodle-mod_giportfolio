@@ -3,4 +3,5 @@ $('#toggleoutline').click(function() {
 	$('#toggleshow').toggle();
 	$('#togglehide').toggle();
 	});
-$('#toggleshow').toggle();
+$('#togglehide').toggle();
+$('#giportfolio_outline').toggle();

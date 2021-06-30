@@ -271,6 +271,7 @@ if (!$giportfolio->customtitles) {
 global $USER;
 $pixpath = "$CFG->wwwroot/pix";
 
+$templatecontext->menteementor = ($mentor != 0 || $mentee == 0) && !$cangrade; // Show Content by default for the Student role and Parent role
 // Parent view of own child's activity functionality. CGS
 $userid = $mentee == 0 ? $USER->id : $mentee;
 $menteesmentorsid = giportfolio_get_mentees_mentor($userid);
@@ -296,7 +297,8 @@ if (!$allowedit || $cangrade && $mentee != 0) {
     }
     $addurl = new moodle_url('/mod/giportfolio/editcontribution.php', $params);
 
-    echo $OUTPUT->single_button($addurl, get_string('addcontrib', 'mod_giportfolio'), 'GET');
+    echo $OUTPUT->single_button($addurl, '','', array('class' => 'add-contribution', 'tooltip' => get_string('addcontrib', 'mod_giportfolio')));
+    echo '<br>';
 }
 
 
@@ -503,10 +505,12 @@ if ($contriblist) {
         }
     }
 
-
-    if ($giportfolio->displayoutline) {
-        echo $contribution_outline . '</table><br/>';
+    if ($giportfolio->displayoutline) { //TODO: VER QUE SEPARE;
+      
+        echo $contribution_outline . '</table><br><hr class ="outline-separator"><br>';
     }
+
+    echo '<p class="giportfolio_outline" >Contributions</p>';
     echo $contribution_buffer;
     echo $OUTPUT->box_end();
 }

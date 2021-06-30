@@ -374,8 +374,10 @@ if ($contriblist) {
     }
 
     if($giportfolio->displayoutline) {
-        echo $contribution_outline.'</table><br/>';
+        echo $contribution_outline.'</table><br/><hr class ="outline-separator"><br>';
     }
+
+    echo '<p class="giportfolio_outline" >Contributions</p>';
     echo $contribution_buffer;
     echo $OUTPUT->box_end();
 }

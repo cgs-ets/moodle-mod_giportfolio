@@ -19,13 +19,14 @@ along with Moodle. If not, see
 @copyright 2021 Veronica Bermegui
 @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 }}
-
+<br>
 <div id="intro-container">
-   <button type="button" class="btn btn-secondary showinstructions" data-toggle="collapse"
-      data-target="#collapseinstructions" aria-expanded="false" aria-controls="collapseExample">
-      {{#str}} showinstructions, mod_giportfolio{{/str}}
-   </button> <br><br>
-   <div class='collapse' id="collapseinstructions">
+   <button  type="button" class="show-hide-instructions" data-toggle="collapse"
+      data-target="#collapseinstructions" aria-expanded="true" aria-controls="collapseExample">
+      
+   </button> <br><br><br>
+   <div class='collapse {{#menteementor}}show{{/menteementor}}' id="collapseinstructions">
       {{{intro}}}
    </div>
 </div>
+<br>
