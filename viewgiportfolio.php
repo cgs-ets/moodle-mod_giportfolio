@@ -184,7 +184,14 @@ foreach ($chapters as $ch) {
     $last = $ch->id;
 }
 
-$chnavigation = '';
+$chnavigation = ' <a  type="button" 
+                      class="show-hide-instructions" 
+                      data-toggle="collapse"
+                      data-target="#collapseinstructions" 
+                      aria-expanded="true" 
+                      aria-controls="collapseExample"
+                      title="Info">
+                      <img src='. $OUTPUT->image_url('info', 'mod_giportfolio').' class="bigicon" />'.'</a>';
 $mentorid = '&amp;mentor=' . $mentor;
 $menteeid = '&amp;mentee=' . $mentee;
 $contribute  = '&amp;cont=' . $contribute;

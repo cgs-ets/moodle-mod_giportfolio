@@ -317,7 +317,7 @@ p.alert.alert-info.giportfolio-restricted-access {
 
 /* Show/hide instructions button */
 
-.show-hide-instructions {
+/* .show-hide-instructions {
     background-image: url([[pix:giportfolio|info]]);
     background-repeat: no-repeat;
     box-shadow: 1px 1px grey;
@@ -331,7 +331,7 @@ p.alert.alert-info.giportfolio-restricted-access {
 
 .show-hide-instructions:focus {
     outline: none;
-}
+} */
 
 .add-contribution button {
     background-image: url([[pix:giportfolio|add_contrib]]);
