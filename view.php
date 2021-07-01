@@ -122,10 +122,10 @@ echo $OUTPUT->box_start('generalbox giportfolio_content');
 $intro = file_rewrite_pluginfile_urls($giportfolio->intro, 'pluginfile.php', $context->id, 'mod_giportfolio', 'intro', '');
 $templatecontext = new \stdClass();
 
-// echo format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
 $usercontribution = 0;
-
+$showupdates = false;
 if ($allowedit) {
+    echo format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
     $usersgiportfolios = giportfolio_get_giportfolios_number($giportfolio->id, $cm->id);
     echo html_writer::start_tag('div', array('class' => 'giportfolioteacher'));
     echo '</br>';
@@ -166,30 +166,16 @@ if ($allowedit) {
             );
             echo $OUTPUT->single_button($reporturl, get_string('courseoverview', 'mod_giportfolio'), 'get');
         }
-        echo '</br>';
-        echo get_string('lastupdated', 'mod_giportfolio') . date('l jS \of F Y h:i:s A', $usercontribution);
-        echo '</br>';
+
+        $showupdates = true;
      
         if (is_non_editing_teacher() && $noneditingteachercancontribute) {
             echo html_writer::link(
                 new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id)),
                 get_string('submitedporto', 'mod_giportfolio') . ' ' . count($chapters)
             );
-        } else {
-            echo get_string('chapternumber', 'mod_giportfolio') . count($chapters);
-        }
+        } 
 
-        echo '</br>';
-        echo '</br>';
-        if ($usergrade->items && $userfinalgrade->grade) {
-            $percentage = explode("/", $userfinalgrade->str_long_grade);
-            echo get_string('usergraded', 'mod_giportfolio') . number_format($userfinalgrade->grade, 2) .
-                '  (' . $userfinalgrade->str_long_grade . ') - ' . round(($percentage[0] / $percentage[1]) * 100, 4) . '%';
-            echo '</br>';
-            if ($userfinalgrade->feedback) {
-                echo get_string('usergradefeedback', 'mod_giportfolio') . $userfinalgrade->feedback;
-            }
-        }
         echo '</br>';
         echo html_writer::end_tag('div');
     } else {
@@ -215,6 +201,7 @@ if ($allowedit) {
         echo html_writer::end_tag('div');
     }
 } else if ($mentor) {
+    echo format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
     echo html_writer::start_tag('div', array('class' => 'giportfolioparent'));
     echo '</br>';
     // Replace link with button.
@@ -266,9 +253,26 @@ if ($allowedit) {
         get_string('submitedporto', 'mod_giportfolio') . ' ' . count($chapters)
     );
 }
+// Display intro after the start button
+if (!$allowedit && $showupdates ) {
+    echo format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
+    echo '</br>';
+    echo get_string('lastupdated', 'mod_giportfolio') . date('l jS \of F Y h:i:s A', $usercontribution);
+    echo '</br>';
+    echo get_string('chapternumber', 'mod_giportfolio') . count($chapters);
+    echo '<br>';
 
-echo '<br><hr><br>';
-echo format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
+    if ($usergrade->items && $userfinalgrade->grade) {
+        $percentage = explode("/", $userfinalgrade->str_long_grade);
+        echo get_string('usergraded', 'mod_giportfolio') . number_format($userfinalgrade->grade, 2) .
+            '  (' . $userfinalgrade->str_long_grade . ') - ' . round(($percentage[0] / $percentage[1]) * 100, 4) . '%';
+        echo '</br>';
+        if ($userfinalgrade->feedback) {
+            echo get_string('usergradefeedback', 'mod_giportfolio') . $userfinalgrade->feedback;
+        }
+    }
+}
+
 
 // To show the parent perspective.
 // if (is_role_switched($course->id) ) {

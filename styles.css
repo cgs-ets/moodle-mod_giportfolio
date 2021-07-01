@@ -302,9 +302,10 @@ p.alert.alert-info.giportfolio-restricted-access {
 
 /* Start button style */
 .start-btn button {
-    background-image: url([[pix:giportfolio|green-play]]);
-    border-radius: 50%;
+    background-image: url([[pix:giportfolio|start_contrib]]);
     background-repeat: no-repeat;
+    background-color: white;
+    border-radius: 50%;
     border: none;
     width: 100px;
     height: 99px;
