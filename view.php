@@ -248,7 +248,7 @@ if ($allowedit) {
     }
     echo html_writer::end_tag('div');
 } else if (is_non_editing_teacher() && $noneditingteachercancontribute) {  // Case where a non editing doesnt have the submit capability but is allowed to contribute.
-    echo html_writer::start_tag('div', array('class' => 'giportfolioupdated'));
+    echo format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
     echo html_writer::link(
         new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id)),
         get_string('submitedporto', 'mod_giportfolio') . ' ' . count($chapters)
