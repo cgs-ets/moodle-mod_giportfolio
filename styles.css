@@ -3,7 +3,7 @@
     text-align: left;
     font-size: large;
     font-weight: bold;
-
+    display: inline;
     margin-left: 0;
     margin-bottom: 20px;
 }
@@ -187,13 +187,6 @@ p.giportfolio_outline {
     font-size: large;
 }
 
-.path-mod-giportfolio span.toggleoutline {
-    cursor: pointer;
-    color: crimson;
-    font-size: medium;
-    font-weight: bold;
-}
-
 .path-mod-giportfolio td.contribdate {
     padding-left: 10px;
 }
@@ -316,23 +309,13 @@ p.alert.alert-info.giportfolio-restricted-access {
     outline: none;
 }
 
-/* Show/hide instructions button */
-
-/* .show-hide-instructions {
-    background-image: url([[pix:giportfolio|info]]);
-    background-repeat: no-repeat;
-    box-shadow: 1px 1px grey;
-    background-size: 51px;
-    border-radius: 50%;
-    border: none;
-    width: 50px;
-    height: 50px;
-    margin-left: 82%;
+.show-hide-instructions,
+span.toggleoutline.show-hide-details {
+    font-size: 1.3rem;
+    color: #0c62af;
+    margin-left: 0.5%;
+    cursor: pointer;
 }
-
-.show-hide-instructions:focus {
-    outline: none;
-} */
 
 .add-contribution button {
     background-image: url([[pix:giportfolio|add_contrib]]);

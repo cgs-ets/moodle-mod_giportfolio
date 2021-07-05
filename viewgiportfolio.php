@@ -184,14 +184,7 @@ foreach ($chapters as $ch) {
     $last = $ch->id;
 }
 
-$chnavigation = ' <a  type="button" 
-                      class="show-hide-instructions" 
-                      data-toggle="collapse"
-                      data-target="#collapseinstructions" 
-                      aria-expanded="true" 
-                      aria-controls="collapseExample"
-                      title="Info">
-                      <img src='. $OUTPUT->image_url('info', 'mod_giportfolio').' class="bigicon" />'.'</a>';
+$chnavigation = '';
 $mentorid = '&amp;mentor=' . $mentor;
 $menteeid = '&amp;mentee=' . $mentee;
 $contribute  = '&amp;cont=' . $contribute;
@@ -262,15 +255,20 @@ echo $extralinks;
 // Chapter itself.
 echo $OUTPUT->box_start('generalbox giportfolio_content');
 
+// Add the anchor to show/hide the portfolio details. <span class="fa fa-caret-down badge-name"></span>
+$showhide = '<a type="button" class="show-hide-instructions" data-toggle="collapse" data-target="#collapseinstructions" aria-expanded="true" 
+aria-controls="collapseExample" title="Info"> <span class="fa fa-caret-down show-hide-details"></span> </a>';
+
 if (!$giportfolio->customtitles) {
     $hidden = $chapter->hidden ? 'dimmed_text' : '';
     if (!$chapter->subchapter) {
         $currtitle = giportfolio_get_chapter_title($chapter->id, $chapters, $giportfolio, $context);
-        echo '<p class="giportfolio_chapter_title ' . $hidden . '">' . $currtitle . '</p>';
+        echo '<p class="giportfolio_chapter_title ' . $hidden . '">' . $currtitle . '</p>' . $showhide;
+        
     } else {
         $currtitle = giportfolio_get_chapter_title($chapters[$chapter->id]->parent, $chapters, $giportfolio, $context);
         $currsubtitle = giportfolio_get_chapter_title($chapter->id, $chapters, $giportfolio, $context);
-        echo '<p class="giportfolio_chapter_title ' . $hidden . '">' . $currtitle . '<br />' . $currsubtitle . '</p>';
+        echo '<p class="giportfolio_chapter_title ' . $hidden . '">' . $currtitle . $showhide .'<br />' . $currsubtitle . '</p>';
     }
 }
 
@@ -353,15 +351,15 @@ if ($giportfolio->klassenbuchtrainer && giportfolio_include_klassenbuchtrainer()
 
 if ($contriblist) {
     echo $OUTPUT->box_start('giportfolio_contributions');
-
+//<span class="fa fa-caret-down"></span>
     $contribution_buffer = '';
     $contribution_outline = '';
     if ($giportfolio->displayoutline) {
         $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/outline.js'));
         $contribution_outline = '<p class="giportfolio_outline">' . get_string('outline', 'mod_giportfolio')
-            . ' <span id="toggleoutline" class="toggleoutline">[ '
-            . '<span id="togglehide">' . get_string('outline_hide', 'mod_giportfolio') . '</span>'
-            . '<span id="toggleshow">' . get_string('outline_show', 'mod_giportfolio') . '</span> ]'
+            . '<span id="toggleoutline" class="toggleoutline show-hide-details"> '
+            . '<span id="togglehide" class="fa fa-caret-down "></span>'
+            . '<span id="toggleshow" class="fa fa-caret-down "></span> '
             . '</span></p><table id="giportfolio_outline" class="contents">';
     }
 
@@ -512,7 +510,7 @@ if ($contriblist) {
         }
     }
 
-    if ($giportfolio->displayoutline) { //TODO: VER QUE SEPARE;
+    if ($giportfolio->displayoutline) {
       
         echo $contribution_outline . '</table><br><hr class ="outline-separator"><br>';
     }
