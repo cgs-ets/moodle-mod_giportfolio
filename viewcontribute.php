@@ -59,7 +59,7 @@ if ($mentor == 0) {
 }
 
 $viewhidden = has_capability('mod/giportfolio:viewhiddenchapters', $context);
-
+$cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context);
 $edit = 0;
 
 // Read chapters.
@@ -198,11 +198,16 @@ echo '<div class="navtop">'.$chnavigation.'</div>';
 
 // Chapter itself.
 echo $OUTPUT->box_start('generalbox giportfolio_content');
+
+// Add the anchor to show/hide the portfolio details. <span class="fa fa-caret-down badge-name"></span>
+$showhide = '<a type="button" class="show-hide-instructions" data-toggle="collapse" data-target="#collapseinstructions" aria-expanded="true" 
+aria-controls="collapseExample" title="Info"> <span class="fa fa-caret-down show-hide-details"></span> </a>';
+
 if (!$giportfolio->customtitles) {
     $hidden = $chapter->hidden ? 'dimmed_text' : '';
     if (!$chapter->subchapter) {
         $currtitle = giportfolio_get_chapter_title($chapter->id, $chapters, $giportfolio, $context);
-        echo '<p class="giportfolio_chapter_title '.$hidden.'">'.$currtitle.'</p>';
+        echo '<p class="giportfolio_chapter_title '.$hidden.'">'.$currtitle.'</p>' . $showhide;
     } else {
         $currtitle = giportfolio_get_chapter_title($chapters[$chapter->id]->parent, $chapters, $giportfolio, $context);
         $currsubtitle = giportfolio_get_chapter_title($chapter->id, $chapters, $giportfolio, $context);
@@ -222,7 +227,8 @@ $chaptertext = file_rewrite_pluginfile_urls(
     $chapter->id
 );
 
-$templatecontext->intro = $chaptertext;
+$templatecontext->intro = format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context)); 
+$templatecontext->menteementor = ($mentor != 0 || $mentee == 0) && !$cangrade;
 $disabledelbtn = $DB->get_field('giportfolio', 'disabledeletebtn', ['id' => $giportfolio->id]);
 
 echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', $templatecontext); // Show/hide instruction button.
@@ -232,13 +238,13 @@ if ($contriblist) {
 
     $contribution_buffer = '';
     $contribution_outline = '';
-    if($giportfolio->displayoutline) {
-        $PAGE->requires->js( new moodle_url($CFG->wwwroot.'/mod/giportfolio/outline.js'));
-        $contribution_outline = '<p class="giportfolio_outline">'.get_string('outline', 'mod_giportfolio')
-            .' <span id="toggleoutline" class="toggleoutline">[ '
-                .'<span id="togglehide">'.get_string('outline_hide', 'mod_giportfolio').'</span>'
-                .'<span id="toggleshow">'.get_string('outline_show', 'mod_giportfolio').'</span> ]'
-            .'</span></p><table id="giportfolio_outline" class="contents">';
+    if ($giportfolio->displayoutline) {
+        $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/outline.js'));
+        $contribution_outline = '<p class="giportfolio_outline">' . get_string('outline', 'mod_giportfolio')
+            . '<span id="toggleoutline" class="toggleoutline show-hide-details"> '
+            . '<span id="togglehide" class="fa fa-caret-down" title= "Hide"></span>'
+            . '<span id="toggleshow" class="fa fa-caret-down" title ="Show"></span> '
+            . '</span></p><table id="giportfolio_outline" class="contents">';
     }
 
     $contribution_count = 0;
