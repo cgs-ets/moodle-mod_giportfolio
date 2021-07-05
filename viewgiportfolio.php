@@ -268,7 +268,7 @@ if (!$giportfolio->customtitles) {
     } else {
         $currtitle = giportfolio_get_chapter_title($chapters[$chapter->id]->parent, $chapters, $giportfolio, $context);
         $currsubtitle = giportfolio_get_chapter_title($chapter->id, $chapters, $giportfolio, $context);
-        echo '<p class="giportfolio_chapter_title ' . $hidden . '">' . $currtitle . $showhide .'<br />' . $currsubtitle . '</p>';
+        echo '<p class="giportfolio_chapter_title ' . $hidden . '">' . $currtitle .'<br />' . $currsubtitle . $showhide .'</p>';
     }
 }
 

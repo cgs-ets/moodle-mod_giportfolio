@@ -891,8 +891,7 @@ function giportfolio_set_mentor_info($contributions, $menteeid)
     return $contribution;
 }
 
-function giportfolio_get_user_default_chapter($giportfolioid, $userid)
-{ // Part of Allow a teacher to make a contribution on behalf of a student.
+function giportfolio_get_user_default_chapter($giportfolioid, $userid) { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
     $sql = "SELECT TOP(1) chapterid  FROM mdl_giportfolio_contributions
@@ -901,8 +900,9 @@ function giportfolio_get_user_default_chapter($giportfolioid, $userid)
 
     return  $DB->get_record_sql($sql);
 }
-function giportfolio_get_user_chapters($giportfolioid, $userid)
-{ // Return user added chapters for a giportfolio.
+
+
+function giportfolio_get_user_chapters($giportfolioid, $userid)  { // Return user added chapters for a giportfolio.
     global $DB;
 
     $sql = "SELECT * FROM {giportfolio_chapters}
@@ -920,9 +920,8 @@ function giportfolio_get_user_chapters($giportfolioid, $userid)
     }
 }
 
-function giportfolio_get_user_contribution_status($giportfolioid, $userid)
-{
-    // Return (if exists) the last contribution date to a giportfolio for a user.
+function giportfolio_get_user_contribution_status($giportfolioid, $userid) { // Return (if exists) the last contribution date to a giportfolio for a user.
+    
     global $DB;
 
     $params = array(
@@ -936,8 +935,8 @@ function giportfolio_get_user_contribution_status($giportfolioid, $userid)
     return (int)max($contribtime, $chaptertime);
 }
 
-function giportfolio_get_giportfolios_number($giportfolioid, $cmid)
-{
+
+function giportfolio_get_giportfolios_number($giportfolioid, $cmid) {
     // Return (if exists) the number of student giportfolios for each activity.
     global $DB;
 
@@ -970,8 +969,7 @@ function giportfolio_get_giportfolios_number($giportfolioid, $cmid)
     return $giportfolionumber;
 }
 
-function giportfolio_chapter_count_contributions($giportfolioid, $chapterid)
-{
+function giportfolio_chapter_count_contributions($giportfolioid, $chapterid) {
     global $DB;
 
     $chapterids = array($chapterid);

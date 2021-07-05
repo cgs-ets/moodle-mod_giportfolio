@@ -127,8 +127,6 @@ $showupdates = false;
 if ($allowedit) {
     
     $usersgiportfolios = giportfolio_get_giportfolios_number($giportfolio->id, $cm->id);
-    $usercontribution = giportfolio_get_user_contribution_status($giportfolio->id, $USER->id);
- 
     echo html_writer::start_tag('div', array('class' => 'giportfolioteacher'));
     echo '</br>';
     // Replace link with button.
@@ -139,13 +137,9 @@ if ($allowedit) {
     echo $OUTPUT->single_button($form->url, '', '',  array('class' => 'start-btn', 'tooltip' => 'Start'));
     echo '</br>';
     echo format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
-    echo '</br></br>';
-   
-    if($usercontribution) {
-        echo get_string('lastupdated', 'mod_giportfolio') . date('l jS \of F Y h:i:s A', $usercontribution);
-        echo '</br>';
-        echo get_string('chapternumber', 'mod_giportfolio') . count($chapters) . '<br><br>';
-    }
+    echo '</br>';
+    echo get_string('chapternumber', 'mod_giportfolio') . count($chapters) . '<br><br>';
+
     echo html_writer::link(
         new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id)),
         get_string('submitedporto', 'mod_giportfolio') . ' ' . $usersgiportfolios
