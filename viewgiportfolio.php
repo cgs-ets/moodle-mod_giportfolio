@@ -424,7 +424,9 @@ if ($contriblist) {
                 $shareicon = html_writer::link($shareurl, $shareicon);
                 $actionsharing = array( $shareicon);
             }
+
             $actions = array();
+            
             if (!$giportfolio->disabledeletebtn ) {
                 // Only allow to edit contributions done by the user.
                 if ($contrib->mentorid == 0 && $contrib->teacherid == 0 && $contrib->userid != $USER->id) {
@@ -448,14 +450,20 @@ if ($contriblist) {
             // Do not show contribution if peersharing is disabled, even if the contribution was previously shared
             continue;
         }
+        
+        $hidementortag = ($contrib->mentorid == 0) ? 'hidden' : '';
+        $hideteachertag = ($contrib->teacherid == 0) ? 'hidden' : '';
+       
         $cout = '';
-        $cout .= $userfullname . '<strong>' . format_string($contrib->title) . '</strong>  ' . implode(' ', $actions) . '<br>';
+        $cout .= $userfullname . '<strong>' . format_string($contrib->title) . '</strong>  ' . implode(' ', $actions);
+        $cout .= '<span class="badge badge-info"'.$hidementortag.'>'.format_string(get_string('mentorcontribution', 'mod_giportfolio')).'</span>';
+        $cout .= '<span class="badge badge-success"'.$hideteachertag.'>'.format_string(get_string('teachercontribution', 'mod_giportfolio')).'</span> <br>';
         $cout .= date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
         if ($contrib->timecreated !== $contrib->timemodified) {
             $cout .= '<br/><i>' . get_string('lastmodified', 'mod_giportfolio') . date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified) . '</i>';
         }
         $cout .= '<br/><br/>';
-
+       
         $cout = html_writer::tag('contribheader', $cout);
         $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
             'contribution', $contrib->id);
@@ -493,13 +501,10 @@ if ($contriblist) {
                     . '</span></span>';
             }
 
-            $hidementortag = ($contrib->mentorid == 0) ? 'hidden' : '';
-            $hideteachertag = ($contrib->teacherid == 0) ? 'hidden' : '';
-
             $contribution_outline .= html_writer::tag('tr',
                     '<td><a href="#contribution' . $contribution_count . '">' . format_string($contrib->title) . '</a></td>' .
                     '<td class="contribdate">' . $date_display . '</td>'.
-                '<td class="badge badge-info"'.$hidementortag.' ><strong>'.format_string(get_string('mentorcontribution', 'mod_giportfolio')).'</td>'.
+                    '<td class="badge badge-info"'.$hidementortag.' ><strong>'.format_string(get_string('mentorcontribution', 'mod_giportfolio')).'</td>'.
                     '<td class="badge badge-success"'.$hideteachertag.' ><strong>'.format_string(get_string('teachercontribution', 'mod_giportfolio')).'</td>',
                     array('class' => ($ismine ? 'mine' : 'notmine'))
             );
