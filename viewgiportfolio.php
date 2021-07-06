@@ -358,7 +358,7 @@ if ($contriblist) {
         $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/outline.js'));
         $contribution_outline = '<p class="giportfolio_outline">' . get_string('outline', 'mod_giportfolio')
             . '<span id="toggleoutline" class="toggleoutline show-hide-details"> '
-            . '<span id="togglehide" class="fa fa-caret-down " title= "Hide"></span>'
+            . '<span id="togglehide" class="fa fa-caret-up " title= "Hide"></span>'
             . '<span id="toggleshow" class="fa fa-caret-down " title= "Show"></span> '
             . '</span></p><table id="giportfolio_outline" class="contents">';
     }
