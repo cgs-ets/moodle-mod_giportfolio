@@ -378,8 +378,7 @@ if ($contriblist) {
     );
     
     $align = 'right';
-    $disabledelbtn = $DB->get_field('giportfolio', 'disabledeletebtn', ['id' => $giportfolio->id]);
-  
+
     foreach ($contriblist as $contrib) {
         $ismine = ($contrib->userid == $userid);
 
@@ -423,24 +422,25 @@ if ($contriblist) {
                     $shareicon = $OUTPUT->pix_icon('share', get_string('share', 'mod_giportfolio', $alias), 'mod_giportfolio');
                 }
                 $shareicon = html_writer::link($shareurl, $shareicon);
+                $actionsharing = array( $shareicon);
             }
-           
-            if (!$disabledelbtn ) {
+            $actions = array();
+            if (!$giportfolio->disabledeletebtn ) {
                 // Only allow to edit contributions done by the user.
                 if ($contrib->mentorid == 0 && $contrib->teacherid == 0 && $contrib->userid != $USER->id) {
-                    $actions = array($delicon, $showicon, $shareicon);
+                    $actions = array($delicon, $showicon);
                 } else {
-                    $actions = array($editicon, $delicon, $showicon, $shareicon);
+                    $actions = array($editicon, $delicon, $showicon);
                 }
             } 
             
-            if ($disabledelbtn && giportfolio_count_contributions_comments($contrib->id) > 0) {
-                $actions = array();
+            if ($giportfolio->disabledeletebtn && giportfolio_count_contributions_comments($contrib->id) > 0) {
                 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/deletecomment.js'));
             }
             
            
             $userfullname = '';
+            $actions = array_merge($actions, $actionsharing);
         } else if ($giportfolio->peersharing) {
             $actions = array(); // No actions when viewing another user's contribution.
             $userfullname = $otherusers[$contrib->userid] . ': ';

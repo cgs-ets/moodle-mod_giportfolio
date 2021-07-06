@@ -229,7 +229,6 @@ $chaptertext = file_rewrite_pluginfile_urls(
 
 $templatecontext->intro = format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context)); 
 $templatecontext->menteementor = ($mentor != 0 || $mentee == 0) && !$cangrade;
-$disabledelbtn = $DB->get_field('giportfolio', 'disabledeletebtn', ['id' => $giportfolio->id]);
 
 echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', $templatecontext); // Show/hide instruction button.
 
@@ -282,14 +281,14 @@ if ($contriblist) {
             } else {
                 $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
                 $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
+                $actionsharing = array( $shareicon);
             }
         }
 
         
         $showicon = html_writer::link($showurl, $showicon);
         $shareicon = '';
-
-      
+        $actions = array();      
         if (!$contrib->hidden) {
            
             $editurl = new moodle_url($baseurl);
@@ -299,15 +298,15 @@ if ($contriblist) {
             $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
             $delicon = html_writer::link($delurl, $delicon);
 
-            if (!$disabledelbtn ) {
+            if (!$giportfolio->disabledeletebtn ) {
                 // Only allow to edit contributions done by the user.
                 if ($contrib->mentorid == 0 && $contrib->teacherid == 0 && $contrib->userid != $USER->id) {
-                    $actions = array($delicon, $showicon, $shareicon);
+                    $actions = array($delicon, $showicon);
                 } else {
-                    $actions = array($editicon, $delicon, $showicon, $shareicon);
+                    $actions = array($editicon, $delicon, $showicon);
                 }
             } 
-
+            $actions = array_merge($actions, $actionsharing);
             $cout = '';
             $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                          'contribution', $contrib->id);
@@ -367,7 +366,7 @@ if ($contriblist) {
             }
           
             
-            if ($disabledelbtn && giportfolio_count_contributions_comments($contrib->id) > 0) {
+            if ($giportfolio->disabledeletebtn && giportfolio_count_contributions_comments($contrib->id) > 0) {
                 $actions = array();
                 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/deletecomment.js'));
             }
