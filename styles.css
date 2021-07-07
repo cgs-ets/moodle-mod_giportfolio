@@ -347,6 +347,10 @@ span.show-hide-mentor {
     color: #66a8d8;
 }
 
+a.mentorfullname {
+    margin-left: 2%;
+}
+
 
 /* Media Query: large smartphone (Vertical) */
 /* Any screen that also has amax less than 600px*/

@@ -1060,8 +1060,6 @@ function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid, $
             $bc->content .= $feedback;
         }
 
-
-
         // Display the name of the mentors that are allowed to contribute on behalf of the student. CGS
          if ($giportfolio->allowmentorcontrib) {
 
@@ -1070,9 +1068,9 @@ function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid, $
              $dummyspan = '<span id="togglecdetails" class="toggleoutline show-hide-details">'; // To control click
              $hidedetails = '<span id="togglehidemd" class="fa fa-caret-up show-hide-mentor data-toggle="collapse" aria-expanded="false" aria-controls="mentor-list"" title= "Hide"></span>';
              $showdetails = '<span id="toggleshowmd" class="fa fa-caret-down show-hide-mentor" title ="Show"></span>';
-             $help = '<span id="whocchelp" class="fa fa-question-circle show-hide-mentor help-wcc" data-toggle="tooltip" data-placement="top" title ="'.get_string('whocancontribute','giportfolio').'"></span>';
+             $help = '<span id="whocchelp" class="fa fa-question-circle show-hide-mentor help-wcc" data-toggle="tooltip" data-placement="top" title ="'.get_string('wcchelp','giportfolio').'"></span>';
              $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/show_hide_contributor.js'));
-             $bc->content .=  '<br><strong class="giportfolio_wcc">' . 'Who can contribute?' . $dummyspan. $showdetails. $hidedetails. $help .'</strong>';
+             $bc->content .=  '<br><strong class="giportfolio_wcc">' . get_string('wcc','giportfolio') . $dummyspan. $showdetails. $hidedetails. $help .'</strong>';
              
              $bc->content .= html_writer::div($mentorsdetail, 'collapse', array('id' => 'mentor-list'));
          }
@@ -1388,16 +1386,18 @@ function giportfolio_get_mentees_mentor($menteeid)
 
 // Get the mentor(s) name and user picture to display in fake user block
 function giportfolio_who_can_contribute_details($menteeid) {
-    global $DB, $OUTPUT;
+    global $DB, $OUTPUT, $CFG;
 
     $mentorsid =  giportfolio_get_mentees_mentor($menteeid);
     $ufields = user_picture::fields('u');
     $sql = "SELECT $ufields FROM {user} u WHERE u.id IN ($mentorsid)";
     $mentors = $DB->get_records_sql($sql);
     $mentorpictures = '';
+    
     foreach($mentors as $mentor) {
-        $mentor->link = true;
-        $mentorpictures .= $OUTPUT->user_picture($mentor);
+        $profileurl = new moodle_url('/user/profile.php', array('id' => $mentor->id));  // Link to global profile.
+        $link = html_writer::link($profileurl, $mentor->firstname . ' ' . $mentor->lastname, array('class' => 'mentorfullname'));
+        $mentorpictures .= $OUTPUT->user_picture($mentor) .$link.'<br>';
     }
     return $mentorpictures;
 }
