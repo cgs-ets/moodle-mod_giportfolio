@@ -312,9 +312,9 @@ if ($contriblist) {
             $hidementortag = ($contrib->mentorid == 0) ? 'hidden' : '';
             $hideteachertag =($contrib->teacherid == 0) ? 'hidden' : '';
             $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio', 'contribution', $contrib->id);
-            $cout .='<strong>'.$contribtitle.'</strong>'. implode(' ', $actions) . '<br>';
-            $cout .= '<span class="badge badge-info"'.$hidementortag.'>'.format_string(get_string('mentorcontribution', 'mod_giportfolio')).'</span>';
-            $cout .= '<span class="badge badge-success"'.$hideteachertag.'>'.format_string(get_string('teachercontribution', 'mod_giportfolio')).'</span> <br>';
+            $cout .='<strong>'.$contribtitle.'</strong>'. implode(' ', $actions) ;
+            $cout .= '<span class="badge badge-info contributor-tag"'.$hidementortag.'>'.format_string(get_string('mentorcontribution', 'mod_giportfolio')).'</span>';
+            $cout .= '<span class="badge badge-success contributor-tag"'.$hideteachertag.'>'.format_string(get_string('teachercontribution', 'mod_giportfolio')).'</span> <br>';
             $cout .= date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
             if ($contrib->timecreated !== $contrib->timemodified) {
                 $cout .= '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';

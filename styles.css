@@ -337,6 +337,22 @@ hr.outline-separator {
     border-top: 4px solid #66a8d8;
 }
 
+.contributor-tag {
+    margin-left: 2%;
+}
+
+span.show-hide-mentor {
+    margin-left: 2%;
+    font-size: 1.2rem;
+    color: #66a8d8;
+}
+
+/* Change tooltip background */
+.help-wcc+.tooltip>.tooltip-inner,
+.red-tooltip+.tooltip>.tooltip-arrow {
+    background-color: #f00;
+}
+
 /* Media Query: large smartphone (Vertical) */
 /* Any screen that also has amax less than 600px*/
 @media screen and (max-width: 600px) {

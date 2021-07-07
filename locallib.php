@@ -894,9 +894,9 @@ function giportfolio_set_mentor_info($contributions, $menteeid)
 function giportfolio_get_user_default_chapter($giportfolioid, $userid) { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT TOP(1) chapterid  FROM mdl_giportfolio_contributions
+    $sql = "SELECT  chapterid  FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = {$giportfolioid}
-           --LIMIT 1; ";
+           LIMIT 1; ";
 
     return  $DB->get_record_sql($sql);
 }
@@ -1000,7 +1000,7 @@ function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid, $
     global $OUTPUT, $PAGE, $CFG, $DB;
 
     require_once($CFG->libdir . '/gradelib.php');
-
+    
     $ufields = user_picture::fields('u');
 
     $select = "SELECT $ufields ";
@@ -1008,7 +1008,6 @@ function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid, $
     $sql = 'FROM {user} u ' . 'WHERE u.id=' . $userid;
 
     $user = $DB->get_record_sql($select . $sql);
-
     $picture = $OUTPUT->user_picture($user);
 
     $usercontribution = giportfolio_get_user_contribution_status($giportfolio->id, $userid);
@@ -1060,8 +1059,24 @@ function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid, $
             $bc->content .= '<br/>';
             $bc->content .= $feedback;
         }
+
+
+
+        // Display the name of the mentors that are allowed to contribute on behalf of the student. CGS
+         if ($giportfolio->allowmentorcontrib) {
+
+             $mentorsdetail = giportfolio_who_can_contribute_details($userid);
+            
+             $dummyspan = '<span id="togglecdetails" class="toggleoutline show-hide-details">'; // To control click
+             $hidedetails = '<span id="togglehidemd" class="fa fa-caret-up show-hide-mentor data-toggle="collapse" aria-expanded="false" aria-controls="mentor-list"" title= "Hide"></span>';
+             $showdetails = '<span id="toggleshowmd" class="fa fa-caret-down show-hide-mentor" title ="Show"></span>';
+             $help = '<span id="whocchelp" class="fa fa-question-circle show-hide-mentor help-wcc" data-toggle="tooltip" data-placement="top" title ="'.get_string('whocancontribute','giportfolio').'"></span>';
+             $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/show_hide_contributor.js'));
+             $bc->content .=  '<br><strong class="giportfolio_wcc">' . 'Who can contribute?' . $dummyspan. $showdetails. $hidedetails. $help .'</strong>';
+             
+             $bc->content .= html_writer::div($mentorsdetail, 'collapse', array('id' => 'mentor-list'));
+         }
     }
-    $bc->content .= '<br/>';
 
     $regions = $PAGE->blocks->get_regions();
     $firstregion = reset($regions);
@@ -1346,7 +1361,7 @@ function giportfolio_hide_show_contribution($instanceid) {
     return $DB->get_field('giportfolio', 'hideshowcontribution', ['id' => $instanceid], IGNORE_MISSING);
 }
 
-
+// Get the mentee's mentor details. CGS
 function giportfolio_get_mentees_mentor($menteeid)
 {
     global $DB;
@@ -1370,7 +1385,23 @@ function giportfolio_get_mentees_mentor($menteeid)
 
     return $ids;
 }
-//Part of Portfolios Updated chapters list.
+
+// Get the mentor(s) name and user picture to display in fake user block
+function giportfolio_who_can_contribute_details($menteeid) {
+    global $DB, $OUTPUT;
+
+    $mentorsid =  giportfolio_get_mentees_mentor($menteeid);
+    $ufields = user_picture::fields('u');
+    $sql = "SELECT $ufields FROM {user} u WHERE u.id IN ($mentorsid)";
+    $mentors = $DB->get_records_sql($sql);
+    $mentorpictures = '';
+    foreach($mentors as $mentor) {
+        $mentor->link = true;
+        $mentorpictures .= $OUTPUT->user_picture($mentor);
+    }
+    return $mentorpictures;
+}
+//Part of Portfolios Updated chapters list. CGS
 function has_seen_contribution($contributionid)
 {
     global $DB, $USER;
@@ -1682,7 +1713,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
 }
 
 
-// Helper functions for giportfolio_get_contributions_to_display.
+// Helper functions for giportfolio_get_contributions_to_display. 
 function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $userid, $cm)
 {
     global $DB, $PAGE, $USER;
@@ -1815,8 +1846,6 @@ function giportfolio_count_contributions_comments($contributionid){
     return $total;
 }
 
-
-// End helper functions.
 
 function giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers, $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter)
 {

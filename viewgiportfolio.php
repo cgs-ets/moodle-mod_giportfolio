@@ -255,7 +255,7 @@ echo $extralinks;
 // Chapter itself.
 echo $OUTPUT->box_start('generalbox giportfolio_content');
 
-// Add the anchor to show/hide the portfolio details. <span class="fa fa-caret-down badge-name"></span>
+// Add the anchor to show/hide the portfolio details.
 $showhide = '<a type="button" class="show-hide-instructions" data-toggle="collapse" data-target="#collapseinstructions" aria-expanded="true" 
 aria-controls="collapseExample" title="Info"> <span class="fa fa-caret-down show-hide-details"></span> </a>';
 
@@ -351,7 +351,6 @@ if ($giportfolio->klassenbuchtrainer && giportfolio_include_klassenbuchtrainer()
 
 if ($contriblist) {
     echo $OUTPUT->box_start('giportfolio_contributions');
-//<span class="fa fa-caret-down"></span>
     $contribution_buffer = '';
     $contribution_outline = '';
     if ($giportfolio->displayoutline) {
@@ -456,8 +455,8 @@ if ($contriblist) {
        
         $cout = '';
         $cout .= $userfullname . '<strong>' . format_string($contrib->title) . '</strong>  ' . implode(' ', $actions);
-        $cout .= '<span class="badge badge-info"'.$hidementortag.'>'.format_string(get_string('mentorcontribution', 'mod_giportfolio')).'</span>';
-        $cout .= '<span class="badge badge-success"'.$hideteachertag.'>'.format_string(get_string('teachercontribution', 'mod_giportfolio')).'</span> <br>';
+        $cout .= '<span class="badge badge-info contributor-tag"'.$hidementortag.'>'.format_string(get_string('mentorcontribution', 'mod_giportfolio')).'</span>';
+        $cout .= '<span class="badge badge-success contributor-tag"'.$hideteachertag.'>'.format_string(get_string('teachercontribution', 'mod_giportfolio')).'</span> <br>';
         $cout .= date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
         if ($contrib->timecreated !== $contrib->timemodified) {
             $cout .= '<br/><i>' . get_string('lastmodified', 'mod_giportfolio') . date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified) . '</i>';
