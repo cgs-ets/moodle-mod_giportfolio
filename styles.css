@@ -337,6 +337,10 @@ hr.outline-separator {
     border-top: 4px solid #66a8d8;
 }
 
+.contributor-tag {
+    margin-left: 2%;
+}
+
 /* Media Query: large smartphone (Vertical) */
 /* Any screen that also has amax less than 600px*/
 @media screen and (max-width: 600px) {
