@@ -217,4 +217,4 @@ $string['contrcomment'] = 'Commented';
 $string['contrnocomment'] = ' Not commented ';
 $string['contrcomments'] = 'Multiple comments';
 $string['additionlegend'] = '(by {$a})';
-$string['whocancontribute'] = 'If a portfolio is set to allow mentors to contribute, you can see who they are';
+$string['whocancontribute'] = 'If a portfolio is set to allow mentors to contribute, you can see who those mentors are';

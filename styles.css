@@ -347,11 +347,6 @@ span.show-hide-mentor {
     color: #66a8d8;
 }
 
-/* Change tooltip background */
-.help-wcc+.tooltip>.tooltip-inner,
-.red-tooltip+.tooltip>.tooltip-arrow {
-    background-color: #f00;
-}
 
 /* Media Query: large smartphone (Vertical) */
 /* Any screen that also has amax less than 600px*/
