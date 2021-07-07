@@ -219,3 +219,4 @@ $string['contrcomments'] = 'Multiple comments';
 $string['additionlegend'] = '(by {$a})';
 $string['wcc'] = 'Who can contribute?';
 $string['wcchelp'] = 'If a portfolio is set to allow mentors to contribute, you can see who those mentors are';
+$string['nomentorassociated'] = 'No mentor associated to this {$a}';

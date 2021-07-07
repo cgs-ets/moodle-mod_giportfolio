@@ -894,7 +894,7 @@ function giportfolio_set_mentor_info($contributions, $menteeid)
 function giportfolio_get_user_default_chapter($giportfolioid, $userid) { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT TOP(1)  chapterid  FROM mdl_giportfolio_contributions
+    $sql = "SELECT  TOP(1) chapterid  FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = {$giportfolioid}
            --LIMIT 1; ";
 
@@ -1386,20 +1386,27 @@ function giportfolio_get_mentees_mentor($menteeid)
 
 // Get the mentor(s) name and user picture to display in fake user block
 function giportfolio_who_can_contribute_details($menteeid) {
-    global $DB, $OUTPUT, $CFG;
+    global $DB, $OUTPUT, $CFG, $COURSE;
 
     $mentorsid =  giportfolio_get_mentees_mentor($menteeid);
-    $ufields = user_picture::fields('u');
-    $sql = "SELECT $ufields FROM {user} u WHERE u.id IN ($mentorsid)";
-    $mentors = $DB->get_records_sql($sql);
-    $mentorpictures = '';
-    
-    foreach($mentors as $mentor) {
-        $profileurl = new moodle_url('/user/profile.php', array('id' => $mentor->id));  // Link to global profile.
-        $link = html_writer::link($profileurl, $mentor->firstname . ' ' . $mentor->lastname, array('class' => 'mentorfullname'));
-        $mentorpictures .= $OUTPUT->user_picture($mentor) .$link.'<br>';
+    if (!empty($mentorsid)) {
+
+        $ufields = user_picture::fields('u');
+        $sql = "SELECT $ufields FROM {user} u WHERE u.id IN ($mentorsid)";
+        $mentors = $DB->get_records_sql($sql);
+        $mentorpictures = '';
+        
+        foreach($mentors as $mentor) {
+            $profileurl = new moodle_url('/user/profile.php', array('id' => $mentor->id));  // Link to global profile.
+            $link = html_writer::link($profileurl, $mentor->firstname . ' ' . $mentor->lastname, array('class' => 'mentorfullname'));
+            $mentorpictures .= $OUTPUT->user_picture($mentor) .$link.'<br>';
+        }
+        return $mentorpictures;
     }
-    return $mentorpictures;
+    get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
+    $alias = get_student_alias($COURSE);
+    
+    return get_string('nomentorassociated', 'mod_giportfolio', $alias);
 }
 //Part of Portfolios Updated chapters list. CGS
 function has_seen_contribution($contributionid)
