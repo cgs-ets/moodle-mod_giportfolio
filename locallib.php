@@ -1334,12 +1334,40 @@ function giportfolio_user_is_mentor($context, $user)
             'contextlevel' => CONTEXT_USER
         );
 
+      
         if ($users = $DB->get_records_sql($sql, $params)) {
             return [$users, true];
         }
     }
 
     return [null, false];
+}
+
+function giportfolio_user_mentor_of_student($context, $userid) {
+    global $USER, $DB;
+    $mentorrole = $DB->get_record('role', array('shortname' => 'parent'));
+     $sql = "SELECT ra.*, r.name, r.shortname
+                    FROM {role_assignments} ra
+                    INNER JOIN {role} r ON ra.roleid = r.id
+                    INNER JOIN {user} u ON ra.userid = u.id
+                    WHERE ra.userid = ?
+                    AND ra.roleid = ?
+                    AND ra.contextid IN (SELECT c.id
+                        FROM {context} c
+                        WHERE c.contextlevel = ?
+                        AND c.instanceid = ?)";
+                $params = array(
+                    $USER->id, //Where current user
+                    $mentorrole->id, // is a mentor
+                    CONTEXT_USER,
+                    $userid, 
+                );
+                $mentor = $DB->get_records_sql($sql, $params);
+              
+                if (!empty($mentor)) {
+                    return true;
+                }
+    return false;
 }
 
 function giportfolio_mentor_allowed_to_contribute($instanceid)

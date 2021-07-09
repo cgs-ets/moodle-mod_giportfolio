@@ -54,9 +54,11 @@ require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/giportfolio:view', $context);
 
-if ($mentor == 0) {
+$cansee = giportfolio_user_mentor_of_student($context, $userid);
+
+if ($mentor == 0 || !$cansee) {
     require_capability('mod/giportfolio:viewgiportfolios', $context);
-}
+} 
 
 $viewhidden = has_capability('mod/giportfolio:viewhiddenchapters', $context);
 $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context);

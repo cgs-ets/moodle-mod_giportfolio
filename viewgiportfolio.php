@@ -58,7 +58,8 @@ require_capability('mod/giportfolio:view', $context);
 
 $allowedit = has_capability('mod/giportfolio:edit', $context);
 $viewhidden = has_capability('mod/giportfolio:viewhiddenchapters', $context);
-$allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context) || $mentor;
+$ismentor = giportfolio_user_mentor_of_student($context, $mentee);
+$allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context) || $ismentor;
 $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Allow a teacher to make a contrib on behalf of a student.
 
 if ($allowedit) {
