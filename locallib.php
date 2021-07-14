@@ -1505,14 +1505,14 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
     foreach ($chapters as $chapter) {
         if (!$chapter->subchapter) {
-            $titles[] =  '<div class="rotated-text-container"><span class="rotated-text">'. ($chapter->title).'</span></div>
+            $titles[] =  '<div class="rotated-text-container"><span class="rotated-text" title = "' . $chapter->title .'">'. shorten_text($chapter->title).'</span></div>
                             <div class = "subchapter-icon">
                             <img class ="icon" alt ="Chapter" title = "Chapter" src="'. $OUTPUT->image_url('chapter', 'mod_giportfolio').'"/>
                         </div>
             ';
         } else {
             $titles[] = '<div class="rotated-text-container">
-                              <span class="rotated-text">'.  ($chapter->title). '</span>
+                              <span class="rotated-text" title = "'.$chapter->title .'">'. shorten_text($chapter->title). '</span>
                         </div>
                         <div class = "subchapter-icon">
                             <img class ="icon" alt ="Subchapter" title = "Subchapter" src="'. $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio').'"/>
