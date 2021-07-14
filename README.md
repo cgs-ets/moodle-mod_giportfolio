@@ -70,6 +70,9 @@ Intentionally omitted features:
 * Allow mentors to contribute on behalf of a mentee.
 * Allow teachers to contribute on behalf of a student.
 * Allow non-editing teachers to contribute on behalf of a student.
+* Change on buttons look.
+* Display list of contributors on the portfolio summary.
+
 
 > New Functionalities
 >>
@@ -80,5 +83,6 @@ Intentionally omitted features:
 >>
 * Change on students skip intro page default to true.
 * Enable/Disable students to hide their contributions.
+* Disable delete button from contributions and comments.
 
 
