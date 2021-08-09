@@ -893,7 +893,7 @@ function giportfolio_set_mentor_info($contributions, $menteeid)
 function giportfolio_get_user_default_chapter($giportfolioid) { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT TOP (1) chapterid  FROM mdl_giportfolio_contributions
+    $sql = "SELECT  TOP (1)chapterid  FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = {$giportfolioid}
             --LIMIT 1;
            ";
@@ -1895,7 +1895,7 @@ function giportfolio_get_last_chapter_seen($giportfolio) {
     }
 }
 
-function giportfolio_remove_last_chapter_seen ($chapter) {
+function giportfolio_remove_last_chapter_seen($chapter) {
     global $DB, $USER;
 
     $sql = "SELECT id FROM mdl_giportfolio_last_seen WHERE userid = $USER->id AND chapterid = $chapter->id";
@@ -1909,8 +1909,7 @@ function giportfolio_set_last_chapter_seen($giportfolioid, $chapterid = null) {
 
     if ($chapterid == null) { // In case the last seen chapter was set to hidden after it was seen.
         // save the first chapter as default.
-        $chapterid = (giportfolio_get_user_default_chapter($giportfolioid))->chapterid;
-       // var_dump($chapterid);  exit;
+        $chapterid = (giportfolio_get_user_default_chapter($giportfolioid))->chapterid;      
     } 
 
     $table = 'giportfolio_last_seen';

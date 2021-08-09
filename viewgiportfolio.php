@@ -37,6 +37,7 @@ $showshared = optional_param('showshared', null, PARAM_BOOL);
 $mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID
 $mentee = optional_param('mentee', 0, PARAM_INT);
 $contribute = optional_param('cont', 'no', PARAM_RAW); // When teacher is contributing.
+$h = optional_param('h', 0, PARAM_INT);
 
 // Security checks START - teachers edit; students view.
 
@@ -101,8 +102,8 @@ if ($allowedit and !$chapters) {
     redirect('edit.php?cmid=' . $cm->id); // No chapters - add new one.
 }
 
-// Check chapterid and read chapter data.
 
+// Check chapterid and read chapter data.
 if ($chapterid == '0') { 
     
     if (giportfolio_get_last_chapter_seen($giportfolio) == null) { // Bookmarked
@@ -124,7 +125,9 @@ if ($chapterid == '0') {
     } 
 } 
 
-giportfolio_set_last_chapter_seen($giportfolio->id, $chapterid);
+if ($h != 1) { // If the chapter is set to hidden, when it comes back to this page, dont set it as last seen.
+    giportfolio_set_last_chapter_seen($giportfolio->id, $chapterid);
+}
 
 // Display the Mentee info to make it clear which portfolio is the teacher or mentor contributing to. CGS customisation.
 if ($mentee != 0) {
