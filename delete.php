@@ -80,6 +80,8 @@ if ($confirm) { // The operation was confirmed.
     $DB->set_field('giportfolio', 'revision', $giportfolio->revision + 1, array('id' => $giportfolio->id));
 
     giportfolio_regrade($giportfolio);
+    // If it was in the bookmark delete
+    giportfolio_remove_last_chapter_seen($chapter);
     redirect('viewgiportfolio.php?id='.$cm->id);
 }
 
