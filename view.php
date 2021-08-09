@@ -83,6 +83,7 @@ if ($allowedit) {
 } else {
     $edit = 0;
 }
+// TODO: get the last chapter
 
 if ($giportfolio->skipintro) {
     if ($allowcontribute && !$allowedit) {

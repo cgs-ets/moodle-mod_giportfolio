@@ -377,8 +377,7 @@ function giportfolio_add_fakeuser_block($chapters, $chapter, $giportfolio, $cm, 
  * @param bool $edit
  * @return string
  */
-function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $mentee)
-{
+function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $mentee) {
     global $USER, $OUTPUT;
 
     $toc = ''; // Representation of toc (HTML).
@@ -891,18 +890,19 @@ function giportfolio_set_mentor_info($contributions, $menteeid)
     return $contribution;
 }
 
-function giportfolio_get_user_default_chapter($giportfolioid, $userid) { // Part of Allow a teacher to make a contribution on behalf of a student.
+function giportfolio_get_user_default_chapter($giportfolioid) { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT  TOP(1) chapterid  FROM mdl_giportfolio_contributions
+    $sql = "SELECT TOP (1) chapterid  FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = {$giportfolioid}
-           --LIMIT 1; ";
+            --LIMIT 1;
+           ";
 
     return  $DB->get_record_sql($sql);
 }
 
 
-function giportfolio_get_user_chapters($giportfolioid, $userid)  { // Return user added chapters for a giportfolio.
+function giportfolio_get_user_chapters($giportfolioid, $userid)  {  //user added chapters for a giportfolio.
     global $DB;
 
     $sql = "SELECT * FROM {giportfolio_chapters}
@@ -1207,8 +1207,7 @@ function giportfolio_get_usergrade_id($itemid, $userid)
     }
 }
 
-function giportfolio_get_last_chapter($giportfolioid, $chapterid = null)
-{
+function giportfolio_get_last_chapter($giportfolioid, $chapterid = null) {
     // Return the last chapter of a teacher defined giportfolio.
     global $DB;
 
@@ -1253,8 +1252,7 @@ function giportfolio_get_first_userchapter($giportfolioid, $chapterid, $userid)
     return $DB->get_record_sql($sql, $params);
 }
 
-function giportfolio_check_user_chapter($chapter, $userid)
-{ // Check if chapter is user defined one.
+function giportfolio_check_user_chapter($chapter, $userid) { // Check if chapter is user defined one.
     if (!is_object($chapter)) {
         throw new coding_exception('Must pass full chapter object to giportfolio_check_user_chapter');
     }
@@ -1264,8 +1262,7 @@ function giportfolio_check_user_chapter($chapter, $userid)
     return (bool)($chapter->userid);
 }
 
-function giportfolio_delete_user_contributions($chapterid, $userid, $giportfolioid)
-{
+function giportfolio_delete_user_contributions($chapterid, $userid, $giportfolioid) {
     // Delete user contributions from their chapters before deleting the chapter.
     global $DB;
 
@@ -1292,8 +1289,7 @@ function giportfolio_delete_user_contributions($chapterid, $userid, $giportfolio
     }
 }
 
-function giportfolio_delete_chapter_contributions($chapterid, $cmid, $giportfolioid)
-{
+function giportfolio_delete_chapter_contributions($chapterid, $cmid, $giportfolioid) {
     global $DB;
 
     $params = array(
@@ -1315,8 +1311,7 @@ function giportfolio_delete_chapter_contributions($chapterid, $cmid, $giportfoli
 }
 
 // Parent view of own child's activity functionality
-function giportfolio_user_is_mentor($context, $user)
-{
+function giportfolio_user_is_mentor($context, $user) {
     global $DB;
 
     if (!is_enrolled($context, $user)) {
@@ -1436,6 +1431,7 @@ function giportfolio_who_can_contribute_details($menteeid) {
     
     return get_string('nomentorassociated', 'mod_giportfolio', $alias);
 }
+
 //Part of Portfolios Updated chapters list. CGS
 function has_seen_contribution($contributionid)
 {
@@ -1881,6 +1877,61 @@ function giportfolio_count_contributions_comments($contributionid){
     return $total;
 }
 
+// Bookmark CGS
+function giportfolio_get_last_chapter_seen($giportfolio) {
+
+    global $DB, $USER;
+    $sql = "SELECT chapterid FROM mdl_giportfolio_last_seen WHERE userid = $USER->id AND giportfolioid = $giportfolio->id";
+    $record = $DB->get_record_sql($sql);
+
+    if ($record) {
+      
+        $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id = $record->chapterid";
+        $record = $DB->get_records_sql($sql);
+        return $record;
+    } else {
+        return null;
+       
+    }
+}
+
+function giportfolio_remove_last_chapter_seen ($chapter) {
+    global $DB, $USER;
+
+    $sql = "SELECT id FROM mdl_giportfolio_last_seen WHERE userid = $USER->id AND chapterid = $chapter->id";
+    $record = $DB->get_record_sql($sql);
+    $DB->delete_records('giportfolio_last_seen', ['id' => $record->id]);
+
+}
+
+function giportfolio_set_last_chapter_seen($giportfolioid, $chapterid = null) {
+    global $DB, $USER;
+
+    if ($chapterid == null) { // In case the last seen chapter was set to hidden after it was seen.
+        // save the first chapter as default.
+        $chapterid = (giportfolio_get_user_default_chapter($giportfolioid))->chapterid;
+       // var_dump($chapterid);  exit;
+    } 
+
+    $table = 'giportfolio_last_seen';
+    $conditions = ['userid' => $USER->id, 'giportfolioid' => $giportfolioid];
+
+    if ($r = $DB->get_record($table, $conditions)) {  // update 
+        $r->chapterid = $chapterid;
+        $r->timemodified = time();
+        $DB->update_record($table, $r);
+    } else { // save
+        $dataobject = new \stdClass();
+        $dataobject->userid = $USER->id;
+        $dataobject->giportfolioid = $giportfolioid;
+        $dataobject->chapterid = $chapterid;
+        $dataobject->timemodified = time();
+        $DB->insert_record($table, $dataobject);
+    }
+
+
+}
+
 
 function giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers, $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter)
 {
@@ -2046,7 +2097,7 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
 
                 if ($usercontribution) {
                     $params = array('id' => $cm->id, 'userid' => $puser->id);
-                    $cid = giportfolio_get_user_default_chapter($giportfolio->id, $puser->id);
+                    $cid = giportfolio_get_user_default_chapter($giportfolio->id);
                     $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id, 'chapterid' => $cid->chapterid, 'cont' => 'yes');
 
                     $viewurl = new moodle_url('/mod/giportfolio/viewcontribute.php', $params);

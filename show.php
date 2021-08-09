@@ -45,11 +45,15 @@ $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'gi
                            '*', MUST_EXIST);
 
 // Switch hidden state.
-$chapter->hidden = $chapter->hidden ? 0 : 1;
 
+$chapter->hidden = $chapter->hidden ? 0 : 1;
 // Update record.
 $DB->update_record('giportfolio_chapters', $chapter);
 
+// Remove from  last seen table if the chapter is hidden.
+if ($chapter->hidden == 1) {
+    giportfolio_remove_last_chapter_seen($chapter);
+}  
 // Change visibility of subchapters too.
 if (!$chapter->subchapter) {
     $chapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0),

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/giportfolio/db" VERSION="20210705" COMMENT="XMLDB file for Moodle mod_giportfolio"
+<XMLDB PATH="mod/giportfolio/db" VERSION="20210809" COMMENT="XMLDB file for Moodle mod_giportfolio"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -101,6 +101,18 @@
         <FIELD NAME="chapterid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="stores the chapter id"/>
         <FIELD NAME="contributionid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Stores contribution id"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="stores the user id"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="giportfolio_last_seen" COMMENT="Keep track of the last chapter seen by the user">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="giportfolioid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="chapterid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

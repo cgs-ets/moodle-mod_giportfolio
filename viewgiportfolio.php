@@ -102,8 +102,17 @@ if ($allowedit and !$chapters) {
 }
 
 // Check chapterid and read chapter data.
-if ($chapterid == '0') { // Go to first chapter if no given.
-    foreach ($chapters as $ch) {
+
+if ($chapterid == '0') { 
+    
+    if (giportfolio_get_last_chapter_seen($giportfolio) == null) { // Bookmarked
+        $chapterst = $chapters;
+    } else {
+        $chapterst = giportfolio_get_last_chapter_seen($giportfolio);
+    }
+
+    foreach ($chapterst as $i => $ch) {
+        
         if ($edit) {
             $chapterid = $ch->id;
             break;
@@ -112,9 +121,10 @@ if ($chapterid == '0') { // Go to first chapter if no given.
             $chapterid = $ch->id;
             break;
         }
-    }
-}
-// SYNERGY.
+    } 
+} 
+
+giportfolio_set_last_chapter_seen($giportfolio->id, $chapterid);
 
 // Display the Mentee info to make it clear which portfolio is the teacher or mentor contributing to. CGS customisation.
 if ($mentee != 0) {

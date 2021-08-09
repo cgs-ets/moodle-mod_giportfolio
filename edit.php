@@ -74,6 +74,7 @@ if ($mform->is_cancelled()) {
     if ($data->id) {
         // Store the files.
         $data = file_postupdate_standard_editor($data, 'content', $options, $context, 'mod_giportfolio', 'chapter', $data->id);
+        $data->timemodified = time();
         $DB->update_record('giportfolio_chapters', $data);
 
 
