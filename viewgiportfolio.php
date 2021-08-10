@@ -202,6 +202,7 @@ $chnavigation = '';
 $mentorid = '&amp;mentor=' . $mentor;
 $menteeid = '&amp;mentee=' . $mentee;
 $contribute  = '&amp;cont=' . $contribute;
+
 if ($previd) {
     $chnavigation .= '<a title="' . get_string('navprev', 'giportfolio') . '" href="viewgiportfolio.php?id=' . $cm->id .
         '&amp;chapterid=' . $previd . $mentorid . $menteeid . $contribute . '">
@@ -394,7 +395,7 @@ if ($contriblist) {
 
     foreach ($contriblist as $contrib) {
         $ismine = ($contrib->userid == $userid);
-
+     
         if ($ismine) {
             $baseurl = new moodle_url(
                 '/mod/giportfolio/editcontribution.php',
@@ -410,7 +411,7 @@ if ($contriblist) {
             $delurl = new moodle_url($baseurl, array('action' => 'delete'));
             $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
             $delicon = html_writer::link($delurl, $delicon);
-
+           
             // Check if the show hide option is available for students.
             if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) {
                 
@@ -424,8 +425,10 @@ if ($contriblist) {
             }
 
             $showicon = html_writer::link($showurl, $showicon);
-            $shareicon = '';
 
+          
+            $shareicon = '';
+            $actionsharing = array();
             if (!$isuserchapter && $giportfolio->peersharing) { // Only for chapters without a userid and if peersharing is enabled.
                 if ($contrib->shared) {
                     $shareurl = new moodle_url($baseurl, array('action' => 'unshare', 'sesskey' => sesskey()));
@@ -439,7 +442,7 @@ if ($contriblist) {
             }
 
             $actions = array();
-            
+           
             if (!$giportfolio->disabledeletebtn ) {
                 // Only allow to edit contributions done by the user.
                 if ($contrib->mentorid == 0 && $contrib->teacherid == 0 && $contrib->userid != $USER->id) {
@@ -449,10 +452,10 @@ if ($contriblist) {
                 }
             } 
             
+           
             if ($giportfolio->disabledeletebtn && giportfolio_count_contributions_comments($contrib->id) > 0) {
                 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/deletecomment.js'));
             }
-            
            
             $userfullname = '';
             $actions = array_merge($actions, $actionsharing);
