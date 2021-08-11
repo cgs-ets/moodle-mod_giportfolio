@@ -56,6 +56,7 @@ if ($additionalchapters) {
 // SYNERGY.
 
 $context = context_module::instance($cm->id);
+
 require_capability('mod/giportfolio:view', $context);
 
 // Parent view of own child's activity functionality
@@ -65,10 +66,10 @@ $userswithaccesstoportofolio = giportfolio_users_with_access($courseuserroles, $
 $mentorcancontribute = giportfolio_mentor_allowed_to_contribute($giportfolio->id);
 $noneditingteachercancontribute = giportfolio_non_editing_teacher_allowed_to_contribute($giportfolio->id);
 $allowedit = has_capability('mod/giportfolio:edit', $context);
-
 $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context);
 $allowreport = has_capability('report/outline:view', $context->get_course_context());
 $allowview = has_capability('mod/giportfolio:view', $context);
+
 
 if ($allowedit) {
     if ($edit != -1 and confirm_sesskey()) {
@@ -83,10 +84,9 @@ if ($allowedit) {
 } else {
     $edit = 0;
 }
-// TODO: get the last chapter
 
 if ($giportfolio->skipintro) {
-    if ($allowcontribute && !$allowedit) {
+    if (($allowcontribute && !$allowedit) || $context->is_locked()) {
         // Redirect to the 'update contribution' page.
         redirect(new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id)));
     }
@@ -109,6 +109,7 @@ $strgiportfolios = get_string('modulenameplural', 'mod_giportfolio');
 $strgiportfolio = get_string('modulename', 'mod_giportfolio');
 $strtoc = get_string('toc', 'mod_giportfolio');
 
+
 // Prepare header.
 $PAGE->set_title(format_string($giportfolio->name));
 $PAGE->add_body_class('mod_giportfolio');
@@ -125,7 +126,8 @@ $templatecontext = new \stdClass();
 
 $usercontribution = 0;
 $showupdates = false;
-if ($allowedit) {
+
+if ($allowedit || ($context->is_locked() && !is_non_editing_teacher())) {  // Is a teacher and the context is locked.
     
     $usersgiportfolios = giportfolio_get_giportfolios_number($giportfolio->id, $cm->id);
     echo html_writer::start_tag('div', array('class' => 'giportfolioteacher'));
@@ -259,6 +261,7 @@ if ($allowedit) {
         get_string('submitedporto', 'mod_giportfolio') . ' ' . count($chapters)
     );
 }
+
 // Display intro after the start button
 if (!$allowedit && $showupdates ) {
     echo format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
@@ -280,7 +283,7 @@ if (!$allowedit && $showupdates ) {
 }
 
 
-// To show the parent perspective.
+//To show the parent perspective.
 // if (is_role_switched($course->id) ) {
 //     $f = new stdClass();
 //     $f->url = new moodle_url('/mod/giportfolio/view.php', array('id' => $cm->id));

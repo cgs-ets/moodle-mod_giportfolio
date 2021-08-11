@@ -310,7 +310,7 @@ echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', 
 
 echo $OUTPUT->box_start('giportfolio_actions');
 
-if (!$allowedit || $cangrade && $mentee != 0) {
+if ((!$allowedit || $cangrade && $mentee != 0) && !$context->is_locked() || is_siteadmin($USER->id)) {
     $params = array('id' => $cm->id, 'chapterid' => $chapter->id, 'mentor' => $mentor, 'mentee' => $mentee);
     if (!empty($contribution)) {
         $params['cont'] = $contribute;
@@ -357,6 +357,7 @@ if (!$isuserchapter && $giportfolio->peersharing) {
     }
 }
 echo $OUTPUT->box_end(); // giportfolio_actions
+
 // Output the 'class plan' content.
 if ($giportfolio->klassenbuchtrainer && giportfolio_include_klassenbuchtrainer()) {
     echo $OUTPUT->box_start('giportfolio_klassenbuchtrainer');
@@ -465,6 +466,11 @@ if ($contriblist) {
         } else {
             // Do not show contribution if peersharing is disabled, even if the contribution was previously shared
             continue;
+        }
+
+        // if the context is frozen, no actions allowed
+        if ($context->is_locked() && !is_siteadmin($USER->id)) {
+            $actions = [];
         }
         
         $hidementortag = ($contrib->mentorid == 0) ? 'hidden' : '';

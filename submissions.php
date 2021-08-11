@@ -46,11 +46,15 @@ if ($id) {
 if ($currenttab !== 'all') {
     $url->param('tab', $currenttab);
 }
+
 $PAGE->set_url($url);
 require_login($course->id, false, $cm);
 
-$context = context_module::instance($cm->id);
-require_capability('mod/giportfolio:gradegiportfolios', $context);
+$context = context_module::instance($cm->id); 
+if (!$context->is_locked() ) {  // To be able to display submission page when context is frozen.
+    require_capability('mod/giportfolio:gradegiportfolios', $context);
+}
+
 require_capability('mod/giportfolio:viewgiportfolios', $context);
 
 $PAGE->set_title(format_string($giportfolio->name));
@@ -136,7 +140,8 @@ if ($quickgrade && $currenttab != 'graphcontributors') {
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
 }
 
-$allusers = get_users_by_capability($context, 'mod/giportfolio:submitportfolio', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
+// Change capability check to be able to display  users when context is frozen. CGS
+$allusers = get_users_by_capability($context, 'mod/giportfolio:printclassplan', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
     'u.firstname ASC', '', '', $currentgroup, '', false, true);
 
 $alluserids = array();
@@ -160,8 +165,6 @@ if ($currenttab == 'graphcontributors') {
     $iconchapter =  html_writer::img($OUTPUT->image_url('chapter', 'mod_giportfolio'), '', ['class' => 'icon']);
     $iconsubchapter =  html_writer::img($OUTPUT->image_url('subchapter_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
    
-    // $OUTPUT->image_url('addition_icon', 'mod_giportfolio');
-// <img class ="icon" alt ="Added by student" title = "Added by student" src="'. $OUTPUT->image_url('addition_icon', 'mod_giportfolio').'"/>
     $out .= html_writer::start_div();
     $out .= "<table>
              <tr>

@@ -893,9 +893,9 @@ function giportfolio_set_mentor_info($contributions, $menteeid)
 function giportfolio_get_user_default_chapter($giportfolioid) { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT  TOP (1) chapterid  FROM mdl_giportfolio_contributions
+    $sql = "SELECT TOP (1)  chapterid  FROM mdl_giportfolio_contributions 
             WHERE  giportfolioid = {$giportfolioid}
-            --LIMIT 1;
+           -- LIMIT 1;
            ";
 
     return  $DB->get_record_sql($sql);
@@ -2048,16 +2048,19 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                 $picture = $OUTPUT->user_picture($puser);
                 $usercontribution = giportfolio_get_user_contribution_status($giportfolio->id, $puser->id);
                 $private = false;
+
                 if (!$usercontribution) {
                     $private = $DB->record_exists('giportfolio_contributions', array(
                         'giportfolioid' => $giportfolio->id,
                         'userid' => $puser->id
                     ));
                 }
+                
                 $statuspublish = '';
                 $userfinalgrade = new stdClass();
                 $userfinalgrade->grade = null;
                 $userfinalgrade->str_grade = '-';
+
                 if ($usercontribution) {
                     $updatedchapters = display_chapters_not_seen($giportfolio, $puser->id, $cm);
                     $lastupdated = date('l jS \of F Y ', $usercontribution);
@@ -2105,8 +2108,10 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                     $gradeurl = new moodle_url('/mod/giportfolio/updategrade.php', $params);
                     $contribute = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $paramscontrib);
                     $statuspublish = html_writer::link($viewurl, $strview);
-                    $statuspublish .= ' | ' . html_writer::link($gradeurl, $strgrade);
-                    $statuspublish .= ' | ' . html_writer::link($contribute, $strcontribute);
+                    if (!$context->is_locked() || is_siteadmin($USER->id)) {   // freeze doesnt apply to admins
+                        $statuspublish .= ' | ' . html_writer::link($gradeurl, $strgrade);
+                        $statuspublish .= ' | ' . html_writer::link($contribute, $strcontribute);
+                    }
                     $rowclass = '';
                 } else if ($private) {
                     $statuspublish = $strprivate;
@@ -2117,7 +2122,10 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                     $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id, 'cont' => 'contribution');
                     $contribute = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $paramscontrib);
                     $url->param('cont', 'contribution');
-                    $statuspublish .= ' | ' . html_writer::link($contribute, $strcontribute);
+
+                    if (!$context->is_locked() || is_siteadmin($USER->id)) {
+                        $statuspublish .= ' | ' . html_writer::link($contribute, $strcontribute);
+                    }
                 }
 
                 $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $puser->id . '&amp;course=' . $course->id . '">' .
