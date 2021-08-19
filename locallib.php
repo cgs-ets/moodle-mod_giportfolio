@@ -1902,7 +1902,9 @@ function giportfolio_remove_last_chapter_seen($chapter) {
     $record = $DB->get_records_sql($sql);
     $ids = implode(', ', array_keys($record));
    
-    $DB->delete_records_select('giportfolio_last_seen', "id in (${ids})");
+    if (!empty($ids)) {
+        $DB->delete_records_select('giportfolio_last_seen', "id in (${ids})");
+    }
 
 }
 
