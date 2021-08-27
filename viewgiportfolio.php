@@ -290,7 +290,7 @@ if (!$giportfolio->customtitles) {
 // SYNERGY.
 global $USER;
 $pixpath = "$CFG->wwwroot/pix";
-
+$templatecontext = new \stdClass();
 $templatecontext->menteementor = ($mentor != 0 || $mentee == 0) && !$cangrade; // Show Content by default for the Student role and Parent role
 // Parent view of own child's activity functionality. CGS
 $userid = $mentee == 0 ? $USER->id : $mentee;

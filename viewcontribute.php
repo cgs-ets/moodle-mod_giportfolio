@@ -229,6 +229,7 @@ $chaptertext = file_rewrite_pluginfile_urls(
     $chapter->id
 );
 
+$templatecontext = new \stdClass();
 $templatecontext->intro = format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context)); 
 $templatecontext->menteementor = ($mentor != 0 || $mentee == 0) && !$cangrade;
 
