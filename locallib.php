@@ -893,7 +893,7 @@ function giportfolio_set_mentor_info($contributions, $menteeid)
 function giportfolio_get_user_default_chapter($giportfolioid) { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT TOP (1)  chapterid  FROM mdl_giportfolio_contributions 
+    $sql = "SELECT TOP(1)  chapterid  FROM mdl_giportfolio_contributions 
             WHERE  giportfolioid = {$giportfolioid}
            -- LIMIT 1;
            ";
@@ -1491,13 +1491,13 @@ function giportfolio_filter_graders($graders)
  */
 function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm)
 {
-    global $CFG, $DB, $OUTPUT, $COURSE;
+    global $CFG, $DB, $OUTPUT; //, $COURSE;
 
     $chapters = giportfolio_preload_chapters($giportfolio);
     $chaptersid = [];
     $titles = [];
  
-    $studentalias = get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
+   // $studentalias = get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
 
     foreach ($chapters as $chapter) {
         if (!$chapter->subchapter) {
@@ -1524,7 +1524,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
                       <div class = "subchapter-icon">
                             <img class ="icon" alt ="Added by student" title = "Added by student" src="'. $OUTPUT->image_url('addition_icon', 'mod_giportfolio').'"/>
                         </div>';
-    list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
+ //   list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
 
     $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
     $extrafields = get_extra_user_fields($context);
@@ -1897,12 +1897,15 @@ function giportfolio_get_last_chapter_seen($giportfolio) {
 
 function giportfolio_remove_last_chapter_seen($chapter) {
     global $DB;
-
+   
     $sql = "SELECT id FROM mdl_giportfolio_last_seen WHERE chapterid = $chapter->id";
     $record = $DB->get_records_sql($sql);
+
+    
     $ids = implode(', ', array_keys($record));
-   
-    $DB->delete_records_select('giportfolio_last_seen', "id in (${ids})");
+    if (!empty($ids)) {
+        $DB->delete_records_select('giportfolio_last_seen', "id in (${ids})");
+    }
 
 }
 
@@ -2360,4 +2363,134 @@ function giportfolio_table_columns($giportfolioid, $context) {
     $tableheaders = array_merge(array('', get_string('fullnameuser')), $extrafieldnames, $columntitles);
       
     return array($tablecolumns, $tableheaders, $showgradecol);
+}
+
+// Get chapters titles to list in the view_students_chapters filter.
+function giportfolio_get_giportfolio_chaptertitle($giportfolioid) {
+    global $DB;
+    
+    $sql = "SELECT   id  as  chapterid, title  FROM mdl_giportfolio_chapters 
+    WHERE  giportfolioid = {$giportfolioid}  AND userid = 0";   // Just bring the chapters created by the teacher
+
+  return  $DB->get_records_sql($sql);
+}
+
+// Send notifications when a teacher makes a comment. CGS custom.
+function giportfolio_send_comment_notification($userid, $contributionid) {
+
+    global $DB, $COURSE;
+
+    $sql = "SELECT cont.id, gp.id as 'giportfolioid', gp.name, gc.id as 'chapterid', 
+            gc.title,  cont.title as 'contributiontitle', cont.userid, gp.allowmentorcontrib, gp.notifycommententry
+            FROM mdl_giportfolio as gp 
+            JOIN mdl_giportfolio_chapters as gc on gp.id = gc.giportfolioid 
+            JOIN mdl_giportfolio_contributions AS cont ON cont.chapterid = gc.id
+            WHERE cont.id =  $contributionid;";
+
+    $contribution = $DB->get_records_sql($sql); 
+    
+    $giportfolioid = ($contribution[$contributionid])->giportfolioid;
+    $cm = get_coursemodule_from_instance("giportfolio", $giportfolioid, $COURSE->id, false, MUST_EXIST);
+    $context = context_module::instance($cm->id);
+    $context = $context->get_course_context();
+   
+    $chapterid = ($contribution[$contributionid])->chapterid;
+    $studentid = ($contribution[$contributionid])->userid;
+    $notifycomment = ($contribution[$contributionid])->notifycommententry;
+    // Check if the user is a teacher. Only send notifications when the teacher makes the comment.
+
+    if (has_capability('mod/giportfolio:gradegiportfolios', $context) && $notifycomment) {
+
+        // Send notification to student
+        $recipient = giportfolio_set_comment_notification_recipients($studentid);
+        $url = new \moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'chapterid' => $chapterid));
+       
+        giportfolio_send_comment_notification_helper($userid, $contributionid, $contribution, $recipient, $url);
+
+        // Check if the parent is allow to contribute.
+       if(($contribution[$contributionid])->allowmentorcontrib) {
+            $mentorsid = explode (',',  giportfolio_get_mentees_mentor(($contribution[$contributionid])->userid));
+            foreach($mentorsid as $id => $mentor) {
+                $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'userid' => $studentid, 'mentor' => $mentor));
+                $recipient = giportfolio_set_comment_notification_recipients($mentor);
+                giportfolio_send_comment_notification_helper($userid, $contributionid, $contribution, $recipient, $url);
+            }
+       }
+        
+    }
+ 
+}
+
+function giportfolio_set_comment_notification_recipients ($id) {
+    $recipient = \core_user::get_user($id);
+    $recipient = giportfolio_minimise_recipient_record($recipient);
+
+    return $recipient;
+}
+
+function giportfolio_send_comment_notification_helper($userid, $contributionid, $contribution, $recipient, $url) {
+    
+    global $COURSE, $USER;
+  
+
+    $info = (object)array(
+        'course' => format_string($COURSE->fullname),
+        'portfolio' => format_string(($contribution[$contributionid])->name),
+        'username' => fullname($USER),
+        'contribution' => format_string(($contribution[$contributionid])->contributiontitle),
+        'chapter' =>  format_string(($contribution[$contributionid])->title),
+        'link' => $url->out(false),
+    );
+
+    $commenter = \core_user::get_user($userid);
+    $subj = get_string('commentnotification_subject', 'mod_giportfolio', fullname($USER));
+
+    $messagetext = get_string('commentnotification_body', 'mod_giportfolio', $info);
+    $info->link = \html_writer::link($url, $url->out(false));
+    $messagehtml = nl2br(get_string('commentnotification_body', 'mod_giportfolio', $info));
+
+    $eventdata = new \core\message\message();
+    $eventdata->component = 'mod_giportfolio';
+    $eventdata->name = 'commentnotification';
+    $eventdata->userfrom = $commenter;
+    $eventdata->userto = $recipient;
+    $eventdata->subject = $subj;
+    $eventdata->fullmessage = $messagetext;
+    $eventdata->fullmessageformat = FORMAT_PLAIN;
+    $eventdata->fullmessagehtml = $messagehtml;
+    $eventdata->smallmessage = $messagetext;
+
+    message_send($eventdata);
+}
+
+
+/**
+ * Removes properties from user record that are not necessary for sending post notifications.
+ *
+ */
+function giportfolio_minimise_recipient_record($recipient) {
+    // Make sure we do not store info there we do not actually
+    // need in mail generation code or messaging.
+    unset($recipient->institution);
+    unset($recipient->department);
+    unset($recipient->address);
+    unset($recipient->city);
+    unset($recipient->url);
+    unset($recipient->currentlogin);
+    unset($recipient->description);
+    unset($recipient->descriptionformat);
+    unset($recipient->icq);
+    unset($recipient->skype);
+    unset($recipient->yahoo);
+    unset($recipient->aim);
+    unset($recipient->msn);
+    unset($recipient->phone1);
+    unset($recipient->phone2);
+    unset($recipient->country);
+    unset($recipient->firstaccess);
+    unset($recipient->lastaccess);
+    unset($recipient->lastlogin);
+    unset($recipient->lastip);
+
+    return $recipient;
 }

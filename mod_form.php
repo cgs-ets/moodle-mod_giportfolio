@@ -117,6 +117,11 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->addElement('selectyesno', 'notifyaddentry', get_string('notifyaddentry', 'giportfolio'));
         $mform->setDefault('newentrynotification', 0);
 
+        // Notify comment
+        $mform->addElement('selectyesno', 'notifycommententry', get_string('notifycommententry', 'giportfolio'));
+        $mform->setDefault('newcommentnotification', 1);
+
+
         $mform->addElement('selectyesno', 'automaticgrading', get_string('automaticgrading', 'giportfolio'));
         $mform->setDefault('automaticgrading', 0);
 

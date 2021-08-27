@@ -77,6 +77,7 @@ if ($usesections) {
 
 $modinfo = get_fast_modinfo($course);
 $currentsection = '';
+
 foreach ($giportfolios as $giportfolio) {
     $cm = $modinfo->get_cm($giportfolio->coursemodule);
     if ($usesections) {

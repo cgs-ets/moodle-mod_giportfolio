@@ -15,27 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the messages notifications sent by giportfolio
- *
- * @package   mod_giportfolio
- * @copyright 2013 Davo Smith, Synergy Learning
+ * @copyright 2020 Veronica Bermegui
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
  */
+
+namespace mod_giportfolio\external;
 
 defined('MOODLE_INTERNAL') || die();
 
-$messageproviders = array(
-    'addentry' => array(
-        'capability' => 'mod/giportfolio:gradegiportfolios',
-        // Use the default providers settings => email: default, all others: permitted.
-    ),
-    
-    'commentnotification' => array(  // CGS custom.
-        'defaults' => array(
-            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
-            // 'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
-            'airnotifier' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
-        ),
-    ),
+require_once($CFG->libdir.'/externallib.php');
+
+use external_api;
+
+class api extends external_api {
   
-);
+    use get_participant;
+   
+}

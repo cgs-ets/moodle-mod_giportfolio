@@ -659,6 +659,21 @@ function xmldb_giportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021080600, 'giportfolio');
     }
 
+    if ($oldversion < 2021082701) {
+
+        // Define field notifycommententry to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('notifycommententry', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'notifyaddentry');
+
+        // Conditionally launch add field notifycommententry.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2021082701, 'giportfolio');
+    }
+
 
 
     return true;

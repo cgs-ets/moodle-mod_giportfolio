@@ -103,6 +103,7 @@ $string['lastgrade'] = 'Graded ';
 $string['lastmodified'] = 'Last Modified:  ';
 $string['lastupdated'] = 'Last Updated:  ';
 $string['messageprovider:addentry'] = 'Notification of new Portfolio entries';
+$string['messageprovider:commentnotification'] = 'Notification of new comment entries';
 $string['modulename'] = 'Portfolio';
 $string['modulename_help'] = '<p>The portfolio module allows students to create portfolio contributions, with a structure set by the teacher.</p>
 <p>The course teacher(s) are able to create an overall structure for the students\' work via a series of chapters and subchapters, the same as the layout found in the book module.</p>
@@ -123,6 +124,13 @@ $string['notifyaddentry_body'] = 'Hi,
 {$a->username} has added a new contribution to \'{$a->chapter}\' in portfolio \'{$a->portfolio}\' in course \'{$a->course}\'.
 
 You can view this contribution at: {$a->link}';
+$string['notifycommententry'] = 'Notify students of new comment';
+$string['commentnotification_subject'] = 'New contribution comment from {$a}';
+$string['commentnotification_body'] = 'Hi,
+
+{$a->username} has added a new comment to  \'{$a->contribution}\'  contribution  in chapter \'{$a->chapter}\' in portfolio \'{$a->portfolio}\' in course \'{$a->course}\'.
+
+You can view this comment at: {$a->link}';
 $string['notstarted'] = 'Not started';
 $string['notyourchapter'] = 'This user chapter does not belong to you';
 $string['actionnotallowed'] = 'Teachers and mentors can only edit their own contributions.';
@@ -205,6 +213,7 @@ $string['chaptersupdated'] = 'Updated Chapters';
 $string['mentorcontribution'] = 'Mentor\'s contribution';
 $string['teachercontribution'] = 'Teacher\'s contribution';
 $string['graphofcontributors'] = 'Graph of contributors';
+$string['navigatebychapter'] = 'Navigate by chapter';
 $string['additionstitle'] = 'Additions';
 
 $string['legends'] = 'Legend';
@@ -220,3 +229,6 @@ $string['additionlegend'] = '(by {$a})';
 $string['wcc'] = 'Who can contribute?';
 $string['wcchelp'] = 'If a portfolio is set to allow mentors to contribute, you can see who those mentors are';
 $string['nomentorassociated'] = 'No mentor associated to this {$a}';
+$string['nousersselected'] = 'No users selected';
+$string['filter'] = 'Filter';
+$string['nofilters'] = 'No filters';

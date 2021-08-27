@@ -332,7 +332,7 @@ if ($contriblist) {
             if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) { 
                 $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
                 $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
-                $cout .= html_writer::link($shareurl, $shareicon);
+                $cout .= html_writer::link($showurl, $shareicon);
             }
             
             $files = giportfolio_print_attachments($contrib, $cm, $type = null, $align = "right");

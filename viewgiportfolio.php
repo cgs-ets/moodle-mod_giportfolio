@@ -412,7 +412,7 @@ if ($contriblist) {
             $delurl = new moodle_url($baseurl, array('action' => 'delete'));
             $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
             $delicon = html_writer::link($delurl, $delicon);
-           
+            $showurl;
             // Check if the show hide option is available for students.
             if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) {
                 

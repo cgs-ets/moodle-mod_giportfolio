@@ -69,6 +69,7 @@ $allurl->remove_params('tab');
 $sincelastloginurl = new moodle_url($PAGE->url, array('tab' => 'sincelastlogin'));
 $nocommentsurl = new moodle_url($PAGE->url, array('tab' => 'nocomments'));
 $graphcontributorsurl = new moodle_url($PAGE->url, array('tab' => 'graphcontributors'));
+
 $tabs = array(
     new tabobject('all', $allurl, get_string('allusers', 'mod_giportfolio', $alias)),
     new tabobject('sincelastlogin', $sincelastloginurl, get_string('sincelastlogin', 'mod_giportfolio')),
@@ -79,8 +80,6 @@ $tabs = array(
 echo get_string('studentgiportfolios', 'mod_giportfolio', $alias);
 echo '</br>';
 echo $OUTPUT->tabtree($tabs, $currenttab);
-echo get_string('filterlist', 'mod_giportfolio');
-
 
 // Check to see if groups are being used in this assignment.
 // Find out current groups mode.
@@ -88,6 +87,8 @@ $groupmode = groups_get_activity_groupmode($cm);
 $currentgroup = groups_get_activity_group($cm, true);
 
 groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab);
+
+
 
 $updatepref = optional_param('updatepref', 0, PARAM_BOOL);
 
@@ -122,6 +123,7 @@ if ($fastg) { // Update the grade and the feedback.
     echo get_string('changessaved');
     echo html_writer::end_tag('div');
 }
+
 $mform = new giportfolio_search_form(null, array('id' => $id, 'tab' => $currenttab));
 $mform->display();
 
@@ -220,10 +222,9 @@ if ($currenttab == 'graphcontributors') {
    
     echo $out;
 
-} else {
+}else {
     giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers,
-        $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter);
-   
+    $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter);
 }
 
 
@@ -280,7 +281,6 @@ function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
             $chids = implode(',', $chids);
             $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id in ($chids)";
         }
-
         return $DB->get_records_sql($sql);
     }
 

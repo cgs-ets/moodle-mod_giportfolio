@@ -15,27 +15,25 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the messages notifications sent by giportfolio
+ * Plugin external functions and services are defined here.
  *
  * @package   mod_giportfolio
- * @copyright 2013 Davo Smith, Synergy Learning
+ * @category    external
+ * @copyright 2020 Veronica Bermegui, Canberra Grammar School <veronica.bermegui@cgs.act.edu.au>
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$messageproviders = array(
-    'addentry' => array(
-        'capability' => 'mod/giportfolio:gradegiportfolios',
-        // Use the default providers settings => email: default, all others: permitted.
-    ),
+$functions = [
+
+    'mod_giportfolio_get_participant' => [
+        'classname' => 'mod_giportfolio\external\api', // Class containing a reference to the external function.
+        'methodname' => 'get_participant', // External function name.
+        'description' => 'Get participant details  ', // Human readable description of the WS function.
+        'type' => 'read', // DB rights of the WS function.
+        'loginrequired' => true,
+        'ajax' => true  // Is this service available to 'internal' ajax calls.
+    ],
     
-    'commentnotification' => array(  // CGS custom.
-        'defaults' => array(
-            'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
-            // 'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
-            'airnotifier' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
-        ),
-    ),
-  
-);
+];
