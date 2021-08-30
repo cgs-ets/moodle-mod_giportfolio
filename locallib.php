@@ -1491,31 +1491,30 @@ function giportfolio_filter_graders($graders)
  */
 function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm)
 {
-    global $CFG, $DB, $OUTPUT; //, $COURSE;
+    global $CFG, $DB, $OUTPUT; 
 
     $chapters = giportfolio_preload_chapters($giportfolio);
     $chaptersid = [];
     $titles = [];
  
-   // $studentalias = get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
 
     foreach ($chapters as $chapter) {
+
         if (!$chapter->subchapter) {
-            $titles[] =  '<div class="rotated-text-container"><span class="rotated-text" title = "' . $chapter->title .'">'. shorten_text($chapter->title).'</span></div>
+            $titles[] =  '<div id ='. $chapter->id . ' class="rotated-text-container"><span class="rotated-text" title = "' . $chapter->title .'">'. shorten_text($chapter->title).'</span></div>
                             <div class = "subchapter-icon">
                             <img class ="icon" alt ="Chapter" title = "Chapter" src="'. $OUTPUT->image_url('chapter', 'mod_giportfolio').'"/>
-                        </div>
-            ';
-        } else {
-            $titles[] = '<div class="rotated-text-container">
-                              <span class="rotated-text" title = "'.$chapter->title .'">'. shorten_text($chapter->title). '</span>
-                        </div>
-                        <div class = "subchapter-icon">
-                            <img class ="icon" alt ="Subchapter" title = "Subchapter" src="'. $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio').'"/>
                         </div>';
+        } else {
+                $titles[] = '<div id ='.$chapter->id.'class="rotated-text-container">
+                                <span class="rotated-text" title = "'.$chapter->title .'">'. shorten_text($chapter->title). '</span>
+                            </div>
+                            <div class = "subchapter-icon">
+                                <img class ="icon" alt ="Subchapter" title = "Subchapter" src="'. $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio').'"/>
+                            </div>';
         }
         $chaptersid[] = $chapter->id;
-    }
+    }  
    
     // Look for chapters created by the student.
 
@@ -1524,11 +1523,10 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
                       <div class = "subchapter-icon">
                             <img class ="icon" alt ="Added by student" title = "Added by student" src="'. $OUTPUT->image_url('addition_icon', 'mod_giportfolio').'"/>
                         </div>';
- //   list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
-
     $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
     $extrafields = get_extra_user_fields($context);
     $tableheaders = array_merge(array('', get_string('fullnameuser')), $titles);
+
 
     require_once($CFG->libdir . '/tablelib.php');
     $table = new flexible_table('mod-giportfolio-graph-contribution');
@@ -1540,13 +1538,12 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $table->sortable(false);
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
-
     foreach ($table->column_class as $name => $column) {
+       
         if (!in_array($name, ['picture', 'fullname', get_string('additionstitle', 'giportfolio')])) {  // These are the columns for the chapter titles          
             $table->column_class($name, 'completion-header');
         }
     }
-
     $table->set_attribute('cellspacing', '0');
     $table->set_attribute('id', 'graphcontributors');
     $table->set_attribute('class', 'graphofcontributors generaltable flexible boxaligncenter');
@@ -1584,7 +1581,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
         $rowclass = null;
         $endposition = $offset + $perpage;
         $currentposition = 0;
-
+    
         foreach ($pusers as $puser) {
 
             if ($currentposition == $offset && $offset < $endposition) {
@@ -1605,7 +1602,6 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     } else {
         echo html_writer::tag('div', get_string('nosubmisson', 'mod_giportfolio'), array('class' => 'nosubmisson'));
     }
-
     $table->print_html();
 }
 
