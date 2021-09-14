@@ -29,13 +29,12 @@ $messageproviders = array(
         'capability' => 'mod/giportfolio:gradegiportfolios',
         // Use the default providers settings => email: default, all others: permitted.
     ),
-    
+
     'commentnotification' => array(  // CGS custom.
         'defaults' => array(
             'popup' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
-            // 'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
             'airnotifier' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
         ),
     ),
-  
+
 );

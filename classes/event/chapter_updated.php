@@ -23,6 +23,7 @@
  */
 
 namespace mod_giportfolio\event;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -104,5 +105,4 @@ class chapter_updated extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = 'giportfolio_chapters';
     }
-
 }

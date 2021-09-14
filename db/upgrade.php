@@ -30,9 +30,12 @@ function xmldb_giportfolio_upgrade($oldversion) {
     $dbman = $DB->get_manager();
 
     if ($oldversion < 2004081100) {
-        throw new upgrade_exception('mod_giportfolio', $oldversion,
-                                    'Can not upgrade such an old giportfolio module, sorry, you should have upgraded it long time '.
-                                    'ago in 1.9 already.');
+        throw new upgrade_exception(
+            'mod_giportfolio',
+            $oldversion,
+            'Can not upgrade such an old giportfolio module, sorry, you should have upgraded it long time ' .
+                'ago in 1.9 already.'
+        );
     }
 
     if ($oldversion < 2007052001) {
@@ -470,7 +473,7 @@ function xmldb_giportfolio_upgrade($oldversion) {
     }
 
     if ($oldversion < 2015061703) {
-        require_once($CFG->dirroot.'/mod/giportfolio/db/upgradelib.php');
+        require_once($CFG->dirroot . '/mod/giportfolio/db/upgradelib.php');
 
         mtrace('Migrating Portfolio user chapters - this may take a long time if there are a lot of user chapters');
         mod_giportfolio_migrate_userchapters();
@@ -511,23 +514,23 @@ function xmldb_giportfolio_upgrade($oldversion) {
 
     if ($oldversion < 2019061500) {
 
-    	// Define field peersharing to be added to giportfolio.
-    	$table = new xmldb_table('giportfolio');
-    	$peersharing_field = new xmldb_field('peersharing', XMLDB_TYPE_INTEGER, '2', null, null, null, '1', 'notifyaddentry');
+        // Define field peersharing to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $peersharing_field = new xmldb_field('peersharing', XMLDB_TYPE_INTEGER, '2', null, null, null, '1', 'notifyaddentry');
 
-    	// Conditionally launch add field peersharing.
-    	if (!$dbman->field_exists($table, $peersharing_field)) {
-    		$dbman->add_field($table, $peersharing_field);
-    	}
+        // Conditionally launch add field peersharing.
+        if (!$dbman->field_exists($table, $peersharing_field)) {
+            $dbman->add_field($table, $peersharing_field);
+        }
 
-    	// Conditionally launch add field showtimeofday.
-    	$timeofday_field = new xmldb_field('timeofday', XMLDB_TYPE_INTEGER, '2', null, null, null, '1', 'notifyaddentry');
-    	if (!$dbman->field_exists($table, $timeofday_field)) {
-    		$dbman->add_field($table, $timeofday_field);
-    	}
+        // Conditionally launch add field showtimeofday.
+        $timeofday_field = new xmldb_field('timeofday', XMLDB_TYPE_INTEGER, '2', null, null, null, '1', 'notifyaddentry');
+        if (!$dbman->field_exists($table, $timeofday_field)) {
+            $dbman->add_field($table, $timeofday_field);
+        }
 
-    	// Giportfolio savepoint reached.
-    	upgrade_mod_savepoint(true, 2019061500, 'giportfolio');
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2019061500, 'giportfolio');
     }
 
     if ($oldversion < 2020032200) {
@@ -557,7 +560,7 @@ function xmldb_giportfolio_upgrade($oldversion) {
         if (!$dbman->field_exists($table_gc, $mentorid_field)) {
             $dbman->add_field($table_gc, $mentorid_field);
         }
-         // Conditionally launch add field teacherid.
+        // Conditionally launch add field teacherid.
         if (!$dbman->field_exists($table_gc, $teacher_field)) {
             $dbman->add_field($table_gc, $teacher_field);
         }
@@ -604,8 +607,8 @@ function xmldb_giportfolio_upgrade($oldversion) {
         // Giportfolio savepoint reached.
         upgrade_mod_savepoint(true, 2021031000, 'giportfolio');
     }
-    
-    if ($oldversion < 2021032501) { //2021031001
+
+    if ($oldversion < 2021032501) {
 
         // Define field hideshowcontribution to be added to giportfolio.
         $table = new xmldb_table('giportfolio');
@@ -646,7 +649,7 @@ function xmldb_giportfolio_upgrade($oldversion) {
         $table->add_field('giportfolioid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('chapterid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-       
+
         // Adding keys to table giportfolio_last_seen.
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
@@ -673,8 +676,6 @@ function xmldb_giportfolio_upgrade($oldversion) {
         // Giportfolio savepoint reached.
         upgrade_mod_savepoint(true, 2021082701, 'giportfolio');
     }
-
-
 
     return true;
 }

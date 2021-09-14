@@ -83,13 +83,19 @@ class restore_giportfolio_activity_task extends restore_activity_task {
 
         // Giportfolio by cm->id.
         $rules[] = new restore_decode_rule('GIPORTFOLIOVIEWBYID', '/mod/giportfolio/viewgiportfolio.php?id=$1', 'course_module');
-        $rules[] = new restore_decode_rule('GIPORTFOLIOVIEWBYIDCH', '/mod/giportfolio/viewgiportfolio.php?id=$1&amp;chapterid=$2',
-                                           array('course_module', 'giportfolio_chapter'));
+        $rules[] = new restore_decode_rule(
+            'GIPORTFOLIOVIEWBYIDCH',
+            '/mod/giportfolio/viewgiportfolio.php?id=$1&amp;chapterid=$2',
+            array('course_module', 'giportfolio_chapter')
+        );
 
         // Giportfolio by giportfolio->id.
         $rules[] = new restore_decode_rule('GIPORTFOLIOVIEWBYB', '/mod/giportfolio/viewgiportfolio.php?b=$1', 'giportfolio');
-        $rules[] = new restore_decode_rule('GIPORTFOLIOVIEWBYBCH', '/mod/giportfolio/viewgiportfolio.php?b=$1&amp;chapterid=$2',
-                                           array('giportfolio', 'giportfolio_chapter'));
+        $rules[] = new restore_decode_rule(
+            'GIPORTFOLIOVIEWBYBCH',
+            '/mod/giportfolio/viewgiportfolio.php?b=$1&amp;chapterid=$2',
+            array('giportfolio', 'giportfolio_chapter')
+        );
 
         // View base page of Portfolio by cm->id.
         $rules[] = new restore_decode_rule('GIPORTFOLIOVIEWBASEBYID', '/mod/giportfolio/view.php?id=$1', 'course_module');

@@ -35,20 +35,35 @@ class backup_giportfolio_activity_structure_step extends backup_activity_structu
         $userinfo = $this->get_setting_value('userinfo');
 
         // Define each element separated.
-        $giportfolio = new backup_nested_element('giportfolio', array('id'),
-                                                 array('name', 'intro', 'introformat', 'numbering', 'customtitles',
-                                                      'timecreated', 'timemodified', 'collapsesubchapters', 'grade', 'printing',
-                                                      'participantadd', 'chapternumber', 'publishnotification', 'notifyaddentry',
-                                                      'automaticgrading', 'skipintro', 'myactivitylink', 'peersharing', 'timeofday', 'displayoutline'));
+        $giportfolio = new backup_nested_element(
+            'giportfolio',
+            array('id'),
+            array(
+                'name', 'intro', 'introformat', 'numbering', 'customtitles',
+                'timecreated', 'timemodified', 'collapsesubchapters', 'grade', 'printing',
+                'participantadd', 'chapternumber', 'publishnotification', 'notifyaddentry',
+                'automaticgrading', 'skipintro', 'myactivitylink', 'peersharing', 'timeofday', 'displayoutline'
+            )
+        );
         $chapters = new backup_nested_element('chapters');
-        $chapter = new backup_nested_element('chapter', array('id'),
-                                             array('pagenum', 'subchapter', 'title', 'content', 'contentformat', 'hidden',
-                                                  'timemcreated', 'timemodified', 'importsrc', 'userid'));
+        $chapter = new backup_nested_element(
+            'chapter',
+            array('id'),
+            array(
+                'pagenum', 'subchapter', 'title', 'content', 'contentformat', 'hidden',
+                'timemcreated', 'timemodified', 'importsrc', 'userid'
+            )
+        );
 
         $contributions = new backup_nested_element('contributions');
-        $contribution = new backup_nested_element('contribution', array('id'),
-                                                  array('chapterid', 'pagenum', 'subchapter', 'title', 'content', 'contentformat',
-                                                       'hidden', 'timemcreated', 'timemodified', 'importsrc', 'userid'));
+        $contribution = new backup_nested_element(
+            'contribution',
+            array('id'),
+            array(
+                'chapterid', 'pagenum', 'subchapter', 'title', 'content', 'contentformat',
+                'hidden', 'timemcreated', 'timemodified', 'importsrc', 'userid'
+            )
+        );
 
         $giportfolio->add_child($chapters);
 

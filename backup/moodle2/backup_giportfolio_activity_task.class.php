@@ -24,8 +24,8 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot.'/mod/giportfolio/backup/moodle2/backup_giportfolio_stepslib.php');    // Because it exists (must).
-require_once($CFG->dirroot.'/mod/giportfolio/backup/moodle2/backup_giportfolio_settingslib.php'); // Because it exists (optional).
+require_once($CFG->dirroot . '/mod/giportfolio/backup/moodle2/backup_giportfolio_stepslib.php');    // Because it exists (must).
+require_once($CFG->dirroot . '/mod/giportfolio/backup/moodle2/backup_giportfolio_settingslib.php'); // Because it exists (optional).
 
 /**
  * giportfolio backup task that provides all the settings and steps to perform one

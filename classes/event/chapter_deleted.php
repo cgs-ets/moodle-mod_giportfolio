@@ -23,6 +23,7 @@
  */
 
 namespace mod_giportfolio\event;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -70,7 +71,7 @@ class chapter_deleted extends \core\event\base {
      */
     protected function get_legacy_logdata() {
         $chapter = $this->get_record_snapshot('giportfolio_chapters', $this->objectid);
-        return array($this->courseid, 'giportfolio', 'update', 'view.php?id='.$this->contextinstanceid, $chapter->giportfolioid, $this->contextinstanceid);
+        return array($this->courseid, 'giportfolio', 'update', 'view.php?id=' . $this->contextinstanceid, $chapter->giportfolioid, $this->contextinstanceid);
     }
 
     /**

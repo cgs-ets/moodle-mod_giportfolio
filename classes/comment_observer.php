@@ -37,20 +37,17 @@ require_once($CFG->dirroot . '/mod/giportfolio/locallib.php');
  */
 class comment_observer {
 
-    
+
     /**
      *  A comment has been made. Send notification
      *
      * @param  $event The event.
      * @return void
      */
-    public static function send_notification($event)
-    {
+    public static function send_notification($event) {
 
         $gcid = ($event->other)['itemid']; // Contribution id.
-        
+
         giportfolio_send_comment_notification($event->userid, $gcid);
     }
-
-    
 }
