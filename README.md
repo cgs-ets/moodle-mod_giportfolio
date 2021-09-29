@@ -79,7 +79,7 @@ Intentionally omitted features:
 * Graph of contributors.
 * Display student role name by alias (if set)
 * Bookmark
-* Commenst notification.
+* Comments notification.
 
 > Settings
 >>
