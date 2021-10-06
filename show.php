@@ -51,18 +51,9 @@ $chapter->hidden = $chapter->hidden ? 0 : 1;
 $DB->update_record('giportfolio_chapters', $chapter);
 
 // Remove from  last seen table if the chapter is hidden.
-function giportfolio_remove_last_chapter_seen($chapter) {
-    global $DB;
-
-    $sql = "SELECT id FROM mdl_giportfolio_last_seen WHERE chapterid = $chapter->id";
-    $record = $DB->get_records_sql($sql);
-    $ids = implode(', ', array_keys($record));
-   
-    if (!empty($ids)) {
-        $DB->delete_records_select('giportfolio_last_seen', "id in (${ids})");
-    }
-
-} 
+if ($chapter->hidden == 1) {
+    giportfolio_remove_last_chapter_seen($chapter);
+}  
 // Change visibility of subchapters too.
 if (!$chapter->subchapter) {
     $chapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0),
