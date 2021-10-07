@@ -85,7 +85,7 @@ class mod_giportfolio_mod_form extends moodleform_mod {
 
         // add peersharing option to settings
         $mform->addElement('selectyesno', 'peersharing', get_string('peersharing', 'giportfolio'));
-        $mform->setDefault('peersharing', 1);
+        $mform->setDefault('peersharing', 0);
 
         // add enable/disable visibility option.
         $mform->addElement('selectyesno', 'hideshowcontribution', get_string('hideshow', 'giportfolio'));
@@ -98,7 +98,7 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         // add display outline option to settings
         $mform->addElement('selectyesno', 'displayoutline', get_string('displayoutline', 'giportfolio'));
         $mform->addHelpButton('displayoutline', 'displayoutline', 'mod_giportfolio');
-        $mform->setDefault('displayoutline', 1);
+        $mform->setDefault('displayoutline', 0);
 
         $mform->addElement('selectyesno', 'participantadd', get_string('participantadd', 'giportfolio'));
         $mform->setDefault('participantadd', 1);
@@ -126,10 +126,10 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->setDefault('automaticgrading', 0);
 
         $mform->addElement('selectyesno', 'skipintro', get_string('skipintro', 'giportfolio'));
-        $mform->setDefault('skipintro', 1);
+        $mform->setDefault('skipintro', 0);
 
         $mform->addElement('selectyesno', 'myactivitylink', get_string('myactivitylink', 'giportfolio'));
-        $mform->setDefault('myactivitylink', 1);
+        $mform->setDefault('myactivitylink', 0);
 
         // Allow mentor to contribute on behalf of their mentee
         $mform->addElement('selectyesno', 'allowmentorcontrib', get_string('allowmentorcontrib', 'giportfolio'));
@@ -138,11 +138,11 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         
         //Allow Non-editing teachers to contribute
         $mform->addElement('selectyesno', 'allownetcontribute', get_string('allownetcontribute', 'giportfolio'));
-        $mform->setDefault('allownetcontribute', 0);
+        $mform->setDefault('allownetcontribute', 1);
 
         //Disable delete buttons on contributions.
         $mform->addElement('selectyesno', 'disabledeletebtn', get_string('disabledeletebtn', 'giportfolio'));
-        $mform->setDefault('disabledeletebtn', 0);
+        $mform->setDefault('disabledeletebtn', 1);
         
         if (giportfolio_include_klassenbuchtrainer()) {
             $mform->addElement('selectyesno', 'klassenbuchtrainer', get_string('klassenbuchtrainer', 'giportfolio'));
