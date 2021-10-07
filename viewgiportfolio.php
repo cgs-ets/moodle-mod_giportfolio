@@ -298,10 +298,6 @@ $menteesmentorsid = giportfolio_get_mentees_mentor($userid);
 $ids = ($mentee == 0) ? $userid : ((!empty($menteesmentorsid)) ? $menteesmentorsid . ',' . $userid : $userid);
 $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $ids, $showshared);
 
-if (count($contriblist) > 0) {
-    giportfolio_set_mentor_info($contriblist, $userid);
-}
-
 $chaptertext = file_rewrite_pluginfile_urls(
     $chapter->content,
     'pluginfile.php',
@@ -310,6 +306,7 @@ $chaptertext = file_rewrite_pluginfile_urls(
     'chapter',
     $chapter->id
 );
+
 $templatecontext->intro = format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
 
 echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', $templatecontext); // Show/hide instruction button.
@@ -326,8 +323,6 @@ if ((!$allowedit || $cangrade && $mentee != 0) && !$context->is_locked() || is_s
     echo $OUTPUT->single_button($addurl, '', '', array('class' => 'add-contribution', 'tooltip' => get_string('addcontrib', 'mod_giportfolio')));
     echo '<br>';
 }
-
-
 
 $otherusers = array();
 
@@ -352,6 +347,7 @@ if ($giportfolio->peersharing && $showshared) {
 }
 
 if (!$isuserchapter && $giportfolio->peersharing) {
+    
     // If this is not a user chapter, display a button to show/hide other users' shared contributions,
     // as long as peersharing is enabled.
     if ($showshared) {
@@ -399,7 +395,8 @@ if ($contriblist) {
     );
 
     $align = 'right';
-
+    $showicon = '';
+    $showurl = '';
     foreach ($contriblist as $contrib) {
         $ismine = ($contrib->userid == $userid);
 
@@ -418,7 +415,7 @@ if ($contriblist) {
             $delurl = new moodle_url($baseurl, array('action' => 'delete'));
             $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
             $delicon = html_writer::link($delurl, $delicon);
-            $showurl;
+          
             // Check if the show hide option is available for students.
             if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) {
 
@@ -430,10 +427,8 @@ if ($contriblist) {
                     $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
                 }
             }
-
+         
             $showicon = html_writer::link($showurl, $showicon);
-
-
             $shareicon = '';
             $actionsharing = array();
             if (!$isuserchapter && $giportfolio->peersharing) { // Only for chapters without a userid and if peersharing is enabled.
@@ -466,6 +461,7 @@ if ($contriblist) {
 
             $userfullname = '';
             $actions = array_merge($actions, $actionsharing);
+           
         } else if ($giportfolio->peersharing) {
             $actions = array(); // No actions when viewing another user's contribution.
             $userfullname = $otherusers[$contrib->userid] . ': ';
@@ -511,11 +507,12 @@ if ($contriblist) {
             $cout .= "</td></tr></table>\n";
             $cout .= '<br>';
         }
-
+       
+        //print_object($commentopts);
         if ($ismine) {
             $commentopts->itemid = $contrib->id;
             $commentbox = new comment($commentopts);
-            $cout .= html_writer::tag('contribcomment', $commentbox->output());
+            $cout .= html_writer::tag('contribcomment', $commentbox->output(true));
             $cout .= '<br>';
         }
 
@@ -523,7 +520,7 @@ if ($contriblist) {
 
         $class = 'giportfolio-contribution';
         $class .= $ismine ? ' mine' : ' notmine';
-        $contribution_buffer .= html_writer::tag('article', $cout, array('class' => $class, 'id' => 'contribution' . $contribution_count));
+        $contribution_buffer .= html_writer::tag('article', $cout, array('class' => $class, 'id' => 'contribution'.$contribution_count));
 
         if ($giportfolio->displayoutline) {
 
@@ -533,6 +530,7 @@ if ($contriblist) {
                     . get_string('lastmodified', 'mod_giportfolio') . '<br/>'
                     . date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified)
                     . '</span></span>';
+                    
             }
 
             $contribution_outline .= html_writer::tag(
@@ -543,6 +541,8 @@ if ($contriblist) {
                     '<td class="badge badge-success"' . $hideteachertag . ' ><strong>' . format_string(get_string('teachercontribution', 'mod_giportfolio')) . '</td>',
                 array('class' => ($ismine ? 'mine' : 'notmine'))
             );
+
+            
         }
 
         if (empty(has_seen_contribution($contrib->id))) { // First time the user sees the contrib.

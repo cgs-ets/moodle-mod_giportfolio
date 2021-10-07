@@ -61,23 +61,23 @@ function pdfgiportfolio_fix_image_links($html) {
             if (empty($params)) {
                 $filepath = '/';
             } else {
-                $filepath = '/'.implode('/', $params).'/';
+                $filepath = '/' . implode('/', $params) . '/';
             }
 
             if (!$file = $fs->get_file($contextid, $component, $filearea, $itemid, $filepath, $filename)) {
                 if ($itemid) {
-                    $filepath = '/'.$itemid.$filepath; // See if there was no itemid in the original URL.
+                    $filepath = '/' . $itemid . $filepath; // See if there was no itemid in the original URL.
                     $itemid = 0;
                     $file = $fs->get_file($contextid, $component, $filename, $itemid, $filepath, $filename);
                 }
             }
 
             if (!$file) {
-                $content = file_get_contents($CFG->dirroot.'/pix/spacer.gif');
+                $content = file_get_contents($CFG->dirroot . '/pix/spacer.gif');
             } else {
                 $content = $file->get_content();
             }
-            $content = '@'.base64_encode($content);
+            $content = '@' . base64_encode($content);
             $html = str_replace($matches[1], $content, $html);
         }
     }
@@ -88,7 +88,7 @@ function pdfgiportfolio_fix_image_links($html) {
 function pdfgiportfolio_fix_svg_images($html) {
     $baseurl = new moodle_url('/theme/image.php');
     $baseurl = preg_quote($baseurl->out());
-    $html = preg_replace_callback("|({$baseurl})([^\"']*)|", function($matches) {
+    $html = preg_replace_callback("|({$baseurl})([^\"']*)|", function ($matches) {
         global $CFG;
         if (substr($matches[2], 0, 1) == '?') {
             // Not using slash arguments.
@@ -110,10 +110,10 @@ function pdfgiportfolio_fix_svg_images($html) {
             if (isset($params['component']) && $params['component'] == 'core') {
                 if (isset($params['image'])) {
                     $filepath = urldecode($params['image']);
-                    $filepath = $CFG->dirroot.'/pix/'.$filepath;
+                    $filepath = $CFG->dirroot . '/pix/' . $filepath;
                     foreach (array('.gif', '.png') as $ext) {
-                        if (file_exists($filepath.$ext)) {
-                            return '@'.base64_encode(file_get_contents($filepath.$ext));
+                        if (file_exists($filepath . $ext)) {
+                            return '@' . base64_encode(file_get_contents($filepath . $ext));
                         }
                     }
                 }
@@ -123,7 +123,7 @@ function pdfgiportfolio_fix_svg_images($html) {
             if (strpos($matches[2], 'svg=0') !== false) {
                 return $matches[0]; // svg=0 already set => nothing to change.
             }
-            return $matches[1].$matches[2].$sep.'svg=0'; // Add 'svg=0' to parameters
+            return $matches[1] . $matches[2] . $sep . 'svg=0'; // Add 'svg=0' to parameters
         }
 
         // Slash arguments.
@@ -133,10 +133,10 @@ function pdfgiportfolio_fix_svg_images($html) {
         if ($parts[2] == 'core') {
             $parts = array_slice($parts, 4); // Remove 'theme', 'core' and 'iteration' params
             $filepath = implode('/', $parts);
-            $filepath = $CFG->dirroot.'/pix/'.$filepath;
+            $filepath = $CFG->dirroot . '/pix/' . $filepath;
             foreach (array('.gif', '.png') as $ext) {
-                if (file_exists($filepath.$ext)) {
-                    return '@'.base64_encode(file_get_contents($filepath.$ext));
+                if (file_exists($filepath . $ext)) {
+                    return '@' . base64_encode(file_get_contents($filepath . $ext));
                 }
             }
         }
@@ -144,7 +144,7 @@ function pdfgiportfolio_fix_svg_images($html) {
         if (substr($matches[1], 4) == '/_s/') {
             return $matches[0]; // /_s/ prefix already set => nothing to change.
         }
-        return $matches[1].'/_s'.$matches[2]; // Add /_s/ prefix to the start of the path.
+        return $matches[1] . '/_s' . $matches[2]; // Add /_s/ prefix to the start of the path.
     }, $html);
     return $html;
 }

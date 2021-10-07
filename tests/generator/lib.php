@@ -124,8 +124,8 @@ class mod_giportfolio_generator extends testing_module_generator {
 
     public function create_content($instance, $record = array()) {
         $record = (array)$record + array(
-                'giportfolioid' => $instance->id
-            );
+            'giportfolioid' => $instance->id
+        );
         return $this->create_chapter($record);
     }
 }

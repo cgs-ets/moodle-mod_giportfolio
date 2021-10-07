@@ -38,7 +38,7 @@ function mod_giportfolio_migrate_moddata_dir_to_legacy($giportfolio, $context, $
     global $OUTPUT, $CFG;
 
     $base = "$CFG->dataroot/$giportfolio->course/$CFG->moddata/giportfolio/$giportfolio->id";
-    $fulldir = $base.$path;
+    $fulldir = $base . $path;
 
     if (!is_dir($fulldir)) {
         // Does not exist.
@@ -62,12 +62,12 @@ function mod_giportfolio_migrate_moddata_dir_to_legacy($giportfolio, $context, $
 
         if ($item->isFile()) {
             if (!$item->isReadable()) {
-                echo $OUTPUT->notification(" File not readable, skipping: ".$fulldir.$item->getFilename());
+                echo $OUTPUT->notification(" File not readable, skipping: " . $fulldir . $item->getFilename());
                 unset($item); // Release file handle.
                 continue;
             }
 
-            $filepath = clean_param("/$CFG->moddata/giportfolio/$giportfolio->id".$path, PARAM_PATH);
+            $filepath = clean_param("/$CFG->moddata/giportfolio/$giportfolio->id" . $path, PARAM_PATH);
             $filename = clean_param($item->getFilename(), PARAM_FILE);
 
             if ($filename === '') {
@@ -77,7 +77,7 @@ function mod_giportfolio_migrate_moddata_dir_to_legacy($giportfolio, $context, $
             }
 
             if (strlen($filepath) > 255) {
-                echo $OUTPUT->notification(" File path longer than 255 chars, skipping: ".$fulldir.$item->getFilename());
+                echo $OUTPUT->notification(" File path longer than 255 chars, skipping: " . $fulldir . $item->getFilename());
                 unset($item); // Release file handle.
                 continue;
             }
@@ -88,16 +88,15 @@ function mod_giportfolio_migrate_moddata_dir_to_legacy($giportfolio, $context, $
                     'filepath' => $filepath, 'filename' => $filename,
                     'timecreated' => $item->getCTime(), 'timemodified' => $item->getMTime()
                 );
-                $fs->create_file_from_pathname($filerecord, $fulldir.$item->getFilename());
+                $fs->create_file_from_pathname($filerecord, $fulldir . $item->getFilename());
             }
-            $oldpathname = $fulldir.$item->getFilename();
+            $oldpathname = $fulldir . $item->getFilename();
             unset($item); // Release file handle.
             @unlink($oldpathname);
-
         } else {
             // Migrate recursively all subdirectories.
-            $oldpathname = $base.$item->getFilename().'/';
-            $subpath = $path.$item->getFilename().'/';
+            $oldpathname = $base . $item->getFilename() . '/';
+            $subpath = $path . $item->getFilename() . '/';
             unset($item); // Release file handle.
             mod_giportfolio_migrate_moddata_dir_to_legacy($giportfolio, $context, $subpath);
             @rmdir($oldpathname); // Deletes dir if empty.
@@ -118,13 +117,29 @@ function mod_giportfolio_migrate_all_areas() {
         upgrade_set_timeout(360); // Set up timeout, may also abort execution.
         $cm = get_coursemodule_from_instance('giportfolio', $giportfolio->id);
         $context = context_module::instance($cm->id);
-        mod_giportfolio_migrate_area($giportfolio, 'intro', 'giportfolio', $giportfolio->course, $context,
-                                     'mod_giportfolio', 'intro', 0);
+        mod_giportfolio_migrate_area(
+            $giportfolio,
+            'intro',
+            'giportfolio',
+            $giportfolio->course,
+            $context,
+            'mod_giportfolio',
+            'intro',
+            0
+        );
 
         $rschapters = $DB->get_recordset('giportfolio_chapters', array('giportfolioid' => $giportfolio->id));
         foreach ($rschapters as $chapter) {
-            mod_giportfolio_migrate_area($chapter, 'content', 'giportfolio_chapters', $giportfolio->course, $context,
-                                         'mod_giportfolio', 'chapter', $chapter->id);
+            mod_giportfolio_migrate_area(
+                $chapter,
+                'content',
+                'giportfolio_chapters',
+                $giportfolio->course,
+                $context,
+                'mod_giportfolio',
+                'chapter',
+                $chapter->id
+            );
         }
         $rschapters->close();
     }
@@ -156,14 +171,14 @@ function mod_giportfolio_migrate_area($record, $field, $table, $courseid, $conte
                 'contextid' => $context->id, 'component' => $component, 'filearea' => $filearea, 'itemid' => $itemid
             );
             foreach ($matches[2] as $i => $filepath) {
-                if (!$file = $fs->get_file_by_hash(sha1("/$ooldcontext->id/course/legacy/0".$filepath))) {
+                if (!$file = $fs->get_file_by_hash(sha1("/$ooldcontext->id/course/legacy/0" . $filepath))) {
                     continue;
                 }
                 try {
-                    if (!$newfile = $fs->get_file_by_hash(sha1("/$context->id/$component/$filearea/$itemid".$filepath))) {
+                    if (!$newfile = $fs->get_file_by_hash(sha1("/$context->id/$component/$filearea/$itemid" . $filepath))) {
                         $fs->create_file_from_storedfile($filerecord, $file);
                     }
-                    $record->$field = str_replace($matches[0][$i], '@@PLUGINFILE@@'.$filepath, $record->$field);
+                    $record->$field = str_replace($matches[0][$i], '@@PLUGINFILE@@' . $filepath, $record->$field);
                 } catch (Exception $ex) {
                     // Ignore problems.
                 }
@@ -184,7 +199,7 @@ function mod_giportfolio_migrate_userchapters() {
         $transaction = $DB->start_delegated_transaction();
 
         // Create a new record.
-        $newrec = clone($userchapter);
+        $newrec = clone ($userchapter);
         unset($newrec->iduser);
         unset($newrec->id);
         $newrec->userid = $userchapter->iduser;

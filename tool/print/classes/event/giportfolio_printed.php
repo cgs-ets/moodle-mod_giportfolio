@@ -23,6 +23,7 @@
  */
 
 namespace giportfoliotool_print\event;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -69,8 +70,10 @@ class giportfolio_printed extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        return array($this->courseid, 'giportfolio', 'print', 'tool/print/index.php?id=' . $this->contextinstanceid,
-            $this->objectid, $this->contextinstanceid);
+        return array(
+            $this->courseid, 'giportfolio', 'print', 'tool/print/index.php?id=' . $this->contextinstanceid,
+            $this->objectid, $this->contextinstanceid
+        );
     }
 
     /**
@@ -101,5 +104,4 @@ class giportfolio_printed extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'giportfolio';
     }
-
 }

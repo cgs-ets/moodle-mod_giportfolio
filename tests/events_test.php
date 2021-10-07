@@ -64,8 +64,10 @@ class mod_giportfolio_events_testcase extends advanced_testcase {
         $this->assertInstanceOf('\mod_giportfolio\event\chapter_created', $event);
         $this->assertEquals(context_module::instance($giportfolio->cmid), $event->get_context());
         $this->assertEquals($chapter->id, $event->objectid);
-        $expected = array($course->id, 'giportfolio', 'add chapter', 'view.php?id='.$giportfolio->cmid.'&chapterid='.$chapter->id,
-            $chapter->id, $giportfolio->cmid);
+        $expected = array(
+            $course->id, 'giportfolio', 'add chapter', 'view.php?id=' . $giportfolio->cmid . '&chapterid=' . $chapter->id,
+            $chapter->id, $giportfolio->cmid
+        );
         $this->assertEventLegacyLogData($expected, $event);
         $this->assertEventContextNotUsed($event);
     }
@@ -94,8 +96,10 @@ class mod_giportfolio_events_testcase extends advanced_testcase {
         $this->assertInstanceOf('\mod_giportfolio\event\chapter_updated', $event);
         $this->assertEquals(context_module::instance($giportfolio->cmid), $event->get_context());
         $this->assertEquals($chapter->id, $event->objectid);
-        $expected = array($course->id, 'giportfolio', 'update chapter', 'view.php?id='.$giportfolio->cmid.'&chapterid='.$chapter->id,
-            $chapter->id, $giportfolio->cmid);
+        $expected = array(
+            $course->id, 'giportfolio', 'update chapter', 'view.php?id=' . $giportfolio->cmid . '&chapterid=' . $chapter->id,
+            $chapter->id, $giportfolio->cmid
+        );
         $this->assertEventLegacyLogData($expected, $event);
         $this->assertEventContextNotUsed($event);
     }
@@ -112,7 +116,7 @@ class mod_giportfolio_events_testcase extends advanced_testcase {
         $chapter = $giportfoliogenerator->create_chapter(array('giportfolioid' => $giportfolio->id));
 
         $event = \mod_giportfolio\event\chapter_deleted::create_from_chapter($giportfolio, $context, $chapter);
-        $legacy = array($course->id, 'giportfolio', 'update', 'view.php?id='.$giportfolio->cmid, $giportfolio->id, $giportfolio->cmid);
+        $legacy = array($course->id, 'giportfolio', 'update', 'view.php?id=' . $giportfolio->cmid, $giportfolio->id, $giportfolio->cmid);
 
         // Triggering and capturing the event.
         $sink = $this->redirectEvents();
@@ -149,7 +153,7 @@ class mod_giportfolio_events_testcase extends advanced_testcase {
         // Checking that the event contains the expected values.
         $this->assertInstanceOf('\mod_giportfolio\event\course_module_instance_list_viewed', $event);
         $this->assertEquals(context_course::instance($course->id), $event->get_context());
-        $expected = array($course->id, 'giportfolio', 'view all', 'index.php?id='.$course->id, '');
+        $expected = array($course->id, 'giportfolio', 'view all', 'index.php?id=' . $course->id, '');
         $this->assertEventLegacyLogData($expected, $event);
         $this->assertEventContextNotUsed($event);
     }
@@ -212,5 +216,4 @@ class mod_giportfolio_events_testcase extends advanced_testcase {
         $this->assertEventLegacyLogData($expected, $event);
         $this->assertEventContextNotUsed($event);
     }
-
 }

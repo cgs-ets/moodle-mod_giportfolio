@@ -859,7 +859,7 @@ function giportfolio_page_type_list($pagetype, $parentcontext, $currentcontext) 
 
 function mod_giportfolio_comment_validate($opts) {
     global $DB, $USER;
-
+  
     if ($opts->commentarea != 'giportfolio_contribution') {
         return false; // Invalid comment area.
     }
@@ -874,6 +874,8 @@ function mod_giportfolio_comment_validate($opts) {
             'id' => $opts->itemid,
             'giportfolioid' => $opts->cm->instance
         ));
+
+       
         if ($userid != $USER->id && !giportfolio_user_is_mentor($opts->context, $USER)) {
             return false;
         }

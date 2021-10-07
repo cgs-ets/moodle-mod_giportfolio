@@ -884,7 +884,7 @@ function giportfolio_get_user_default_chapter($giportfolioid) { // Part of Allow
 
     $sql = "SELECT TOP(1)  chapterid  FROM mdl_giportfolio_contributions 
             WHERE  giportfolioid = {$giportfolioid}
-           -- LIMIT 1;
+          --  LIMIT 1;
            ";
 
     return  $DB->get_record_sql($sql);
@@ -1466,15 +1466,15 @@ function giportfolio_filter_graders($graders) {
  * Render graph of contributors table. CGS customization.
  */
 function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm) {
-    global $CFG, $DB, $OUTPUT;
+    global $CFG, $DB, $OUTPUT, $COURSE;
 
     $chapters = giportfolio_preload_chapters($giportfolio);
     $chaptersid = [];
     $titles = [];
 
+    $studentalias = get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
 
     foreach ($chapters as $chapter) {
-
         if (!$chapter->subchapter) {
             $titles[] =  '<div id ="' . $chapter->id . '" class="rotated-text-container"><span class="rotated-text" title = "' . $chapter->title . '">' . shorten_text($chapter->title) . '</span></div>
                             <div class = "subchapter-icon">
@@ -1498,10 +1498,11 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
                       <div class = "subchapter-icon">
                             <img class ="icon" alt ="Added by student" title = "Added by student" src="' . $OUTPUT->image_url('addition_icon', 'mod_giportfolio') . '"/>
                         </div>';
+    list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
+
     $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
     $extrafields = get_extra_user_fields($context);
     $tableheaders = array_merge(array('', get_string('fullnameuser')), $titles);
-
 
     require_once($CFG->libdir . '/tablelib.php');
     $table = new flexible_table('mod-giportfolio-graph-contribution');
@@ -1513,12 +1514,13 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $table->sortable(false);
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
-    foreach ($table->column_class as $name => $column) {
 
+    foreach ($table->column_class as $name => $column) {
         if (!in_array($name, ['picture', 'fullname', get_string('additionstitle', 'giportfolio')])) {  // These are the columns for the chapter titles          
             $table->column_class($name, 'completion-header');
         }
     }
+
     $table->set_attribute('cellspacing', '0');
     $table->set_attribute('id', 'graphcontributors');
     $table->set_attribute('class', 'graphofcontributors generaltable flexible boxaligncenter');
@@ -1529,7 +1531,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
     $ufields = user_picture::fields('u', $extrafields);
 
-    if ($where) {
+    if (isset($where)) {
         $where .= ' AND ';
     }
 
@@ -1577,6 +1579,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     } else {
         echo html_writer::tag('div', get_string('nosubmisson', 'mod_giportfolio'), array('class' => 'nosubmisson'));
     }
+
     $table->print_html();
 }
 
@@ -1824,7 +1827,7 @@ function giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $con
             $countseen++;
             $countcomments += $contribution->totalcomment;
 
-            if ($contribution->totalcomment == 0) {
+            if (isset($contribution->totalcomment) && $contribution->totalcomment == 0) {
                 $countnocomments++;
             }
         }
@@ -1849,15 +1852,20 @@ function giportfolio_get_last_chapter_seen($giportfolio) {
     $sql = "SELECT chapterid FROM mdl_giportfolio_last_seen WHERE userid = $USER->id AND giportfolioid = $giportfolio->id";
     $record = $DB->get_record_sql($sql);
 
-    if ($record) {
+    if ($record) {  // Maybe the chapter was  hidden after the user saw it.
 
-        $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id = $record->chapterid";
+        $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id = $record->chapterid AND hidden = 0";
         $record = $DB->get_records_sql($sql);
-        return $record;
-    } else {
-        return null;
-    }
+        
+        if ($record) {
+            return $record;
+        }
+        
+    } 
+
+    return null;
 }
+
 
 function giportfolio_remove_last_chapter_seen($chapter) {
     global $DB;
@@ -2262,6 +2270,7 @@ function is_non_editing_teacher() {
     // Allow non editing teachers to contribute
     $contextcourse = \context_course::instance($COURSE->id);
     $coursenoneditingteachers = array_keys(get_role_users('4', $contextcourse, false, 'u.id'));
+   
     if (in_array(intval($USER->id), $coursenoneditingteachers)) {
         return true;
     }

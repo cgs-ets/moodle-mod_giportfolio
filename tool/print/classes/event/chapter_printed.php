@@ -23,6 +23,7 @@
  */
 
 namespace giportfoliotool_print\event;
+
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -104,5 +105,4 @@ class chapter_printed extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'giportfolio';
     }
-
 }

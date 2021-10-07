@@ -167,7 +167,7 @@ if ($currenttab == 'graphcontributors') {
     $iconchapter =  html_writer::img($OUTPUT->image_url('chapter', 'mod_giportfolio'), '', ['class' => 'icon']);
     $iconsubchapter =  html_writer::img($OUTPUT->image_url('subchapter_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
    
-    $out .= html_writer::start_div();
+    $out = html_writer::start_div();
     $out .= "<table>
              <tr>
                 <th>".get_string('legends', 'mod_giportfolio' )."</th>
@@ -273,7 +273,7 @@ function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
         $contribnotseenids = implode(',', array_diff($contribids, $contribseen));
 
         if (empty ($contribnotseenids) || empty($contribids)) {
-            return '';
+            return [];
         } else {
 
             $q = "SELECT DISTINCT chapterid FROM mdl_giportfolio_contributions WHERE id IN ($contribnotseenids);";
@@ -281,6 +281,8 @@ function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
             $chids = implode(',', $chids);
             $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id in ($chids)";
         }
+
+        
         return $DB->get_records_sql($sql);
     }
 
@@ -290,6 +292,7 @@ function display_chapters_not_seen( $giportfolio, $contributorid, $cm) {
     global $DB, $PAGE;
 
     $chapters =  get_updated_chapters_not_seen($giportfolio, $contributorid, $cm);
+   
     $morethanthree = count($chapters) > 3;
     $links = '';
     $index = 0;

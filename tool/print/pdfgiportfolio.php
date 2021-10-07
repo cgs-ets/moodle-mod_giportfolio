@@ -23,12 +23,12 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require(dirname(__FILE__).'/../../../../config.php');
-require_once(dirname(__FILE__).'/locallib.php');
+require(dirname(__FILE__) . '/../../../../config.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 global $CFG, $DB, $USER, $PAGE, $SITE;
-require_once($CFG->libdir.'/pdflib.php');
-require_once($CFG->libdir.'/tcpdf/tcpdf.php');
-require_once($CFG->dirroot.'/mod/giportfolio/tool/print/pdflib.php');
+require_once($CFG->libdir . '/pdflib.php');
+require_once($CFG->libdir . '/tcpdf/tcpdf.php');
+require_once($CFG->dirroot . '/mod/giportfolio/tool/print/pdflib.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
@@ -48,8 +48,12 @@ require_capability('giportfoliotool/print:print', $context);
 // Check all variables.
 if ($chapterid) {
     // Single chapter printing - only visible!
-    $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id),
-                               '*', MUST_EXIST);
+    $chapter = $DB->get_record(
+        'giportfolio_chapters',
+        array('id' => $chapterid, 'giportfolioid' => $giportfolio->id),
+        '*',
+        MUST_EXIST
+    );
     if ($chapter->userid && $chapter->userid != $USER->id) {
         throw new moodle_exception('notyourchapter', 'mod_giportfolio');
     }
@@ -99,15 +103,18 @@ class PORTFOLIOPDF extends pdf {
         // Set font.
         $this->SetFont('helvetica', 'I', 8);
         // Page number.
-        $this->Cell(0, 10, 'Page '.$this->getAliasNumPage().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+        $this->Cell(0, 10, 'Page ' . $this->getAliasNumPage() . '/' . $this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
     }
 }
 
 $stylev = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(255, 0, 0));
 
 $allchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0), 'pagenum');
-$alluserchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
-                                    'pagenum');
+$alluserchapters = $DB->get_records(
+    'giportfolio_chapters',
+    array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
+    'pagenum'
+);
 if ($alluserchapters) {
     $allchapters = $alluserchapters + $allchapters;
 }
@@ -120,7 +127,7 @@ $pdf = new PORTFOLIOPDF($orientation = 'P', 'mm', $format = 'A4', true, 'UTF-8',
 // 'author' name for the PDF ($pdfauthorname) and the URL to link the logo to ($pdflogolink).
 $pdfauthorname = $SITE->fullname;
 $pdflogolink = '';
-$pdfdetailsfile = $CFG->dirroot.'/mod/giportfolio/tool/print/pdfgiportfolio_details.php';
+$pdfdetailsfile = $CFG->dirroot . '/mod/giportfolio/tool/print/pdfgiportfolio_details.php';
 if (file_exists($pdfdetailsfile)) {
     require_once($pdfdetailsfile);
 }
@@ -169,9 +176,26 @@ $pdf->setCellMargins(1, 1, 1, 1);
 
 $pdf->SetFillColor(256, 256, 256);
 
-if (file_exists($CFG->dirroot.'/mod/giportfolio/tool/print/pix/glogo.jpg')) {
-    $pdf->Image('pix/glogo.jpg', 170, 10, 30, 15, 'JPG', $pdflogolink, '', true, 170, '', false, false,
-                0, false, false, false);
+if (file_exists($CFG->dirroot . '/mod/giportfolio/tool/print/pix/glogo.jpg')) {
+    $pdf->Image(
+        'pix/glogo.jpg',
+        170,
+        10,
+        30,
+        15,
+        'JPG',
+        $pdflogolink,
+        '',
+        true,
+        170,
+        '',
+        false,
+        false,
+        0,
+        false,
+        false,
+        false
+    );
 }
 $pdf->MultiCell(155, 4, $giportfolio->name, 0, 'C', 1, 0, '', '', true);
 $pdf->Ln(20);
@@ -183,41 +207,129 @@ $intro = pdfgiportfolio_fix_image_links($intro);
 $pdf->writeHTML($intro);
 
 $pdf->Ln(5);
-$site = '<a href="'.$CFG->wwwroot.'">'.format_string($SITE->fullname, true, array('context' => $context)).'</a>';
+$site = '<a href="' . $CFG->wwwroot . '">' . format_string($SITE->fullname, true, array('context' => $context)) . '</a>';
 $pdf->MultiCell(35, 4, get_string('site'), 0, 'L', 0, 0, '', '', true);
-$pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $site, $border = 0, $ln = 1, $fill = 0, $reseth = true,
-                    $align = '', $autopadding = true);
+$pdf->writeHTMLCell(
+    $w = 0,
+    $h = 0,
+    $x = '',
+    $y = '',
+    $site,
+    $border = 0,
+    $ln = 1,
+    $fill = 0,
+    $reseth = true,
+    $align = '',
+    $autopadding = true
+);
 $pdf->MultiCell(35, 4, get_string('course'), 0, 'L', 0, 0, '', '', true);
-$pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $course->fullname, $border = 0, $ln = 1, $fill = 0, $reseth = true,
-                    $align = '', $autopadding = true);
+$pdf->writeHTMLCell(
+    $w = 0,
+    $h = 0,
+    $x = '',
+    $y = '',
+    $course->fullname,
+    $border = 0,
+    $ln = 1,
+    $fill = 0,
+    $reseth = true,
+    $align = '',
+    $autopadding = true
+);
 $pdf->MultiCell(35, 4, get_string('modulename', 'mod_giportfolio'), 0, 'L', 0, 0, '', '', true);
-$pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $giportfolio->name, $border = 0, $ln = 1, $fill = 0, $reseth = true,
-                    $align = '', $autopadding = true);
+$pdf->writeHTMLCell(
+    $w = 0,
+    $h = 0,
+    $x = '',
+    $y = '',
+    $giportfolio->name,
+    $border = 0,
+    $ln = 1,
+    $fill = 0,
+    $reseth = true,
+    $align = '',
+    $autopadding = true
+);
 $pdf->MultiCell(35, 4, get_string('printedby', 'giportfoliotool_print'), 0, 'L', 0, 0, '', '', true);
-$pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', fullname($USER, true), $border = 0, $ln = 1, $fill = 0, $reseth = true,
-                    $align = '', $autopadding = true);
+$pdf->writeHTMLCell(
+    $w = 0,
+    $h = 0,
+    $x = '',
+    $y = '',
+    fullname($USER, true),
+    $border = 0,
+    $ln = 1,
+    $fill = 0,
+    $reseth = true,
+    $align = '',
+    $autopadding = true
+);
 $pdf->MultiCell(35, 4, get_string('printdate', 'giportfoliotool_print'), 0, 'L', 0, 0, '', '', true);
-$pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', userdate(time()), $border = 0, $ln = 1, $fill = 0, $reseth = true,
-                    $align = '', $autopadding = true);
+$pdf->writeHTMLCell(
+    $w = 0,
+    $h = 0,
+    $x = '',
+    $y = '',
+    userdate(time()),
+    $border = 0,
+    $ln = 1,
+    $fill = 0,
+    $reseth = true,
+    $align = '',
+    $autopadding = true
+);
 $pdf->Ln(5);
 
 list($toc, $titles) = giportfoliotool_print_get_toc($chapters, $giportfolio, $cm);
-$pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', $toc, $border = 0, $ln = 1, $fill = 0, $reseth = true,
-                    $align = '', $autopadding = true);
+$pdf->writeHTMLCell(
+    $w = 0,
+    $h = 0,
+    $x = '',
+    $y = '',
+    $toc,
+    $border = 0,
+    $ln = 1,
+    $fill = 0,
+    $reseth = true,
+    $align = '',
+    $autopadding = true
+);
 
-$link1 = $CFG->wwwroot.'/mod/giportfolio/viewgiportfolio.php?id='.$course->id.'&chapterid=';
-$link2 = $CFG->wwwroot.'/mod/giportfolio/viewgiportfolio.php?id='.$course->id;
+$link1 = $CFG->wwwroot . '/mod/giportfolio/viewgiportfolio.php?id=' . $course->id . '&chapterid=';
+$link2 = $CFG->wwwroot . '/mod/giportfolio/viewgiportfolio.php?id=' . $course->id;
 
 foreach ($chapters as $ch) {
     $chapter = $allchapters[$ch->id];
     if ($chapter->hidden) {
         continue;
     }
-    $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', '<div class="giportfolio_chapter"><a name="ch'.$ch->id.'"></a>',
-                        $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
+    $pdf->writeHTMLCell(
+        $w = 0,
+        $h = 0,
+        $x = '',
+        $y = '',
+        '<div class="giportfolio_chapter"><a name="ch' . $ch->id . '"></a>',
+        $border = 0,
+        $ln = 1,
+        $fill = 0,
+        $reseth = true,
+        $align = '',
+        $autopadding = true
+    );
     if (!$giportfolio->customtitles) {
-        $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', '<p class="giportfolio_chapter_title">'.$titles[$ch->id].'</p>',
-                            $border = 0, $ln = 1, $fill = 0, $reseth = true, $align = '', $autopadding = true);
+        $pdf->writeHTMLCell(
+            $w = 0,
+            $h = 0,
+            $x = '',
+            $y = '',
+            '<p class="giportfolio_chapter_title">' . $titles[$ch->id] . '</p>',
+            $border = 0,
+            $ln = 1,
+            $fill = 0,
+            $reseth = true,
+            $align = '',
+            $autopadding = true
+        );
     }
     $content = str_replace($link1, '#ch', $chapter->content);
     $content = str_replace($link2, '#top', $content);
@@ -230,23 +342,68 @@ foreach ($chapters as $ch) {
     $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $USER->id);
     if ($contriblist) {
         foreach ($contriblist as $contrib) {
-            $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio',
-                                                         'chapter', $contrib->chapterid);
-            $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', '<strong>'.$contribtitle.'</strong></br>', $border = 0, $ln = 1,
-                                $fill = 0, $reseth = true, $align = '', $autopadding = true);
-            $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated), $border = 0, $ln = 1,
-                                $fill = 0, $reseth = true, $align = '', $autopadding = true);
+            $contribtitle = file_rewrite_pluginfile_urls(
+                $contrib->title,
+                'pluginfile.php',
+                $context->id,
+                'mod_giportfolio',
+                'chapter',
+                $contrib->chapterid
+            );
+            $pdf->writeHTMLCell(
+                $w = 0,
+                $h = 0,
+                $x = '',
+                $y = '',
+                '<strong>' . $contribtitle . '</strong></br>',
+                $border = 0,
+                $ln = 1,
+                $fill = 0,
+                $reseth = true,
+                $align = '',
+                $autopadding = true
+            );
+            $pdf->writeHTMLCell(
+                $w = 0,
+                $h = 0,
+                $x = '',
+                $y = '',
+                date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated),
+                $border = 0,
+                $ln = 1,
+                $fill = 0,
+                $reseth = true,
+                $align = '',
+                $autopadding = true
+            );
             if ($contrib->timecreated !== $contrib->timemodified) {
-                $pdf->writeHTMLCell($w = 0, $h = 0, $x = '', $y = '', '<i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>', $border = 0, $ln = 1,
-                    $fill = 0, $reseth = true, $align = '', $autopadding = true);
+                $pdf->writeHTMLCell(
+                    $w = 0,
+                    $h = 0,
+                    $x = '',
+                    $y = '',
+                    '<i>' . get_string('lastmodified', 'mod_giportfolio') . date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified) . '</i>',
+                    $border = 0,
+                    $ln = 1,
+                    $fill = 0,
+                    $reseth = true,
+                    $align = '',
+                    $autopadding = true
+                );
             }
-            $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
-                                                        'contribution', $contrib->id);
+            $contribtext = file_rewrite_pluginfile_urls(
+                $contrib->content,
+                'pluginfile.php',
+                $context->id,
+                'mod_giportfolio',
+                'contribution',
+                $contrib->id
+            );
             $contribtext = pdfgiportfolio_fix_image_links($contribtext);
             $pdf->writeHTML($contribtext);
         }
     }
 }
 
-$filename = 'giportfolio-'.clean_filename($giportfolio->name).'.pdf';
+$filename = 'giportfolio-' . clean_filename($giportfolio->name) . '.pdf';
 $pdf->Output($filename, 'I');

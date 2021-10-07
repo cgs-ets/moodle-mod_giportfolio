@@ -25,9 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(__FILE__) . '/lib.php');
 global $CFG;
-require_once($CFG->dirroot.'/mod/giportfolio/locallib.php');
+require_once($CFG->dirroot . '/mod/giportfolio/locallib.php');
 
 /**
  * Generate toc structure and titles
@@ -63,9 +63,9 @@ function giportfoliotool_print_get_toc($chapters, $giportfolio, $cm) {
     $toc .= '<a name="toc"></a>'; // Representation of toc (HTML).
 
     if ($giportfolio->customtitles) {
-        $toc .= '<h1>'.get_string('toc', 'mod_giportfolio').'</h1>';
+        $toc .= '<h1>' . get_string('toc', 'mod_giportfolio') . '</h1>';
     } else {
-        $toc .= '<p class="giportfolio_chapter_title">'.get_string('toc', 'mod_giportfolio').'</p>';
+        $toc .= '<p class="giportfolio_chapter_title">' . get_string('toc', 'mod_giportfolio') . '</p>';
     }
     $toc .= '<ul>';
     foreach ($chapters as $ch) {
@@ -77,7 +77,7 @@ function giportfoliotool_print_get_toc($chapters, $giportfolio, $cm) {
                 $toc .= $first ? '<li><ul><li>' : '<li>';
             }
             $titles[$ch->id] = $title;
-            $toc .= '<a title="'.s($title).'" href="#ch'.$ch->id.'">'.$title.'</a>';
+            $toc .= '<a title="' . s($title) . '" href="#ch' . $ch->id . '">' . $title . '</a>';
             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
             $first = false;
         }

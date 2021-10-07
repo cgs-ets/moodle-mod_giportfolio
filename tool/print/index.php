@@ -23,8 +23,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require(dirname(__FILE__).'/../../../../config.php');
-require_once(dirname(__FILE__).'/locallib.php');
+require(dirname(__FILE__) . '/../../../../config.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
 global $CFG, $DB, $OUTPUT, $PAGE, $SITE, $USER;
 
@@ -47,8 +47,8 @@ require_capability('giportfoliotool/print:print', $context);
 if ($chapterid) {
     // Single chapter printing - only visible!
     $chapter = $DB->get_record('giportfolio_chapters', array(
-                                                            'id' => $chapterid, 'giportfolioid' => $giportfolio->id
-                                                       ), '*', MUST_EXIST);
+        'id' => $chapterid, 'giportfolioid' => $giportfolio->id
+    ), '*', MUST_EXIST);
     if ($chapter->userid && !$chapter->userid == $USER->id) {
         throw new moodle_exception('notyourchapter', 'mod_giportfolio');
     }
@@ -90,160 +90,194 @@ if ($chapter) {
     \giportfoliotool_print\event\chapter_printed::create_from_chapter($giportfolio, $context, $chapter)->trigger();
 
     // Page header.
-    ?>
+?>
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
     <html>
+
     <head>
         <title><?php echo format_string($giportfolio->name, true, array('context' => $context)) ?></title>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <meta name="description" content="<?php echo s(format_string($giportfolio->name, true, array('context' => $context))) ?>"/>
-        <link rel="stylesheet" type="text/css" href="print.css"/>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="description" content="<?php echo s(format_string($giportfolio->name, true, array('context' => $context))) ?>" />
+        <link rel="stylesheet" type="text/css" href="print.css" />
     </head>
+
     <body>
-    <a name="top"></a>
-    <div class="chapter">
-    <?php
+        <a name="top"></a>
+        <div class="chapter">
+            <?php
 
 
-    if (!$giportfolio->customtitles) {
-        if (!$chapter->subchapter) {
-            $currtitle = giportfolio_get_chapter_title($chapter->id, $chapters, $giportfolio, $context);
-            echo '<p class="giportfolio_chapter_title">'.$currtitle.'</p>';
-        } else {
-            $currtitle = giportfolio_get_chapter_title($chapters[$chapter->id]->parent, $chapters, $giportfolio, $context);
-            $currsubtitle = giportfolio_get_chapter_title($chapter->id, $chapters, $giportfolio, $context);
-            echo '<p class="giportfolio_chapter_title">'.$currtitle.'<br />'.$currsubtitle.'</p>';
-        }
-    }
-
-    $chaptertext = file_rewrite_pluginfile_urls($chapter->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
-                                                'chapter', $chapter->id);
-    echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
-    $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $USER->id);
-    if ($contriblist) {
-        foreach ($contriblist as $contrib) {
-            $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio',
-                                                         'contribution', $contrib->id);
-            echo '<strong>'.$contribtitle.'</strong></br>';
-            echo date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
-            if ($contrib->timecreated !== $contrib->timemodified) {
-                echo '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
-            }
-            $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
-                                                        'contribution', $contrib->id);
-            echo format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context));
-            echo '</br>';
-            echo '</br>';
-        }
-    }
-
-    echo '</div>';
-    echo '</body> </html>';
-
-} else {
-    $params = array(
-        'context' => $context,
-        'objectid' => $giportfolio->id
-    );
-    \giportfoliotool_print\event\giportfolio_printed::create($params)->trigger();
-
-    $allchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0), 'pagenum');
-    $alluserchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
-                                        'pagenum');
-    if ($alluserchapters) {
-        $allchapters = $alluserchapters + $allchapters;
-    }
-
-    // Page header.
-    ?>
-    <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-    <html>
-    <head>
-        <title><?php echo format_string($giportfolio->name, true, array('context' => $context)) ?></title>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <meta name="description"
-              content="<?php echo s(format_string($giportfolio->name, true, array('noclean' => true, 'context' => $context))) ?>"/>
-        <link rel="stylesheet" type="text/css" href="print.css"/>
-    </head>
-<body>
-<a name="top"></a>
-
-<p class="giportfolio_title"><?php echo format_string($giportfolio->name, true, array('context' => $context)) ?></p>
-
-<p class="giportfolio_summary"><?php echo format_text($giportfolio->intro, $giportfolio->introformat, array(
-                                                                                                           'noclean' => true,
-                                                                                                           'context' => $context
-                                                                                                      )) ?></p>
-
-<div class="giportfolio_info">
-    <table>
-        <tr>
-            <td><?php echo get_string('site') ?>:</td>
-            <td>
-                <a href="<?php echo $CFG->wwwroot ?>">
-                    <?php echo format_string($SITE->fullname, true, array('context' => $context)) ?></a>
-            </td>
-        </tr>
-        <tr>
-            <td><?php echo get_string('course') ?>:</td>
-            <td><?php echo format_string($course->fullname, true, array('context' => $context)) ?></td>
-        </tr>
-        <tr>
-            <td><?php echo get_string('modulename', 'mod_giportfolio') ?>:</td>
-            <td><?php echo format_string($giportfolio->name, true, array('context' => $context)) ?></td>
-        </tr>
-        <tr>
-            <td><?php echo get_string('printedby', 'giportfoliotool_print') ?>:</td>
-            <td><?php echo fullname($USER, true) ?></td>
-        </tr>
-        <tr>
-            <td><?php echo get_string('printdate', 'giportfoliotool_print') ?>:</td>
-            <td><?php echo userdate(time()) ?></td>
-        </tr>
-    </table>
-</div>
-
-    <?php
-    list($toc, $titles) = giportfoliotool_print_get_toc($chapters, $giportfolio, $cm);
-    echo $toc;
-    // Chapters.
-    $link1 = $CFG->wwwroot.'/mod/giportfolio/viewgiportfolio.php?id='.$course->id.'&chapterid=';
-    $link2 = $CFG->wwwroot.'/mod/giportfolio/viewgiportfolio.php?id='.$course->id;
-    foreach ($chapters as $ch) {
-        $chapter = $allchapters[$ch->id];
-        if ($chapter->hidden) {
-            continue;
-        }
-        echo '<div class="giportfolio_chapter"><a name="ch'.$ch->id.'"></a>';
-        if (!$giportfolio->customtitles) {
-            echo '<p class="giportfolio_chapter_title">'.$titles[$ch->id].'</p>';
-        }
-        $content = str_replace($link1, '#ch', $chapter->content);
-        $content = str_replace($link2, '#top', $content);
-        $content = file_rewrite_pluginfile_urls($content, 'pluginfile.php', $context->id, 'mod_giportfolio', 'chapter', $ch->id);
-        echo format_text($content, $chapter->contentformat, array('noclean' => true, 'context' => $context));
-
-        $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $USER->id);
-        if ($contriblist) {
-            foreach ($contriblist as $contrib) {
-                $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio',
-                                                             'contribution', $contrib->id);
-                echo '<strong>'.$contribtitle.'</strong></br>';
-                echo date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
-                if ($contrib->timecreated !== $contrib->timemodified) {
-                    echo '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
+            if (!$giportfolio->customtitles) {
+                if (!$chapter->subchapter) {
+                    $currtitle = giportfolio_get_chapter_title($chapter->id, $chapters, $giportfolio, $context);
+                    echo '<p class="giportfolio_chapter_title">' . $currtitle . '</p>';
+                } else {
+                    $currtitle = giportfolio_get_chapter_title($chapters[$chapter->id]->parent, $chapters, $giportfolio, $context);
+                    $currsubtitle = giportfolio_get_chapter_title($chapter->id, $chapters, $giportfolio, $context);
+                    echo '<p class="giportfolio_chapter_title">' . $currtitle . '<br />' . $currsubtitle . '</p>';
                 }
-                echo '</br></br>';
-                $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
-                                                            'contribution', $contrib->id);
-                echo format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context));
-                echo '</br>';
-                echo '</br>';
             }
+
+            $chaptertext = file_rewrite_pluginfile_urls(
+                $chapter->content,
+                'pluginfile.php',
+                $context->id,
+                'mod_giportfolio',
+                'chapter',
+                $chapter->id
+            );
+            echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
+            $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $USER->id);
+            if ($contriblist) {
+                foreach ($contriblist as $contrib) {
+                    $contribtitle = file_rewrite_pluginfile_urls(
+                        $contrib->title,
+                        'pluginfile.php',
+                        $context->id,
+                        'mod_giportfolio',
+                        'contribution',
+                        $contrib->id
+                    );
+                    echo '<strong>' . $contribtitle . '</strong></br>';
+                    echo date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
+                    if ($contrib->timecreated !== $contrib->timemodified) {
+                        echo '<br/><i>' . get_string('lastmodified', 'mod_giportfolio') . date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified) . '</i>';
+                    }
+                    $contribtext = file_rewrite_pluginfile_urls(
+                        $contrib->content,
+                        'pluginfile.php',
+                        $context->id,
+                        'mod_giportfolio',
+                        'contribution',
+                        $contrib->id
+                    );
+                    echo format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context));
+                    echo '</br>';
+                    echo '</br>';
+                }
+            }
+
+            echo '</div>';
+            echo '</body> </html>';
+        } else {
+            $params = array(
+                'context' => $context,
+                'objectid' => $giportfolio->id
+            );
+            \giportfoliotool_print\event\giportfolio_printed::create($params)->trigger();
+
+            $allchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0), 'pagenum');
+            $alluserchapters = $DB->get_records(
+                'giportfolio_chapters',
+                array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
+                'pagenum'
+            );
+            if ($alluserchapters) {
+                $allchapters = $alluserchapters + $allchapters;
+            }
+
+            // Page header.
+            ?>
+            <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+            <html>
+
+            <head>
+                <title><?php echo format_string($giportfolio->name, true, array('context' => $context)) ?></title>
+                <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+                <meta name="description" content="<?php echo s(format_string($giportfolio->name, true, array('noclean' => true, 'context' => $context))) ?>" />
+                <link rel="stylesheet" type="text/css" href="print.css" />
+            </head>
+
+            <body>
+                <a name="top"></a>
+
+                <p class="giportfolio_title"><?php echo format_string($giportfolio->name, true, array('context' => $context)) ?></p>
+
+                <p class="giportfolio_summary"><?php echo format_text($giportfolio->intro, $giportfolio->introformat, array(
+                                                    'noclean' => true,
+                                                    'context' => $context
+                                                )) ?></p>
+
+                <div class="giportfolio_info">
+                    <table>
+                        <tr>
+                            <td><?php echo get_string('site') ?>:</td>
+                            <td>
+                                <a href="<?php echo $CFG->wwwroot ?>">
+                                    <?php echo format_string($SITE->fullname, true, array('context' => $context)) ?></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><?php echo get_string('course') ?>:</td>
+                            <td><?php echo format_string($course->fullname, true, array('context' => $context)) ?></td>
+                        </tr>
+                        <tr>
+                            <td><?php echo get_string('modulename', 'mod_giportfolio') ?>:</td>
+                            <td><?php echo format_string($giportfolio->name, true, array('context' => $context)) ?></td>
+                        </tr>
+                        <tr>
+                            <td><?php echo get_string('printedby', 'giportfoliotool_print') ?>:</td>
+                            <td><?php echo fullname($USER, true) ?></td>
+                        </tr>
+                        <tr>
+                            <td><?php echo get_string('printdate', 'giportfoliotool_print') ?>:</td>
+                            <td><?php echo userdate(time()) ?></td>
+                        </tr>
+                    </table>
+                </div>
+
+            <?php
+            list($toc, $titles) = giportfoliotool_print_get_toc($chapters, $giportfolio, $cm);
+            echo $toc;
+            // Chapters.
+            $link1 = $CFG->wwwroot . '/mod/giportfolio/viewgiportfolio.php?id=' . $course->id . '&chapterid=';
+            $link2 = $CFG->wwwroot . '/mod/giportfolio/viewgiportfolio.php?id=' . $course->id;
+            foreach ($chapters as $ch) {
+                $chapter = $allchapters[$ch->id];
+                if ($chapter->hidden) {
+                    continue;
+                }
+                echo '<div class="giportfolio_chapter"><a name="ch' . $ch->id . '"></a>';
+                if (!$giportfolio->customtitles) {
+                    echo '<p class="giportfolio_chapter_title">' . $titles[$ch->id] . '</p>';
+                }
+                $content = str_replace($link1, '#ch', $chapter->content);
+                $content = str_replace($link2, '#top', $content);
+                $content = file_rewrite_pluginfile_urls($content, 'pluginfile.php', $context->id, 'mod_giportfolio', 'chapter', $ch->id);
+                echo format_text($content, $chapter->contentformat, array('noclean' => true, 'context' => $context));
+
+                $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $USER->id);
+                if ($contriblist) {
+                    foreach ($contriblist as $contrib) {
+                        $contribtitle = file_rewrite_pluginfile_urls(
+                            $contrib->title,
+                            'pluginfile.php',
+                            $context->id,
+                            'mod_giportfolio',
+                            'contribution',
+                            $contrib->id
+                        );
+                        echo '<strong>' . $contribtitle . '</strong></br>';
+                        echo date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
+                        if ($contrib->timecreated !== $contrib->timemodified) {
+                            echo '<br/><i>' . get_string('lastmodified', 'mod_giportfolio') . date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified) . '</i>';
+                        }
+                        echo '</br></br>';
+                        $contribtext = file_rewrite_pluginfile_urls(
+                            $contrib->content,
+                            'pluginfile.php',
+                            $context->id,
+                            'mod_giportfolio',
+                            'contribution',
+                            $contrib->id
+                        );
+                        echo format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context));
+                        echo '</br>';
+                        echo '</br>';
+                    }
+                }
+
+                echo '</div>';
+            }
+            echo '</body> </html>';
         }
-
-        echo '</div>';
-    }
-    echo '</body> </html>';
-}
-

@@ -71,5 +71,4 @@ class mod_giportfolio_generator_testcase extends advanced_testcase {
         $chapter = $giportfoliogenerator->create_content($giportfolio);
         $this->assertEquals(4, $DB->count_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id)));
     }
-
 }

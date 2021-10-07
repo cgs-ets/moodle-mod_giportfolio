@@ -15,22 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Subplugin info class.
+ * Email Signup Notification Plugin
  *
- * @package   mod_giportfolio
- * @copyright 2013 Petr Skoda {@link http://skodak.org}
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    mod_giportfolio
+ * @author     Veronica Bermegui
+ * @copyright  2017 Iñaki Arenaza
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace mod_giportfolio\plugininfo;
-
-use core\plugininfo\base;
 
 defined('MOODLE_INTERNAL') || die();
 
+$observers = array(
 
-class giportfoliotool extends base {
-    public function is_uninstall_allowed() {
-        return true;
-    }
-}
+    array(
+        'eventname'   => '\mod_giportfolio\event\comment_created',
+        'callback' => '\mod_giportfolio\comment_observer::send_notification',
+    ),
+
+);

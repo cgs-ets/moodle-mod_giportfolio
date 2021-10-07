@@ -1,4 +1,9 @@
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
     margin-left: 0;
     font-family: "Times New Roman", Times, serif;
     page-break-after: avoid;
@@ -68,18 +73,22 @@ font {
 .giportfolio_toc_none {
     page-break-before: always;
 }
+
 .giportfolio_toc_none ul {
     margin-left: 0;
     padding-left: 0;
 }
+
 .giportfolio_toc_none ul ul {
     margin-left: 0;
     padding-left: 0;
 }
+
 .giportfolio_toc_none li {
     margin-top: 10px;
     list-style: none;
 }
+
 .giportfolio_toc_none li li {
     margin-top: 0;
     list-style: none;
@@ -89,18 +98,22 @@ font {
 .giportfolio_toc_numbered {
     page-break-before: always;
 }
+
 .giportfolio_toc_numbered ul {
     margin-left: 0;
     padding-left: 0;
 }
+
 .giportfolio_toc_numbered ul ul {
     margin-left: 0;
     padding-left: 0;
 }
+
 .giportfolio_toc_numbered li {
     margin-top: 10px;
     list-style: none;
 }
+
 .giportfolio_toc_numbered li li {
     margin-top: 0;
     list-style: none;
@@ -110,18 +123,22 @@ font {
 .giportfolio_toc_bullets {
     page-break-before: always;
 }
+
 .giportfolio_toc_bullets ul {
     margin-left: 0;
     padding-left: 0;
 }
+
 .giportfolio_toc_bullets ul ul {
     margin-left: 20px;
     padding-left: 0;
 }
+
 .giportfolio_toc_bullets li {
     margin-top: 10px;
     list-style: none;
 }
+
 .giportfolio_toc_bullets li li {
     margin-top: 0;
     list-style: circle;
@@ -131,18 +148,22 @@ font {
 .giportfolio_toc_indented {
     page-break-before: always;
 }
+
 .giportfolio_toc_indented ul {
     margin-left: 0;
     padding-left: 0;
 }
+
 .giportfolio_toc_indented ul ul {
     margin-left: 20px;
     padding-left: 0;
 }
+
 .giportfolio_toc_indented li {
     margin-top: 10px;
     list-style: none;
 }
+
 .giportfolio_toc_indented li li {
     margin-top: 0;
     list-style: none;

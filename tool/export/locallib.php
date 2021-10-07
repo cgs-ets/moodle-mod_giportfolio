@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot.'/mod/giportfolio/locallib.php');
+require_once($CFG->dirroot . '/mod/giportfolio/locallib.php');
 
 /**
  * Generate summary information for a portfolio
@@ -45,14 +45,14 @@ function giportfoliotool_export_get_summary($context, $course, $giportfolio, $us
 
     $output = '';
 
-    $site = '<a href="'.$CFG->wwwroot.'">'.format_string($SITE->fullname, true, array('context' => $context)).'</a>';
+    $site = '<a href="' . $CFG->wwwroot . '">' . format_string($SITE->fullname, true, array('context' => $context)) . '</a>';
 
     $output .= '<table class="giportfolio_summary">';
-    $output .= '<tr><td class="fieldname">'.get_string('site').'</td><td class="value">'.$site.'</td></tr>';
-    $output .= '<tr><td class="fieldname">'.get_string('course').'</td><td class="value">'.$course->fullname.'</td></tr>';
-    $output .= '<tr><td class="fieldname">'.get_string('modulename', 'mod_giportfolio').'</td><td class="value">'.$giportfolio->name.'</td></tr>';
-    $output .= '<tr><td class="fieldname">'.get_string('exportedby', 'giportfoliotool_export').'</td><td class="value">'.fullname($user).'</td></tr>';
-    $output .= '<tr><td class="fieldname">'.get_string('exportdate', 'giportfoliotool_export').'</td><td class="value">'.userdate(time()).'</td></tr>';
+    $output .= '<tr><td class="fieldname">' . get_string('site') . '</td><td class="value">' . $site . '</td></tr>';
+    $output .= '<tr><td class="fieldname">' . get_string('course') . '</td><td class="value">' . $course->fullname . '</td></tr>';
+    $output .= '<tr><td class="fieldname">' . get_string('modulename', 'mod_giportfolio') . '</td><td class="value">' . $giportfolio->name . '</td></tr>';
+    $output .= '<tr><td class="fieldname">' . get_string('exportedby', 'giportfoliotool_export') . '</td><td class="value">' . fullname($user) . '</td></tr>';
+    $output .= '<tr><td class="fieldname">' . get_string('exportdate', 'giportfoliotool_export') . '</td><td class="value">' . userdate(time()) . '</td></tr>';
     $output .= '</table>';
     return $output;
 }
@@ -91,9 +91,9 @@ function giportfoliotool_export_get_toc($chapters, $giportfolio, $cm) {
     $toc .= '<a name="toc"></a>'; // Representation of toc (HTML).
 
     if ($giportfolio->customtitles) {
-        $toc .= '<h1>'.get_string('toc', 'mod_giportfolio').'</h1>';
+        $toc .= '<h1>' . get_string('toc', 'mod_giportfolio') . '</h1>';
     } else {
-        $toc .= '<p class="giportfolio_chapter_title">'.get_string('toc', 'mod_giportfolio').'</p>';
+        $toc .= '<p class="giportfolio_chapter_title">' . get_string('toc', 'mod_giportfolio') . '</p>';
     }
     $toc .= '<ul>';
     foreach ($chapters as $ch) {
@@ -105,7 +105,7 @@ function giportfoliotool_export_get_toc($chapters, $giportfolio, $cm) {
                 $toc .= $first ? '<li><ul><li>' : '<li>';
             }
             $titles[$ch->id] = $title;
-            $toc .= '<a title="'.s($title).'" href="#ch'.$ch->id.'">'.$title.'</a>';
+            $toc .= '<a title="' . s($title) . '" href="#ch' . $ch->id . '">' . $title . '</a>';
             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
             $first = false;
         }
@@ -133,11 +133,11 @@ function giportfoliotool_export_add_filearea_to_zip($zip, $contextid, $filearea,
     $result = '';
     foreach ($files as $hash => $file) {
         $filename = $file->get_filename();
-        $zip->add_file_from_string($filearea.'/'.$filename, $fs->get_file_by_hash($hash)->get_content());
+        $zip->add_file_from_string($filearea . '/' . $filename, $fs->get_file_by_hash($hash)->get_content());
         $result .= "<li class='file'><a href='$filearea/$filename'>$filename</a></li>";
     }
     if ($result) {
-        $result = '<p>'.get_string('attachment', 'mod_giportfolio').'</p><ul class="file-list">'.$result.'</ul>';
+        $result = '<p>' . get_string('attachment', 'mod_giportfolio') . '</p><ul class="file-list">' . $result . '</ul>';
     }
     return $result;
 }
@@ -158,7 +158,7 @@ function giportfoliotool_export_add_contribution($zip, $context, $contrib) {
     giportfoliotool_export_add_filearea_to_zip($zip, $context->id, 'chapter', $contrib->chapterid);
     $contribtitle = str_replace('@@PLUGINFILE@@', 'chapter/', $contrib->title);
     $output .= "<div class='giportfolio_contribution_title'>$contribtitle</div>";
-    $output .= "<div class='giportfolio_contribution_data'>".userdate($contrib->timemodified)."</div>";
+    $output .= "<div class='giportfolio_contribution_data'>" . userdate($contrib->timemodified) . "</div>";
 
     // Add contribution title, fixing links to embedded resources.
     $contribtext = $contrib->content;

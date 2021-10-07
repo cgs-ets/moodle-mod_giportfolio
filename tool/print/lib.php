@@ -46,14 +46,28 @@ function giportfoliotool_print_extend_settings_navigation(settings_navigation $s
 
     if (has_capability('giportfoliotool/print:print', $context)) {
         $url1 = new moodle_url('/mod/giportfolio/tool/print/index.php', array('id' => $params['id']));
-        $url2 = new moodle_url('/mod/giportfolio/tool/print/index.php',
-                               array('id' => $params['id'], 'chapterid' => $params['chapterid']));
+        $url2 = new moodle_url(
+            '/mod/giportfolio/tool/print/index.php',
+            array('id' => $params['id'], 'chapterid' => $params['chapterid'])
+        );
         $action = new action_link($url1, get_string('printgiportfolio', 'giportfoliotool_print'), new popup_action('click', $url1));
-        $giportfolionode->add(get_string('printgiportfolio', 'giportfoliotool_print'), $action, navigation_node::TYPE_SETTING,
-                              null, null, new pix_icon('giportfolio', '', 'giportfoliotool_print', array('class' => 'icon')));
+        $giportfolionode->add(
+            get_string('printgiportfolio', 'giportfoliotool_print'),
+            $action,
+            navigation_node::TYPE_SETTING,
+            null,
+            null,
+            new pix_icon('giportfolio', '', 'giportfoliotool_print', array('class' => 'icon'))
+        );
         $action = new action_link($url2, get_string('printchapter', 'giportfoliotool_print'), new popup_action('click', $url2));
-        $giportfolionode->add(get_string('printchapter', 'giportfoliotool_print'), $action, navigation_node::TYPE_SETTING,
-                              null, null, new pix_icon('chapter', '', 'giportfoliotool_print', array('class' => 'icon')));
+        $giportfolionode->add(
+            get_string('printchapter', 'giportfoliotool_print'),
+            $action,
+            navigation_node::TYPE_SETTING,
+            null,
+            null,
+            new pix_icon('chapter', '', 'giportfoliotool_print', array('class' => 'icon'))
+        );
     }
 }
 

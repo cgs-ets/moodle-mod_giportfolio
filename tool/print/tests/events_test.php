@@ -95,5 +95,4 @@ class giportfoliotool_print_events_testcase extends advanced_testcase {
         $this->assertEventLegacyLogData($expected, $event);
         $this->assertEventContextNotUsed($event);
     }
-
 }

@@ -23,9 +23,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require(dirname(__FILE__).'/../../../../config.php');
-require_once($CFG->libdir.'/filestorage/zip_archive.php');
-require_once($CFG->dirroot.'/mod/giportfolio/tool/export/locallib.php');
+require(dirname(__FILE__) . '/../../../../config.php');
+require_once($CFG->libdir . '/filestorage/zip_archive.php');
+require_once($CFG->dirroot . '/mod/giportfolio/tool/export/locallib.php');
 
 global $CFG, $DB, $USER, $PAGE, $SITE;
 
@@ -47,8 +47,12 @@ require_capability('giportfoliotool/print:print', $context);
 // Check all variables.
 if ($chapterid) {
     // Single chapter exporting - only visible!
-    $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id),
-                               '*', MUST_EXIST);
+    $chapter = $DB->get_record(
+        'giportfolio_chapters',
+        array('id' => $chapterid, 'giportfolioid' => $giportfolio->id),
+        '*',
+        MUST_EXIST
+    );
     if ($chapter->userid && $chapter->userid != $USER->id) {
         throw new moodle_exception('notyourchapter', 'mod_giportfolio');
     }
@@ -73,8 +77,11 @@ if ($additionalchapters) {
 }
 
 $allchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0), 'pagenum');
-$alluserchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
-                                    'pagenum');
+$alluserchapters = $DB->get_records(
+    'giportfolio_chapters',
+    array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
+    'pagenum'
+);
 if ($alluserchapters) {
     $allchapters = $alluserchapters + $allchapters;
 }
@@ -85,13 +92,13 @@ $workdir = make_temp_directory('mod_giportfolio/zipgiportfolio');
 // Create the zip
 $filename = "{$course->id}-{$giportfolio->id}-{$USER->id}.zip";
 $zipfile = new zip_archive();
-@unlink($workdir.'/'.$filename);
-$zipfile->open($workdir.'/'.$filename);
+@unlink($workdir . '/' . $filename);
+$zipfile->open($workdir . '/' . $filename);
 
 // Start building content...
 $output = '';
 
-$output .= "<div class='giportfolio_name'>".$giportfolio->name."</div>";
+$output .= "<div class='giportfolio_name'>" . $giportfolio->name . "</div>";
 
 giportfoliotool_export_add_filearea_to_zip($zipfile, $context->id, 'intro', 0);
 $intro = str_replace('@@PLUGINFILE@@', 'intro/', $giportfolio->intro);
@@ -103,8 +110,8 @@ $output .= giportfoliotool_export_get_summary($context, $course, $giportfolio);
 list($toc, $titles) = giportfoliotool_export_get_toc($chapters, $giportfolio, $cm);
 $output .= $toc;
 
-$link1 = $CFG->wwwroot.'/mod/giportfolio/viewgiportfolio.php?id='.$course->id.'&chapterid=';
-$link2 = $CFG->wwwroot.'/mod/giportfolio/viewgiportfolio.php?id='.$course->id;
+$link1 = $CFG->wwwroot . '/mod/giportfolio/viewgiportfolio.php?id=' . $course->id . '&chapterid=';
+$link2 = $CFG->wwwroot . '/mod/giportfolio/viewgiportfolio.php?id=' . $course->id;
 
 foreach ($chapters as $ch) {
     $chapter = $allchapters[$ch->id];
@@ -114,9 +121,9 @@ foreach ($chapters as $ch) {
         continue;
     }
 
-    $output .= '<div class="giportfolio_chapter"><a name="ch'.$ch->id.'"></a>';
+    $output .= '<div class="giportfolio_chapter"><a name="ch' . $ch->id . '"></a>';
     if (!$giportfolio->customtitles) {
-        $output .= '<p class="giportfolio_chapter_title">'.$titles[$ch->id].'</p>';
+        $output .= '<p class="giportfolio_chapter_title">' . $titles[$ch->id] . '</p>';
     }
     $content = str_replace($link1, '#ch', $chapter->content);
     $content = str_replace($link2, '#top', $content);
@@ -134,7 +141,7 @@ foreach ($chapters as $ch) {
     }
 }
 
-$zipfile->add_file_from_pathname('styles.css', dirname(__FILE__).'/styles.css');
+$zipfile->add_file_from_pathname('styles.css', dirname(__FILE__) . '/styles.css');
 $head = "<link rel='stylesheet' type='text/css' href='styles.css'>";
 $html = "<html><head>$head</head><body>$output</body></html>";
 $zipfile->add_file_from_string('index.html', $html);

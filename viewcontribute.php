@@ -231,7 +231,7 @@ $chaptertext = file_rewrite_pluginfile_urls(
 
 $templatecontext = new \stdClass();
 $templatecontext->intro = format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context)); 
-$templatecontext->menteementor = ($mentor != 0 || $mentee == 0) && !$cangrade;
+$templatecontext->menteementor = ($mentor != 0 || (isset($mentee) && $mentee == 0)) && !$cangrade;
 
 echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', $templatecontext); // Show/hide instruction button.
 
@@ -252,6 +252,7 @@ if ($contriblist) {
     $contribution_count = 0;
 
     comment::init();
+    
     $commentopts = (object)array(
         'context' => $context,
         'component' => 'mod_giportfolio',
@@ -264,6 +265,8 @@ if ($contriblist) {
     );
 
     $align = 'right';
+    $actionsharing = [];
+    $shareicon = '';
     foreach ($contriblist as $contrib) {
         $ismine = ($contrib->userid == $USER->id) || $mentor != 0;
         $baseurl = new moodle_url(
@@ -284,13 +287,13 @@ if ($contriblist) {
             } else {
                 $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
                 $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
-                $actionsharing = array( $shareicon);
+                $actionsharing = array($shareicon);
             }
         }
 
         
         $showicon = html_writer::link($showurl, $showicon);
-        $shareicon = '';
+       
         $actions = array();      
         if (!$contrib->hidden) {
            
@@ -311,6 +314,7 @@ if ($contriblist) {
             } 
             
             $actions = array_merge($actions, $actionsharing);
+       
             $cout = '';
             $hidementortag = ($contrib->mentorid == 0) ? 'hidden' : '';
             $hideteachertag =($contrib->teacherid == 0) ? 'hidden' : '';
@@ -388,7 +392,7 @@ if ($contriblist) {
         echo $contribution_outline.'</table><br/><hr class ="outline-separator"><br>';
     }
 
-    echo '<p class="giportfolio_outline" >Contributions</p>';
+    echo '<p class="giportfolio_outline" >'. get_string('contributions', 'giportfolio').'</p>';
     echo $contribution_buffer;
     echo $OUTPUT->box_end();
 }
