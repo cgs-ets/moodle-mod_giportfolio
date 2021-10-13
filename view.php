@@ -68,6 +68,7 @@ $noneditingteachercancontribute = giportfolio_non_editing_teacher_allowed_to_con
 $allowedit = has_capability('mod/giportfolio:edit', $context);
 
 $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context);
+
 $allowreport = has_capability('report/outline:view', $context->get_course_context());
 $allowview = has_capability('mod/giportfolio:view', $context);
 
@@ -127,8 +128,10 @@ $templatecontext = new \stdClass();
 
 $usercontribution = 0;
 $showupdates = false;
+// Teachers that are parents and can contribute
+$teacherandmentor =  $allowedit && $mentor;
 
-if ($allowedit || ($context->is_locked() && !is_non_editing_teacher() && $allowcontribute)) {  // Is a teacher and the context is locked.
+if ($allowedit && !$teacherandmentor || ($context->is_locked() && !is_non_editing_teacher() && $allowcontribute)) {  // Is a teacher and the context is locked.
     
     $usersgiportfolios = giportfolio_get_giportfolios_number($giportfolio->id, $cm->id);
     echo html_writer::start_tag('div', array('class' => 'giportfolioteacher'));
