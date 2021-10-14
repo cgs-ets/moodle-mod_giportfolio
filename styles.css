@@ -309,6 +309,14 @@ p.alert.alert-info.giportfolio-restricted-access {
     outline: none;
 }
 
+.start-contributing:focus {
+    outline: none;
+}
+
+i.fa.fa-play-circle-o.start-bt {
+    font-size: 6rem;
+}
+
 .show-hide-instructions,
 span.toggleoutline.show-hide-details {
     font-size: 1.3rem;
