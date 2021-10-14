@@ -157,7 +157,7 @@ if ($allowcontribute) {  //Student.
         }
     } 
 
-    $viewdata->lastupdated = get_string('lastupdated', 'mod_giportfolio') . date('l jS \of F Y h:i:s A', $usercontribution);
+    $viewdata->lastupdated = ($usercontribution) ? get_string('lastupdated', 'mod_giportfolio') . date('l jS \of F Y h:i:s A', $usercontribution) : '';
     $viewdata->chapternumber =  get_string('chapternumber', 'mod_giportfolio') . count($chapters);
 } else if ($mentor) { // Parent
 
