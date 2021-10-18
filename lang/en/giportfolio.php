@@ -65,6 +65,7 @@ $string['emailmessagecourse'] = 'inside the course:  ';
 $string['emailmessageuser'] = 'A portfolio has been published by the user:  ';
 $string['emailsubject'] = 'Portfolio published on your course';
 $string['errorchapter'] = 'Error reading portfolio chapter.';
+$string['errorpath'] = 'Please access the portfolio from the course link';
 $string['eventchaptercreated'] = 'Chapter created';
 $string['eventchapterdeleted'] = 'Chapter deleted';
 $string['eventchapterupdated'] = 'Chapter updated';

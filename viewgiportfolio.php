@@ -62,6 +62,10 @@ $ismentor = giportfolio_user_mentor_of_student($context, $mentee);
 $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context) || $ismentor;
 $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Allow a teacher to make a contrib on behalf of a student.
 
+
+if (!is_enrolled($context, $USER->id, '', true) && $mentee == 0) { // 
+    print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
+}
 if ($allowedit) {
     if ($edit != -1 and confirm_sesskey()) {
         $USER->editing = $edit;
@@ -508,7 +512,6 @@ if ($contriblist) {
             $cout .= '<br>';
         }
        
-        //print_object($commentopts);
         if ($ismine) {
             $commentopts->itemid = $contrib->id;
             $commentbox = new comment($commentopts);
