@@ -64,7 +64,7 @@ $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Al
 
 
 if (!is_enrolled($context, $USER->id, '', true) && $mentee == 0) { // 
-    print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
+    print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 if ($allowedit) {
     if ($edit != -1 and confirm_sesskey()) {
