@@ -72,7 +72,6 @@ $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context);
 $allowreport = has_capability('report/outline:view', $context->get_course_context());
 $allowview = has_capability('mod/giportfolio:view', $context);
 
-
 if ($allowedit) {
     if ($edit != -1 and confirm_sesskey()) {
         $USER->editing = $edit;
@@ -88,7 +87,7 @@ if ($allowedit) {
 }
 
 if ($giportfolio->skipintro) {
-    if (($allowcontribute && !$allowedit) || $context->is_locked()) {
+    if (($allowcontribute && !$allowedit)) { // || $context->is_locked()
         // Redirect to the 'update contribution' page.
         redirect(new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id)));
     }
@@ -159,6 +158,7 @@ if ($allowcontribute) {  //Student.
 
     $viewdata->lastupdated = ($usercontribution) ? get_string('lastupdated', 'mod_giportfolio') . date('l jS \of F Y h:i:s A', $usercontribution) : '';
     $viewdata->chapternumber =  get_string('chapternumber', 'mod_giportfolio') . count($chapters);
+    
 } else if ($mentor) { // Parent
 
     $totalmenteesallowed = count(array_intersect_key($mentees, $userswithaccesstoportofolio));
@@ -175,7 +175,7 @@ if ($allowcontribute) {  //Student.
                 echo html_writer::end_tag('p');
             }
         } else {
-            // echo html_writer::start_div('viewcontribute');
+           
             $form = new stdClass();
 
             if (!$mentorcancontribute) {
@@ -185,27 +185,17 @@ if ($allowcontribute) {  //Student.
                 ));
                 $form->text = get_string('viewmenteeportfolio', 'mod_giportfolio', ['name' => $mentee->firstname]);
                 $menteebuttons[] = $form;
-
-                //   echo $OUTPUT->single_button($form->url, $form->text, '', array());
             } else {
                 $addurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array(
                     'id' => $cm->id,
                     'mentor' => $USER->id, 'mentee' => $mentee->id
                 ));
-                // echo $OUTPUT->single_button($addurl, get_string(
-                //     'onbehalf',
-                //     'mod_giportfolio',
-                //     ['name' => $mentee->firstname]
-                // ), 'GET');
 
                 $buttondata = new \stdClass();
                 $buttondata->url = $addurl;
                 $buttondata->text = get_string('onbehalf', 'mod_giportfolio', ['name' => $mentee->firstname]);
                 $menteebuttons[] = $buttondata;
             }
-
-            // echo '<br><br>';
-            // echo html_writer::end_div();
         }
     }
 }
@@ -223,21 +213,21 @@ if ($allowcontribute) {  //Student.
 //     var_dump($USER->access['rsw']); 
 
 //     echo $OUTPUT->single_button($f->url, $text, '', array());
-// }
 
-
+$allowviewgiportfolios = has_capability('mod/giportfolio:viewgiportfolios', $context); 
 $viewdata->admin = is_siteadmin($USER->id);
 $viewdata->student = $allowcontribute;
-$viewdata->teacher = $allowedit;
+$viewdata->teacher = $allowedit || $allowviewgiportfolios;
 $viewdata->teacherandmentor = $teacherandmentor;
 $viewdata->mentor = $mentor;
-$viewdata->playbutton = ($allowcontribute || $allowedit) && !$mentor;
+$viewdata->playbutton = ($allowcontribute || $allowedit || $allowviewgiportfolios) && !$mentor;
 $viewdata->playbuttonurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id));
 $viewdata->playparentbutton = $mentor;
 $viewdata->mentees = $menteebuttons;
 $viewdata->skipintro = $giportfolio->skipintro;
 $viewdata->intro = format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
 $viewdata->chapternumbers = get_string('chapternumber', 'mod_giportfolio') . count($chapters);
+
 
 echo $OUTPUT->render_from_template('mod_giportfolio/view_portfolio_entry', $viewdata);
 
