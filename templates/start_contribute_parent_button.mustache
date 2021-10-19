@@ -19,15 +19,15 @@
     @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later                                                              
   }}
 
-<div class = 'viewcontribute'>
-    <br>
-    {{#mentees}}
-        <a href= "{{{url}}}" class="btn btn-secondary" role = "button">
-            {{text}}
-        </a> 
-        <br><br>
-    {{/mentees}}
-   
-</div>
-
-
+{{^contextlocked}}
+    <div class = 'viewcontribute'>
+        <br>
+        {{#mentees}}
+            <a href= "{{{url}}}" class="btn btn-secondary" role = "button">
+                {{text}}
+            </a> 
+            <br><br>
+        {{/mentees}}
+    
+    </div>
+{{/contextlocked}}
