@@ -30,9 +30,8 @@ global $CFG, $DB, $OUTPUT, $PAGE, $SITE, $USER;
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
-
+$userid = optional_param('userid', $USER->id, PARAM_INT); // User ID.
 // Security checks START - teachers and students view.
-
 $cm = get_coursemodule_from_id('giportfolio', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
@@ -42,6 +41,7 @@ require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/giportfolio:view', $context);
 require_capability('giportfoliotool/print:print', $context);
+
 
 // Check all variables.
 if ($chapterid) {
@@ -57,7 +57,7 @@ if ($chapterid) {
     $chapter = false;
 }
 
-$PAGE->set_url('/mod/giportfolio/print.php', array('id' => $id, 'chapterid' => $chapterid));
+$PAGE->set_url('/mod/giportfolio/print.php', array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid));
 
 unset($id);
 unset($chapterid);
@@ -81,7 +81,7 @@ $strtop = get_string('top', 'mod_giportfolio');
 @header('Expires: ');
 @header('Accept-Ranges: none');
 @header('Content-type: text/html; charset=utf-8');
-
+//var_dump($chapter); exit;
 if ($chapter) {
 
     if ($chapter->hidden) {
@@ -126,8 +126,10 @@ if ($chapter) {
                 'chapter',
                 $chapter->id
             );
+           
             echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
-            $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $USER->id);
+            $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $userid ); //$USER->id
+          
             if ($contriblist) {
                 foreach ($contriblist as $contrib) {
                     $contribtitle = file_rewrite_pluginfile_urls(
@@ -167,11 +169,8 @@ if ($chapter) {
             \giportfoliotool_print\event\giportfolio_printed::create($params)->trigger();
 
             $allchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0), 'pagenum');
-            $alluserchapters = $DB->get_records(
-                'giportfolio_chapters',
-                array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
-                'pagenum'
-            );
+            $alluserchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => $userid), //$USER->id
+                'pagenum');
             if ($alluserchapters) {
                 $allchapters = $alluserchapters + $allchapters;
             }
@@ -246,7 +245,7 @@ if ($chapter) {
                 $content = file_rewrite_pluginfile_urls($content, 'pluginfile.php', $context->id, 'mod_giportfolio', 'chapter', $ch->id);
                 echo format_text($content, $chapter->contentformat, array('noclean' => true, 'context' => $context));
 
-                $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $USER->id);
+                $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $userid); //$USER->id
                 if ($contriblist) {
                     foreach ($contriblist as $contrib) {
                         $contribtitle = file_rewrite_pluginfile_urls(

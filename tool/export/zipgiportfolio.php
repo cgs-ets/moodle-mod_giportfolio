@@ -31,7 +31,7 @@ global $CFG, $DB, $USER, $PAGE, $SITE;
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
-
+$userid = optional_param('userid', $USER->id, PARAM_INT); // Chapter ID.
 // Security checks START - teachers and students view.
 
 $cm = get_coursemodule_from_id('giportfolio', $id, 0, false, MUST_EXIST);
@@ -61,7 +61,7 @@ if ($chapterid) {
     $chapter = false;
 }
 
-$PAGE->set_url('/mod/giportfolio/zipgiportfolio.php', array('id' => $id, 'chapterid' => $chapterid));
+$PAGE->set_url('/mod/giportfolio/zipgiportfolio.php', array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid));
 
 unset($id);
 unset($chapterid);
@@ -79,7 +79,7 @@ if ($additionalchapters) {
 $allchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0), 'pagenum');
 $alluserchapters = $DB->get_records(
     'giportfolio_chapters',
-    array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
+    array('giportfolioid' => $giportfolio->id, 'userid' => $userid), //$USER->id
     'pagenum'
 );
 if ($alluserchapters) {
@@ -90,7 +90,7 @@ if ($alluserchapters) {
 $workdir = make_temp_directory('mod_giportfolio/zipgiportfolio');
 
 // Create the zip
-$filename = "{$course->id}-{$giportfolio->id}-{$USER->id}.zip";
+$filename = "{$course->id}-{$giportfolio->id}-{$userid}.zip"; //$USER->id
 $zipfile = new zip_archive();
 @unlink($workdir . '/' . $filename);
 $zipfile->open($workdir . '/' . $filename);
@@ -133,7 +133,7 @@ foreach ($chapters as $ch) {
     $content = str_replace('@@PLUGINFILE@@', 'chapter/', $content);
     $output .= $content;
 
-    $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $USER->id);
+    $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $userid); //$USER->id
     if ($contriblist) {
         foreach ($contriblist as $contrib) {
             $output .= giportfoliotool_export_add_contribution($zipfile, $context, $contrib);

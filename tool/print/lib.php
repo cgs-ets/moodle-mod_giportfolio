@@ -26,7 +26,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 function giportfoliotool_print_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $giportfolionode) {
-    global $PAGE, $DB;
+    global $PAGE, $DB, $USER;
 
     if ($PAGE->cm->modname !== 'giportfolio') {
         return;
@@ -34,7 +34,8 @@ function giportfoliotool_print_extend_settings_navigation(settings_navigation $s
 
     $context = context_module::instance($PAGE->cm->id);
     $params = $PAGE->url->params();
-
+    
+    $userid = !empty($params['mentee']) ? $params['mentee'] : $USER->id;
     if (empty($params['id']) or empty($params['chapterid'])) {
         return;
     }
@@ -45,10 +46,10 @@ function giportfoliotool_print_extend_settings_navigation(settings_navigation $s
     }
 
     if (has_capability('giportfoliotool/print:print', $context)) {
-        $url1 = new moodle_url('/mod/giportfolio/tool/print/index.php', array('id' => $params['id']));
+        $url1 = new moodle_url('/mod/giportfolio/tool/print/index.php', array('id' => $params['id'], 'userid' => $userid));
         $url2 = new moodle_url(
             '/mod/giportfolio/tool/print/index.php',
-            array('id' => $params['id'], 'chapterid' => $params['chapterid'])
+            array('id' => $params['id'], 'chapterid' => $params['chapterid'], 'userid' => $userid)
         );
         $action = new action_link($url1, get_string('printgiportfolio', 'giportfoliotool_print'), new popup_action('click', $url1));
         $giportfolionode->add(

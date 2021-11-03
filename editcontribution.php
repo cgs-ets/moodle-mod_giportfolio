@@ -32,8 +32,8 @@ $contributionid = optional_param('contributionid', 0, PARAM_INT);
 $chapterid = required_param('chapterid', PARAM_INT); // Chapter ID.
 $action = optional_param('action', null, PARAM_ALPHA);
 $mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID
-$mentee = optional_param('mentee', 0, PARAM_INT); // Mentor ID
-$tid = optional_param('teacherid', 0, PARAM_INT); // Mentor ID
+$mentee = optional_param('mentee', 0, PARAM_INT); // Mentee ID
+$tid = optional_param('teacherid', 0, PARAM_INT); // Teacher ID
 // Contribution  means the teacher is contributing on behalf of a student. Help on navigation
 // when teacher can add chapters on behalf of the student.
 $contribute = optional_param('cont', 'no', PARAM_RAW);
@@ -102,7 +102,7 @@ if ($contributionid) {
     $contribution = $DB->get_record('giportfolio_contributions', array(
         'id' => $contributionid, 'chapterid' => $chapterid,
     ), '*', MUST_EXIST);
-
+    
     $formdata->mentor = $contribution->mentorid;
     $formdata->mentee = $contribution->userid;
     $formdata->teacherid =  $contribution->teacherid;

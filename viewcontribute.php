@@ -54,8 +54,8 @@ require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/giportfolio:view', $context);
 
-$cansee = giportfolio_user_mentor_of_student($context, $userid);
 
+$cansee = giportfolio_user_mentor_of_student($context, $userid);
 if ($mentor == 0 || !$cansee) {
     require_capability('mod/giportfolio:viewgiportfolios', $context);
 } 
@@ -314,7 +314,6 @@ if ($contriblist) {
             } 
             
             $actions = array_merge($actions, $actionsharing);
-       
             $cout = '';
             $hidementortag = ($contrib->mentorid == 0) ? 'hidden' : '';
             $hideteachertag =($contrib->teacherid == 0) ? 'hidden' : '';
@@ -381,8 +380,8 @@ if ($contriblist) {
                 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/deletecomment.js'));
             }
             
-            if (empty(has_seen_contribution($contrib->id))) { // First time the user sees the contrib.
-                follow_updates_entry($contrib);
+            if (empty(giportfolio_has_seen_contribution($contrib->id))) { // First time the user sees the contrib.
+                giportfolio_follow_updates_entry($contrib);
             }
 
         }

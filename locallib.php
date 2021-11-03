@@ -867,6 +867,9 @@ function giportfolio_get_user_contributions($chapterid, $giportfolioid, $ids, $s
     return $DB->get_records_sql($sql, $params);
 }
 
+
+
+
 function giportfolio_set_mentor_info($contributions, $menteeid) {
     $mentorids = giportfolio_get_mentees_mentor($menteeid);
     $mentorids = explode(',', $mentorids);
@@ -882,9 +885,9 @@ function giportfolio_set_mentor_info($contributions, $menteeid) {
 function giportfolio_get_user_default_chapter($giportfolioid) { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT TOP(1)  chapterid  FROM mdl_giportfolio_contributions 
+    $sql = "SELECT   chapterid  FROM mdl_giportfolio_contributions 
             WHERE  giportfolioid = {$giportfolioid}
-          --  LIMIT 1;
+            LIMIT 1;
            ";
 
     return  $DB->get_record_sql($sql);
@@ -1340,11 +1343,13 @@ function giportfolio_user_mentor_of_student($context, $userid) {
         CONTEXT_USER,
         $userid,
     );
-    $mentor = $DB->get_records_sql($sql, $params);
 
+    $mentor = $DB->get_records_sql($sql, $params);
+   
     if (!empty($mentor)) {
         return true;
     }
+
     return false;
 }
 
@@ -1406,14 +1411,14 @@ function giportfolio_who_can_contribute_details($menteeid) {
         }
         return $mentorpictures;
     }
-    get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
+   // get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
     $alias = get_student_alias($COURSE);
 
     return get_string('nomentorassociated', 'mod_giportfolio', $alias);
 }
 
 //Part of Portfolios Updated chapters list. CGS
-function has_seen_contribution($contributionid) {
+function giportfolio_has_seen_contribution($contributionid) {
     global $DB, $USER;
 
     $sql = "SELECT chapterid
@@ -1424,7 +1429,7 @@ function has_seen_contribution($contributionid) {
     return $r;
 }
 
-function follow_updates_entry($contribution) {
+function giportfolio_follow_updates_entry($contribution) {
     global $DB, $USER;
 
     $data = new \stdClass();
@@ -1472,7 +1477,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $chaptersid = [];
     $titles = [];
 
-    $studentalias = get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
+   // $studentalias = get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
 
     foreach ($chapters as $chapter) {
         if (!$chapter->subchapter) {
@@ -1498,7 +1503,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
                       <div class = "subchapter-icon">
                             <img class ="icon" alt ="Added by student" title = "Added by student" src="' . $OUTPUT->image_url('addition_icon', 'mod_giportfolio') . '"/>
                         </div>';
-    list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
+    //list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
 
     $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
     $extrafields = get_extra_user_fields($context);

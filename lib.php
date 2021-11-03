@@ -507,7 +507,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     }
 
     $context = context_module::instance($PAGE->cm->id);
-    $plugins = get_plugin_list('giportfoliotool');
+    $plugins = core_component::get_plugin_list('giportfoliotool'); //get_plugin_list('giportfoliotool');
 
     foreach ($plugins as $plugin => $dir) {
         if (file_exists("$dir/lib.php")) {
@@ -521,6 +521,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
 
     $params = $PAGE->url->params();
     $alias = get_student_alias($COURSE);
+    $userid = !empty($params['mentee']) ? $params['mentee'] : $USER->id;
     // SYNERGY - add grade console link.
     if (!empty($params['id']) and!empty($params['chapterid']) and
         has_capability('mod/giportfolio:viewgiportfolios', $context)) {
@@ -537,8 +538,8 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
 
     if (!empty($params['id'])
         && !empty($params['chapterid'])
-        && !$allowedit && giportfolio_get_user_contribution_status($giportfolio->id, $USER->id)) {
-
+        && !$allowedit && giportfolio_get_user_contribution_status($giportfolio->id, $userid)) { //$USER->id
+        
         if (!$giportfolio->klassenbuchtrainer) {
             // Add pdf export link.
             $url = new moodle_url('/mod/giportfolio/tool/print/pdfgiportfolio.php', array('id' => $params['id'], 'sesskey' => sesskey()));
@@ -548,7 +549,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
                 new pix_icon('pdf', '', 'giportfoliotool_print', array('class' => 'icon')));
 
             // SYNERGY LEARNING - Export as zip option.
-            $url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array('id' => $params['id'])); // Add zip export link.
+            $url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array('id' => $params['id'], 'userid' => $userid)); // Add zip export link.
             $giportfolionode->add(get_string('exportzip', 'mod_giportfolio'), $url, navigation_node::TYPE_SETTING, null, null,
                 new pix_icon('zip', '', 'giportfoliotool_export', array('class' => 'icon')));
             // END SYNERGY LEARNING - Export as zip option.
@@ -558,7 +559,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
 
     // Turn student editing on.
     if ((!empty($params['id']) && !empty($params['chapterid']) && (giportfolio_get_collaborative_status($giportfolio)))
-        && ( has_capability('mod/giportfolio:submitportfolio', $context) || (!empty($params['mentor']) && $params['mentor']!= 0)
+        && ( has_capability('mod/giportfolio:submitportfolio', $context) /*|| (!empty($params['mentor']) && $params['mentor']!= 0)*/
             || (!empty($params['cont']) && $params['cont'] != 'no'))) {
 
         $useredit = optional_param('useredit', 0, PARAM_BOOL); // Edit mode.
