@@ -81,7 +81,7 @@ $strtop = get_string('top', 'mod_giportfolio');
 @header('Expires: ');
 @header('Accept-Ranges: none');
 @header('Content-type: text/html; charset=utf-8');
-//var_dump($chapter); exit;
+
 if ($chapter) {
 
     if ($chapter->hidden) {
@@ -126,10 +126,10 @@ if ($chapter) {
                 'chapter',
                 $chapter->id
             );
-           
+
             echo format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
-            $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $userid ); //$USER->id
-          
+            $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $userid); //$USER->id
+
             if ($contriblist) {
                 foreach ($contriblist as $contrib) {
                     $contribtitle = file_rewrite_pluginfile_urls(
@@ -169,8 +169,11 @@ if ($chapter) {
             \giportfoliotool_print\event\giportfolio_printed::create($params)->trigger();
 
             $allchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0), 'pagenum');
-            $alluserchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => $userid), //$USER->id
-                'pagenum');
+            $alluserchapters = $DB->get_records(
+                'giportfolio_chapters',
+                array('giportfolioid' => $giportfolio->id, 'userid' => $userid), //$USER->id
+                'pagenum'
+            );
             if ($alluserchapters) {
                 $allchapters = $alluserchapters + $allchapters;
             }
@@ -191,8 +194,10 @@ if ($chapter) {
                 <a name="top"></a>
 
                 <p class="giportfolio_title"><?php echo format_string($giportfolio->name, true, array('context' => $context)) ?></p>
-
-                <p class="giportfolio_summary"><?php echo format_text($giportfolio->intro, $giportfolio->introformat, array(
+                
+                <p class="giportfolio_summary"><?php 
+                                                    $giportfolio->intro = file_rewrite_pluginfile_urls($giportfolio->intro, 'pluginfile.php', $context->id, 'mod_giportfolio', 'intro', '');
+                                                    echo format_text($giportfolio->intro, $giportfolio->introformat, array(
                                                     'noclean' => true,
                                                     'context' => $context
                                                 )) ?></p>

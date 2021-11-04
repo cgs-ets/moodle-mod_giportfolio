@@ -32,7 +32,7 @@ require_once($CFG->dirroot . '/mod/giportfolio/tool/print/pdflib.php');
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
-
+$userid = optional_param('userid', $USER->id, PARAM_INT); // User ID.
 // Security checks START - teachers and students view.
 
 $cm = get_coursemodule_from_id('giportfolio', $id, 0, false, MUST_EXIST);
@@ -62,7 +62,7 @@ if ($chapterid) {
     $chapter = false;
 }
 
-$PAGE->set_url('/mod/giportfolio/pdfgiportfolio.php', array('id' => $id, 'chapterid' => $chapterid));
+$PAGE->set_url('/mod/giportfolio/pdfgiportfolio.php', array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid));
 
 unset($id);
 unset($chapterid);
@@ -112,7 +112,7 @@ $stylev = array('width' => 0.5, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0,
 $allchapters = $DB->get_records('giportfolio_chapters', array('giportfolioid' => $giportfolio->id, 'userid' => 0), 'pagenum');
 $alluserchapters = $DB->get_records(
     'giportfolio_chapters',
-    array('giportfolioid' => $giportfolio->id, 'userid' => $USER->id),
+    array('giportfolioid' => $giportfolio->id, 'userid' => $userid), //$USER->id
     'pagenum'
 );
 if ($alluserchapters) {
@@ -202,7 +202,6 @@ $pdf->Ln(20);
 $pdf->SetFont('helvetica', '', 8);
 
 $intro = file_rewrite_pluginfile_urls($giportfolio->intro, 'pluginfile.php', $context->id, 'mod_giportfolio', 'intro', '');
-
 $intro = pdfgiportfolio_fix_image_links($intro);
 $pdf->writeHTML($intro);
 
@@ -339,7 +338,7 @@ foreach ($chapters as $ch) {
     $content = pdfgiportfolio_fix_image_links($content);
     $pdf->writeHTML($content);
 
-    $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $USER->id);
+    $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $userid); //$USER->id
     if ($contriblist) {
         foreach ($contriblist as $contrib) {
             $contribtitle = file_rewrite_pluginfile_urls(

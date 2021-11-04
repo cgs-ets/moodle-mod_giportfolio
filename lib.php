@@ -542,7 +542,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
         
         if (!$giportfolio->klassenbuchtrainer) {
             // Add pdf export link.
-            $url = new moodle_url('/mod/giportfolio/tool/print/pdfgiportfolio.php', array('id' => $params['id'], 'sesskey' => sesskey()));
+            $url = new moodle_url('/mod/giportfolio/tool/print/pdfgiportfolio.php', array('id' => $params['id'], 'sesskey' => sesskey(), 'userid' => $userid));
             // Open as new window.
             $action = new action_link($url, get_string('exportpdf', 'mod_giportfolio'), new popup_action('click', $url));
             $giportfolionode->add(get_string('exportpdf', 'mod_giportfolio'), $action, navigation_node::TYPE_SETTING, null, null,

@@ -28,7 +28,6 @@ function pdfgiportfolio_fix_image_links($html) {
     global $CFG;
 
     $html = pdfgiportfolio_fix_svg_images($html);
-
     $baseurl = new moodle_url('/pluginfile.php');
     $baseurl = preg_quote($baseurl->out());
     $regex = "|<img[^>]*src=\"({$baseurl}([^\"]*))|";
@@ -81,7 +80,6 @@ function pdfgiportfolio_fix_image_links($html) {
             $html = str_replace($matches[1], $content, $html);
         }
     }
-
     return $html;
 }
 
