@@ -154,6 +154,12 @@ if ($chapter) {
                         $contrib->id
                     );
                     echo format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context));
+                    $files = giportfolio_print_attachments($contrib, $cm, 'html', $align = "right");
+                    if ($files) {
+                        echo "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\">\n";
+                        echo $files;
+                        echo "</td></tr></table>\n";
+                    }
                     echo '</br>';
                     echo '</br>';
                 }
@@ -276,6 +282,13 @@ if ($chapter) {
                             $contrib->id
                         );
                         echo format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context));
+                        echo '</br></br>';
+                        $files = giportfolio_print_attachments($contrib, $cm, 'html', $align = "right");
+                        if ($files) {
+                            echo "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\">\n";
+                            echo $files;
+                            echo "</td></tr></table>\n";
+                        }
                         echo '</br>';
                         echo '</br>';
                     }

@@ -172,7 +172,7 @@ $pdf->AddPage();
 $pdf->setCellPaddings(1, 1, 1, 1);
 
 // Set cell margins.
-$pdf->setCellMargins(1, 1, 1, 1);
+$pdf->setCellMargins(2, 2, 2, 2);
 
 $pdf->SetFillColor(256, 256, 256);
 
@@ -398,8 +398,28 @@ foreach ($chapters as $ch) {
                 'contribution',
                 $contrib->id
             );
+
+
             $contribtext = pdfgiportfolio_fix_image_links($contribtext);
             $pdf->writeHTML($contribtext);
+
+            $files = giportfolio_print_attachments($contrib, $cm, 'html', $align = "right");
+            if ($files) {
+                $pdf->writeHTMLCell(
+                    $w = 0,
+                    $h = 0,
+                    $x = '',
+                    $y = '',
+                    '<i>' . get_string('attachment', 'mod_giportfolio')  . '</i>',
+                    $border = 0,
+                    $ln = 1,
+                    $fill = 0,
+                    $reseth = true,
+                    $align = '',
+                    $autopadding = true
+                );
+                $pdf->writeHTML($files);
+            }
         }
     }
 }

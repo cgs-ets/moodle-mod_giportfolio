@@ -33,3 +33,4 @@ $string['printchapter'] = 'Print this chapter';
 $string['printdate'] = 'Date';
 $string['printedby'] = 'Printed by';
 $string['print:print'] = 'Print portfolio';
+$string['attachment'] = 'Attachment(s)';
