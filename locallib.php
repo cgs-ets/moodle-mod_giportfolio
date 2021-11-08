@@ -885,7 +885,7 @@ function giportfolio_set_mentor_info($contributions, $menteeid) {
 function giportfolio_get_user_default_chapter($giportfolioid) { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT TOP (1)  chapterid  FROM mdl_giportfolio_contributions 
+    $sql = "SELECT TOP(1) chapterid  FROM mdl_giportfolio_contributions 
             WHERE  giportfolioid = {$giportfolioid}
            -- LIMIT 1;
            ";
@@ -1503,7 +1503,6 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
                       <div class = "subchapter-icon">
                             <img class ="icon" alt ="Added by student" title = "Added by student" src="' . $OUTPUT->image_url('addition_icon', 'mod_giportfolio') . '"/>
                         </div>';
-    //list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
 
     $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
     $extrafields = get_extra_user_fields($context);
@@ -2000,9 +1999,9 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
 
         $sql = 'FROM {user} u ' . $extratables .
             ' WHERE ' . $where . 'u.id IN (' . $listusersids . ') ';
-
+        
         $pusers = $DB->get_records_sql($select . $sql . $sort, $params, $table->get_page_start(), $table->get_page_size());
-
+        
         $table->pagesize($perpage, count($pusers));
 
         $offset = $page * $perpage;
@@ -2165,6 +2164,8 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
         $mform->display();
     }
 }
+
+
 /**
  * File browsing support class
  */
