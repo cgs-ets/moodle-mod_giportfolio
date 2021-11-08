@@ -103,18 +103,19 @@ if (count($usergroups) > 0 && !is_siteadmin() && $print == '') {
     foreach ($groupmembers as $group)  {
         $allusers =  array_merge($allusers, $group);
     }
- 
 
-    $filtereduser = array_filter($allusers, function ($user) {
+
+    $filtereduser = array_filter($allusers, function ($user)  use ($context) {
         global $USER;
-        if ($user->id != $USER->id) {
+        if ($user->id != $USER->id && (has_capability('mod/giportfolio:submitportfolio', $context, $user->id) ||
+            has_capability('mod/giportfolio:printclassplan', $context, $user->id))) {
             return $user->id;
         }
     });
 
     // remove duplicate
-    
     unset($groupmembers);
+
     foreach($filtereduser as $user) {
         $groupmembers[] = $user->id;
     }
