@@ -885,9 +885,9 @@ function giportfolio_set_mentor_info($contributions, $menteeid) {
 function giportfolio_get_user_default_chapter($giportfolioid) { // Part of Allow a teacher to make a contribution on behalf of a student.
     global $DB;
 
-    $sql = "SELECT TOP(1) chapterid  FROM mdl_giportfolio_contributions 
+    $sql = "SELECT TOP(1)  chapterid  FROM mdl_giportfolio_contributions 
             WHERE  giportfolioid = {$giportfolioid}
-           -- LIMIT 1;
+         --   LIMIT 1;
            ";
 
     return  $DB->get_record_sql($sql);
@@ -1477,7 +1477,6 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $chaptersid = [];
     $titles = [];
 
-   // $studentalias = get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
 
     foreach ($chapters as $chapter) {
         if (!$chapter->subchapter) {
@@ -1503,6 +1502,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
                       <div class = "subchapter-icon">
                             <img class ="icon" alt ="Added by student" title = "Added by student" src="' . $OUTPUT->image_url('addition_icon', 'mod_giportfolio') . '"/>
                         </div>';
+    
 
     $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
     $extrafields = get_extra_user_fields($context);
@@ -2456,4 +2456,101 @@ function giportfolio_minimise_recipient_record($recipient) {
     unset($recipient->lastip);
 
     return $recipient;
+}
+
+
+/**
+ * Print group menu selector for activity.
+ *
+ * @category giportfolio
+ * @param stdClass|cm_info $cm course module object
+ * @param string|moodle_url $urlroot return address that users get to if they choose an option;
+ *   should include any parameters needed, e.g. "$CFG->wwwroot/mod/forum/view.php?id=34"
+ * @param bool $return return as string instead of printing
+ * @param bool $hideallparticipants If true, this prevents the 'All participants'
+ *   option from appearing in cases where it normally would. This is intended for
+ *   use only by activities that cannot display all groups together. (Note that
+ *   selecting this option does not prevent groups_get_activity_group from
+ *   returning 0; it will still do that if the user has chosen 'all participants'
+ *   in another activity, or not chosen anything.)
+ * @return mixed void or string depending on $return param
+ * Copy from grouplib.php with a couple of changes to the conditions to only display
+ * 
+ */
+function giportfolio_groups_print_activity_menu($cm, $urlroot, $return=false, $hideallparticipants=false) {
+    global $USER, $OUTPUT;
+
+    if ($urlroot instanceof moodle_url) {
+        // no changes necessary
+
+    } else {
+        if (strpos($urlroot, 'http') !== 0) { // Will also work for https
+            // Display error if urlroot is not absolute (this causes the non-JS version to break)
+            debugging('groups_print_activity_menu requires absolute URL for ' .
+                      '$urlroot, not <tt>' . s($urlroot) . '</tt>. Example: ' .
+                      'groups_print_activity_menu($cm, $CFG->wwwroot . \'/mod/mymodule/view.php?id=13\');',
+                      DEBUG_DEVELOPER);
+        }
+        $urlroot = new moodle_url($urlroot);
+    }
+
+    if (!$groupmode = groups_get_activity_groupmode($cm)) {
+        if ($return) {
+            return '';
+        } else {
+            return;
+        }
+    }
+
+    $context = context_module::instance($cm->id);
+    $aag = has_capability('moodle/site:accessallgroups', $context);
+
+    $usergroups = array();
+    if ($groupmode == VISIBLEGROUPS and $aag || is_siteadmin()) {
+        $allowedgroups = groups_get_all_groups($cm->course, 0, $cm->groupingid); // any group in grouping
+        // Get user's own groups and put to the top.
+        $usergroups = groups_get_all_groups($cm->course, $USER->id, $cm->groupingid);
+    } else {
+        $allowedgroups = groups_get_all_groups($cm->course, $USER->id, $cm->groupingid); // only assigned groups
+    }
+
+    $activegroup = groups_get_activity_group($cm, true, $allowedgroups);
+
+    $groupsmenu = array();
+    if ($groupmode == SEPARATEGROUPS) {
+        // Don't display all partipants option
+    }else  if ((!$allowedgroups or $groupmode == VISIBLEGROUPS or $aag) and !$hideallparticipants) {
+        $groupsmenu[0] = get_string('allparticipants');
+    }
+
+    $groupsmenu += groups_sort_menu_options($allowedgroups, $usergroups);
+
+    if ($groupmode == VISIBLEGROUPS) {
+        $grouplabel = get_string('groupsvisible');
+    } else {
+        $grouplabel = get_string('groupsseparate');
+    }
+
+    if ($aag and $cm->groupingid) {
+        if ($grouping = groups_get_grouping($cm->groupingid)) {
+            $grouplabel = $grouplabel . ' (' . format_string($grouping->name) . ')';
+        }
+    }
+
+    if (count($groupsmenu) == 1) {
+        $groupname = reset($groupsmenu);
+        $output = $grouplabel.': '.$groupname;
+    } else {
+        $select = new single_select($urlroot, 'group', $groupsmenu, $activegroup, null, 'selectgroup');
+        $select->label = $grouplabel;
+        $output = $OUTPUT->render($select);
+    }
+
+    $output = '<div class="groupselector">'.$output.'</div>';
+
+    if ($return) {
+        return $output;
+    } else {
+        echo $output;
+    }
 }
