@@ -50,8 +50,8 @@ if ($currenttab !== 'all') {
 $PAGE->set_url($url);
 require_login($course->id, false, $cm);
 
-$context = context_module::instance($cm->id); 
-if (!$context->is_locked() ) {  // To be able to display submission page when context is frozen.
+$context = context_module::instance($cm->id);
+if (!$context->is_locked()) {  // To be able to display submission page when context is frozen.
     require_capability('mod/giportfolio:gradegiportfolios', $context);
 }
 
@@ -86,7 +86,55 @@ echo $OUTPUT->tabtree($tabs, $currenttab);
 $groupmode = groups_get_activity_groupmode($cm);
 $currentgroup = groups_get_activity_group($cm, true);
 
-groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab);
+$print = groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab, true);
+$usergroups = groups_get_all_groups($cm->course, $USER->id, $cm->groupingid);
+$allusers = [];
+$groupmembers = [];
+echo $print; 
+
+// Filter the list of students to only the ones this teachers can see and only if the separate groups is not set.
+if (count($usergroups) > 0 && !is_siteadmin() && $print == '') { 
+    $groupids = array_keys($usergroups);
+  
+    foreach ($groupids as $id) {
+        array_push( $groupmembers, groups_get_members($id, 'u.id'));
+    }
+  
+    foreach ($groupmembers as $group)  {
+        $allusers =  array_merge($allusers, $group);
+    }
+ 
+
+    $filtereduser = array_filter($allusers, function ($user) {
+        global $USER;
+        if ($user->id != $USER->id) {
+            return $user->id;
+        }
+    });
+
+    // remove duplicate
+    
+    unset($groupmembers);
+    foreach($filtereduser as $user) {
+        $groupmembers[] = $user->id;
+    }
+
+    $groupmembers = array_unique($groupmembers);
+    $filtereduser = implode("', '",($groupmembers));
+    $listusersids = "'" . $filtereduser . "'";
+
+} else {
+    
+    // Change capability check to be able to display  users when context is frozen. CGS
+    $allusers = get_users_by_capability($context, 'mod/giportfolio:printclassplan', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
+        'u.firstname ASC', '', '', $currentgroup, '', false, true);
+
+    $alluserids = array();
+    foreach ($allusers as $user) {
+        array_push($alluserids, $user->id);
+    }
+    $listusersids = "'" . implode("', '", $alluserids) . "'";
+}
 
 
 
@@ -110,7 +158,7 @@ $strsaveallfeedback = get_string('saveallfeedback', 'mod_giportfolio');
 $fastg = optional_param('fastg', 0, PARAM_BOOL);
 
 if ($fastg) { // Update the grade and the feedback.
-   
+
     if (isset($_POST["menu"])) {
         $menu = $_POST["menu"];
         giportfolio_quick_update_grades($cm->id, $menu, $currentgroup, $giportfolio->id);
@@ -143,15 +191,16 @@ if ($quickgrade && $currenttab != 'graphcontributors') {
 }
 
 // Change capability check to be able to display  users when context is frozen. CGS
-$allusers = get_users_by_capability($context, 'mod/giportfolio:printclassplan', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
-    'u.firstname ASC', '', '', $currentgroup, '', false, true);
+// $allusers = get_users_by_capability($context, 'mod/giportfolio:printclassplan', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
+//     'u.firstname ASC', '', '', $currentgroup, '', false, true);
 
-$alluserids = array();
-foreach ($allusers as $user) {
-    array_push($alluserids, $user->id);
-}
+// $alluserids = array();
+// foreach ($allusers as $user) {
+//     array_push($alluserids, $user->id);
+// }
+// print_object($alluserids); exit;
+// $listusersids = "'" . implode("', '", $alluserids) . "'";
 
-$listusersids = "'" . implode("', '", $alluserids) . "'";
 // Generate table.
 if ($currenttab == 'graphcontributors') {
 
@@ -166,65 +215,77 @@ if ($currenttab == 'graphcontributors') {
     $iconaddition =  html_writer::img($OUTPUT->image_url('addition_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
     $iconchapter =  html_writer::img($OUTPUT->image_url('chapter', 'mod_giportfolio'), '', ['class' => 'icon']);
     $iconsubchapter =  html_writer::img($OUTPUT->image_url('subchapter_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
-   
+
     $out = html_writer::start_div();
     $out .= "<table>
              <tr>
-                <th>".get_string('legends', 'mod_giportfolio' )."</th>
+                <th>" . get_string('legends', 'mod_giportfolio') . "</th>
                 <th></th>  
-            </tr>".
-            "<tr>
-                <td>".get_string('nocontrib', 'mod_giportfolio') ." </td>
-                <td>".$iconnocontrib ." </td>
-            </tr>".
-            "<tr>
-                <td>".get_string('unseencontrib', 'mod_giportfolio' )."</td>
-                <td>".$iconunseen. "</td>
-            </tr>".
-            "<tr>
-                <td>".get_string('multipleunseen', 'mod_giportfolio' )."</td>
-                <td>". $iconunseen.' '.$iconunseen. "</td>
-            </tr>".
-            "<tr>
-                <td>".get_string('seencontrib', 'mod_giportfolio' )."</td>
-                <td>". $iconseen. "</td>
-            </tr>".
-            "<tr>
-                <td>".get_string('multipleseen', 'mod_giportfolio' )."</td>
-                <td>". $iconseen.' '.$iconseen. "</td>
-            </tr>".
-            "<tr>
-                <td>".get_string('contrcomment', 'mod_giportfolio' )."</td>
-                <td>". $iconcomment. "</td>
-             </tr>".
-            "<tr>
-                <td>".get_string('contrnocomment', 'mod_giportfolio' )."</td>
-                <td>". $iconnocomment. "</td>
-            </tr>".
-            "<tr>
-                <td>".get_string('contrcomments', 'mod_giportfolio' )."</td>
-                <td>". $iconcomments. "</td>
-            </tr>".
-            "<tr>
-                <td>".get_string('additionstitle', 'mod_giportfolio' ). get_string('additionlegend', 'mod_giportfolio', $alias )."</td>
-                <td>".$iconaddition. "</td>               
-            </tr>".    
-            "<tr>
+            </tr>" .
+        "<tr>
+                <td>" . get_string('nocontrib', 'mod_giportfolio') . " </td>
+                <td>" . $iconnocontrib . " </td>
+            </tr>" .
+        "<tr>
+                <td>" . get_string('unseencontrib', 'mod_giportfolio') . "</td>
+                <td>" . $iconunseen . "</td>
+            </tr>" .
+        "<tr>
+                <td>" . get_string('multipleunseen', 'mod_giportfolio') . "</td>
+                <td>" . $iconunseen . ' ' . $iconunseen . "</td>
+            </tr>" .
+        "<tr>
+                <td>" . get_string('seencontrib', 'mod_giportfolio') . "</td>
+                <td>" . $iconseen . "</td>
+            </tr>" .
+        "<tr>
+                <td>" . get_string('multipleseen', 'mod_giportfolio') . "</td>
+                <td>" . $iconseen . ' ' . $iconseen . "</td>
+            </tr>" .
+        "<tr>
+                <td>" . get_string('contrcomment', 'mod_giportfolio') . "</td>
+                <td>" . $iconcomment . "</td>
+             </tr>" .
+        "<tr>
+                <td>" . get_string('contrnocomment', 'mod_giportfolio') . "</td>
+                <td>" . $iconnocomment . "</td>
+            </tr>" .
+        "<tr>
+                <td>" . get_string('contrcomments', 'mod_giportfolio') . "</td>
+                <td>" . $iconcomments . "</td>
+            </tr>" .
+        "<tr>
+                <td>" . get_string('additionstitle', 'mod_giportfolio') . get_string('additionlegend', 'mod_giportfolio', $alias) . "</td>
+                <td>" . $iconaddition . "</td>               
+            </tr>" .
+        "<tr>
                 <td> Chapter</td>
-                <td>".$iconchapter.  "</td>               
-            </tr>". 
-            "<tr>
+                <td>" . $iconchapter .  "</td>               
+            </tr>" .
+        "<tr>
                 <td> Subchapter</td>
-                <td>".$iconsubchapter.  "</td>               
-            </tr>".
-    "</table>";
+                <td>" . $iconsubchapter .  "</td>               
+            </tr>" .
+        "</table>";
     $out .= html_writer::end_div();
-   
-    echo $out;
 
-}else {
-    giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers,
-    $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter);
+    echo $out;
+} else {
+    giportfolio_submissionstables(
+        $context,
+        $username,
+        $currenttab,
+        $giportfolio,
+        $allusers,
+        $listusersids,
+        $perpage,
+        $page,
+        $cm,
+        $url,
+        $course,
+        $quickgrade,
+        $filter
+    );
 }
 
 
@@ -253,10 +314,10 @@ function quickgrade_mode_allowed($cmid) {
 // Part of CGS customisation.  List chapters with new contribution.
 function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
     global $DB, $USER, $PAGE;
-    $conditions = array ('giportfolioid' => $giportfolio->id, 'userid' => $contributorid);
+    $conditions = array('giportfolioid' => $giportfolio->id, 'userid' => $contributorid);
     $countcontributions = $DB->count_records('giportfolio_contributions', $conditions);
 
-    if ($countcontributions > 0 ) {
+    if ($countcontributions > 0) {
 
         // Get contribution ids done by the contributor.
         $select = "giportfolioid = $giportfolio->id AND userid = $contributorid";
@@ -272,7 +333,7 @@ function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
         // Filter the contribution ids to only have the ids not seen.
         $contribnotseenids = implode(',', array_diff($contribids, $contribseen));
 
-        if (empty ($contribnotseenids) || empty($contribids)) {
+        if (empty($contribnotseenids) || empty($contribids)) {
             return [];
         } else {
 
@@ -282,30 +343,31 @@ function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
             $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id in ($chids)";
         }
 
-        
+
         return $DB->get_records_sql($sql);
     }
-
 }
 
-function display_chapters_not_seen( $giportfolio, $contributorid, $cm) {
+function display_chapters_not_seen($giportfolio, $contributorid, $cm) {
     global $DB, $PAGE;
 
     $chapters =  get_updated_chapters_not_seen($giportfolio, $contributorid, $cm);
-   
+
     $morethanthree = count($chapters) > 3;
     $links = '';
     $index = 0;
 
     // In case the chapter has no content, by pass it
-    $conditions = array ('giportfolioid' => $giportfolio->id, 'userid' => $contributorid);
+    $conditions = array('giportfolioid' => $giportfolio->id, 'userid' => $contributorid);
     $countcontributions = $DB->count_records('giportfolio_contributions', $conditions);
- 
-    if ($countcontributions > 0 ) {
+
+    if ($countcontributions > 0) {
         foreach ($chapters as $chapter) {
 
-            $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'chapterid' => $chapter->id,
-                'userid' => $contributorid, 'cont' => 'no'));
+            $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
+                'id' => $cm->id, 'chapterid' => $chapter->id,
+                'userid' => $contributorid, 'cont' => 'no'
+            ));
             if ($index >= 3) {
                 $params = [
                     'href' => $url,
@@ -334,10 +396,7 @@ function display_chapters_not_seen( $giportfolio, $contributorid, $cm) {
         }
 
         return $links;
-
     } else {
         return '';
     }
-
 }
-
