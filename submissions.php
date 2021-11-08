@@ -86,8 +86,15 @@ echo $OUTPUT->tabtree($tabs, $currenttab);
 $groupmode = groups_get_activity_groupmode($cm);
 $currentgroup = groups_get_activity_group($cm, true);
 
-//groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab);
-giportfolio_groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab);
+// Change capability check to be able to display  users when context is frozen. CGS
+$allusers = get_users_by_capability($context, 'mod/giportfolio:printclassplan', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
+    'u.firstname ASC', '', '', $currentgroup, '', false, true);
+
+$info = new \core_availability\info_module(cm_info::create($cm));
+$allusers = $info->filter_user_list($allusers);
+
+groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab);
+
 $updatepref = optional_param('updatepref', 0, PARAM_BOOL);
 
 if ($updatepref) {
@@ -141,8 +148,8 @@ if ($quickgrade && $currenttab != 'graphcontributors') {
 }
 
 // Change capability check to be able to display  users when context is frozen. CGS
-$allusers = get_users_by_capability($context, 'mod/giportfolio:printclassplan', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
-    'u.firstname ASC', '', '', $currentgroup, '', false, true);
+// $allusers = get_users_by_capability($context, 'mod/giportfolio:printclassplan', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
+//     'u.firstname ASC', '', '', $currentgroup, '', false, true);
 
 $alluserids = array();
 foreach ($allusers as $user) {
