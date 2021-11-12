@@ -64,7 +64,7 @@ $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Al
 
 $userid =  ($contribute == 'yes' || $ismentor ) ? $mentee : $USER->id; // To allow teachers/parents to print students portfolio
 
-if ((!is_enrolled($context, $USER->id, '', true) && $mentee == 0) && !is_siteadmin() ) { // 
+if ((!is_enrolled($context, $USER->id, '') && $mentee == 0) && !is_siteadmin() ) { // 
     print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 if ($allowedit) {
