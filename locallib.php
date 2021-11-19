@@ -1345,7 +1345,7 @@ function giportfolio_user_mentor_of_student($context, $userid) {
     );
 
     $mentor = $DB->get_records_sql($sql, $params);
-   
+
     if (!empty($mentor)) {
         return true;
     }
@@ -1411,7 +1411,7 @@ function giportfolio_who_can_contribute_details($menteeid) {
         }
         return $mentorpictures;
     }
-   // get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
+    // get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
     $alias = get_student_alias($COURSE);
 
     return get_string('nomentorassociated', 'mod_giportfolio', $alias);
@@ -1502,7 +1502,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
                       <div class = "subchapter-icon">
                             <img class ="icon" alt ="Added by student" title = "Added by student" src="' . $OUTPUT->image_url('addition_icon', 'mod_giportfolio') . '"/>
                         </div>';
-    
+
 
     $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
     $extrafields = get_extra_user_fields($context);
@@ -1688,9 +1688,6 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             }
         } else if (giportfolio_in_array($chapterid, $cnotseen)) {
             list($countseen, $countcomments, $countnocomments) = giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributions);
-            if ($chapterid == 119) {
-                var_dump($countseen);
-            }
 
             if ($countseen > 1) {
                 $links[] = html_writer::tag('a', "$unseencontribution $unseencontribution", ['href' => $url, 'target' => '_blank']);
@@ -1860,12 +1857,11 @@ function giportfolio_get_last_chapter_seen($giportfolio) {
 
         $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id = $record->chapterid AND hidden = 0";
         $record = $DB->get_records_sql($sql);
-        
+
         if ($record) {
             return $record;
         }
-        
-    } 
+    }
 
     return null;
 }
@@ -1999,9 +1995,9 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
 
         $sql = 'FROM {user} u ' . $extratables .
             ' WHERE ' . $where . 'u.id IN (' . $listusersids . ') ';
-        
+
         $pusers = $DB->get_records_sql($select . $sql . $sort, $params, $table->get_page_start(), $table->get_page_size());
-        
+
         $table->pagesize($perpage, count($pusers));
 
         $offset = $page * $perpage;
@@ -2276,7 +2272,7 @@ function is_non_editing_teacher() {
     // Allow non editing teachers to contribute
     $contextcourse = \context_course::instance($COURSE->id);
     $coursenoneditingteachers = array_keys(get_role_users('4', $contextcourse, false, 'u.id'));
-   
+
     if (in_array(intval($USER->id), $coursenoneditingteachers)) {
         return true;
     }
@@ -2457,4 +2453,3 @@ function giportfolio_minimise_recipient_record($recipient) {
 
     return $recipient;
 }
-
