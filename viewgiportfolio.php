@@ -276,7 +276,7 @@ echo $OUTPUT->box_start('generalbox giportfolio_content');
 
 // Add the anchor to show/hide the portfolio details.
 $showhide = '<a type="button" class="show-hide-instructions" data-toggle="collapse" data-target="#collapseinstructions" aria-expanded="true" 
-aria-controls="collapseExample" title="Info"> <span class="fa fa-caret-down show-hide-details"></span> </a>';
+aria-controls="collapseExample" title="Info"> <span class="fa fa-caret-down show-hide-details"></span> <span class="fa fa-caret-up show-hide-details"></span></a>';
 
 if (!$giportfolio->customtitles) {
     $hidden = $chapter->hidden ? 'dimmed_text' : '';
@@ -322,8 +322,15 @@ if ((!$allowedit || $cangrade && $mentee != 0) && !$context->is_locked() || is_s
         $params['cont'] = $contribute;
     }
     $addurl = new moodle_url('/mod/giportfolio/editcontribution.php', $params);
+    $label = html_writer::span('<i class = "fa"></i>', '');
+    $ctx = new \stdClass();
+    $ctx->url = $addurl;
+    $ctx->id = $params['id'];
+    $ctx->chapterid = $params['chapterid'];
+    $ctx->mentor = $params['mentor'];
+    $ctx->mentee = $params['mentee'];
 
-    echo $OUTPUT->single_button($addurl, '', '', array('class' => 'add-contribution', 'tooltip' => get_string('addcontrib', 'mod_giportfolio')));
+    echo $OUTPUT->render_from_template('mod_giportfolio/add_contribution_button', $ctx);
     echo '<br>';
 }
 

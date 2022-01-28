@@ -223,7 +223,7 @@ $viewdata->mentor = $mentor;
 $viewdata->playbutton = ($allowcontribute || $allowedit || $allowviewgiportfolios) && !$mentor;
 $viewdata->playbuttonurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id));
 $viewdata->playparentbutton = $mentor;
-$viewdata->mentees = $menteebuttons;
+$viewdata->mentees = isset($menteebuttons) ? $menteebuttons : '';
 $viewdata->skipintro = $giportfolio->skipintro;
 $viewdata->intro = format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
 $viewdata->chapternumbers = get_string('chapternumber', 'mod_giportfolio') . count($chapters);

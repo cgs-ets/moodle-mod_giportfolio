@@ -1534,7 +1534,6 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $table->setup();
 
     $ufields = user_picture::fields('u', $extrafields);
-
     if (isset($where)) {
         $where .= ' AND ';
     }
@@ -1551,8 +1550,14 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     if (!empty($allusers)) {
         $select = "SELECT DISTINCT $ufields";
 
-        $sql = ' FROM {user} u ' . $extratables .
-            ' WHERE ' . $where . 'u.id IN (' . $listusersids . ') ';
+        if (isset($where)) {
+
+            $sql = ' FROM {user} u ' . $extratables .
+                ' WHERE ' . $where . 'u.id IN (' . $listusersids . ') ';
+        } else {
+            $sql = ' FROM {user} u ' . $extratables .
+                ' WHERE  u.id IN (' . $listusersids . ') ';
+        }
 
         $pusers = $DB->get_records_sql($select . $sql . $sort, $params, $table->get_page_start(), $table->get_page_size());
 
@@ -2271,7 +2276,7 @@ function is_non_editing_teacher() {
     global $COURSE, $USER;
     // Allow non editing teachers to contribute
     $contextcourse = \context_course::instance($COURSE->id);
-    $coursenoneditingteachers = array_keys(get_role_users('4', $contextcourse, false, 'u.id'));
+    $coursenoneditingteachers = array_keys(get_role_users('4', $contextcourse, false, 'u.id,  u.lastname, u.firstname'));
 
     if (in_array(intval($USER->id), $coursenoneditingteachers)) {
         return true;

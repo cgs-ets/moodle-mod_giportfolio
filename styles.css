@@ -314,19 +314,32 @@ span.toggleoutline.show-hide-details {
     cursor: pointer;
 }
 
-.add-contribution button {
-    background-image: url([[pix:giportfolio|add_contrib]]);
-    background-repeat: no-repeat;
-    box-shadow: 1px 1px grey;
-    background-size: 51px;
-    border-radius: 50%;
-    border: none;
-    width: 50px;
-    height: 50px;
+a[aria-expanded=true] .fa-caret-down {
+    display: none;
 }
 
-.add-contribution button:focus {
+a[aria-expanded=false] .fa-caret-up {
+    display: none;
+}
+
+.add-contrib {
+    border-radius: 50%;
+    border: none;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    margin: 4px 2px;
+}
+
+.add-contrib a:focus {
     outline: none;
+}
+
+i.fa.fa-plus-circle.add-contribution {
+    font-size: 4rem;
+    color: #66A8D8;
 }
 
 hr.outline-separator {
@@ -363,6 +376,7 @@ a.mentorfullname {
     padding: 10px 0;
     z-index: 1;
 }
+
 .path-mod-giportfolio [data-region="configure-filters"]::before,
 .path-mod-giportfolio [data-region="configure-filters"]::after {
     position: absolute;
