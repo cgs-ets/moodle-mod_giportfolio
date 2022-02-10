@@ -881,13 +881,13 @@ function giportfolio_set_mentor_info($contributions, $menteeid) {
     }
     return $contribution;
 }
-
-function giportfolio_get_user_default_chapter($giportfolioid) { // Part of Allow a teacher to make a contribution on behalf of a student.
+// Part of Allow a teacher to make a contribution on behalf of a student.
+function giportfolio_get_user_default_chapter($giportfolioid) {
     global $DB;
 
-    $sql = "SELECT TOP(1)  chapterid  FROM mdl_giportfolio_contributions 
+    $sql = "SELECT TOP(1) chapterid  FROM mdl_giportfolio_contributions  
             WHERE  giportfolioid = {$giportfolioid}
-           -- LIMIT 1;
+           --  LIMIT 1;
            ";
 
     return  $DB->get_record_sql($sql);
@@ -1578,7 +1578,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
                 $offset++;
 
                 list($legends, $additions) = giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $puser, $cm);
-
+               // print_object($legends);
                 $row = array_merge(array($picture, $userlink), $legends, $additions);
                 $table->add_data($row, $rowclass);
             }
@@ -1598,21 +1598,34 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
     list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
 
     // Get all the contributions done by this user.
-    $sql = "SELECT id as 'contribid', chapterid FROM {giportfolio_contributions} WHERE chapterid $insql AND userid = $user->id";
+    $sql = "SELECT id AS 'contribid', chapterid, teacherid 
+            FROM {giportfolio_contributions} 
+            WHERE chapterid $insql AND userid = $user->id AND teacherid = 0";
+
     $contributions = $DB->get_records_sql($sql, $inparams);
 
+    // Get teachers contributions in this chapter
+    $sql = "SELECT id AS 'contribid', chapterid, userid, teacherid 
+            FROM {giportfolio_contributions} 
+            WHERE chapterid $insql AND userid = $user->id AND teacherid <> 0";
+            
+    $teachercontributions = $DB->get_records_sql($sql, $inparams);
+    $teachercontributions = array_combine(array_map(function ($o) { return $o->chapterid; }, $teachercontributions), $teachercontributions);
+    $teachercontributions = array_keys($teachercontributions);
+   
     $nocontribution = html_writer::span('<i class = "fa">&#xf068;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('nocontrib', 'mod_giportfolio')]);
     $unseencontribution = html_writer::span('<i class = "fa">&#xf096;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('unseencontrib', 'mod_giportfolio')]);
     $seencontribution = html_writer::span('<i class = "fa">&#xf046;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('seencontrib', 'mod_giportfolio')]);
     $iconcomment =  html_writer::span('<i class = "fa">&#xf075;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrcomment', 'mod_giportfolio')]);
     $iconnocomment = html_writer::span('<i class = "fa">&#xf0e5;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrnocomment', 'mod_giportfolio')]);
     $iconcomments = html_writer::span('<i class = "fa">&#xf086</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrcomments', 'mod_giportfolio')]);
+    $iconteacher = html_writer::span('<i class = "fa fa-user-circle"></i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('teachercontrib', 'mod_giportfolio')]);
 
 
 
     // Filter the chapter ids.
     foreach ($contributions as $contribution) {
-
+       
         if (!in_array($contribution->chapterid, $chaptersid)) {
             $chaptersid[] = $contribution->chapterid;
         }
@@ -1621,16 +1634,18 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
     // Users contribution ids only.
     $usercontrib = array_keys($contributions);
     $usercontrib = implode(',', $usercontrib);
+   
 
     if ($usercontrib != '') {
         // Get all the contributions done by this user seen by the teacher.
         $sql = "SELECT contributionid, chapterid
-                    FROM mdl_giportfolio_follow_updates
-                    WHERE userid = $USER->id AND contributionid  IN ($usercontrib) AND giportfolioid = $giportfolio->id";
+                FROM mdl_giportfolio_follow_updates
+                WHERE userid = $USER->id AND contributionid  IN ($usercontrib) AND giportfolioid = $giportfolio->id";
 
         $contributionsseen = $DB->get_records_sql($sql);
         $usercontrib = explode(',', $usercontrib); // Convert string to array again.
         $contributionsnotseen = array_diff($usercontrib, array_keys($DB->get_records_sql($sql))); // Id's of the contributions not seen.
+     
         $cnotseen = [];
 
         foreach ($contributions as $contribution) {
@@ -1642,6 +1657,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
                 $contr->totalcomment = giportfolio_count_contributions_comments($contribution->contribid);
                 $cnotseen[] = $contr;
             }
+
         }
 
         foreach ($contributionsseen as $cseen) {
@@ -1666,13 +1682,15 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
         if (giportfolio_in_array($chapterid, $contributionsseen)) {
 
             list($countseen, $countcomments, $countnocomments) = giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributionsseen);
-
+           
             if ($countseen > 1) {
                 $links[] = html_writer::tag('a', "$seencontribution $seencontribution", ['href' => $url, 'target' => '_blank']);
             } else {
                 $links[] = html_writer::tag('a', " $seencontribution", ['href' => $url, 'target' => '_blank']);
             }
-            // The chapter has been seen before and there are new contributions.
+
+
+            // The chapter has been seen before and there are new contributions. 
             if (giportfolio_in_array($chapterid, $cnotseen)) {
                 $link = array_pop($links);
                 if ($countnocomments == 0) {
@@ -1691,7 +1709,9 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             } else if ($countcomments > 1) {
                 array_push($links, $link . html_writer::tag('a', "$iconcomments", ['href' => $url, 'target' => '_blank']));
             }
+
         } else if (giportfolio_in_array($chapterid, $cnotseen)) {
+
             list($countseen, $countcomments, $countnocomments) = giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributions);
 
             if ($countseen > 1) {
@@ -1713,7 +1733,14 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
 
             $links[] =  $nocontribution;
         }
+    
+        if (in_array($chapterid, $teachercontributions)) {
+            $link = array_pop($links);
+            array_push($links, $link . html_writer::tag('a', "$iconteacher", ['href' => $url, 'target' => '_blank']));          
+        }
+      
     }
+
 
     $additions[] = giportfolio_get_user_generated_chapters_not_seen($giportfolio->id, $user->id, $cm, $usercontrib);
 
@@ -1827,11 +1854,16 @@ function giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $con
     $countseen = 0;
     $countcomments = 0;
     $countnocomments = 0;
-
-    foreach ($contributions as $contribution) {
+    $teachercontrib = 0;
+   
+    foreach ($contributions as $cid => $contribution) {
         if ($contribution->chapterid == $chapterid) {
+       
             $countseen++;
-            $countcomments += $contribution->totalcomment;
+
+            if (isset($contribution->totalcomment) && $contribution->totalcomment > 0) {
+                $countcomments += $contribution->totalcomment;
+            }
 
             if (isset($contribution->totalcomment) && $contribution->totalcomment == 0) {
                 $countnocomments++;
@@ -1839,8 +1871,9 @@ function giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $con
         }
     }
 
-    return array($countseen, $countcomments, $countnocomments);
+    return array($countseen, $countcomments, $countnocomments, $teachercontrib);
 }
+
 
 function giportfolio_count_contributions_comments($contributionid) {
     global $DB;

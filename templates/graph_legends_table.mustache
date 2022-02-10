@@ -1,0 +1,130 @@
+{{!                                                                                                                                 
+    This file is part of Moodle - http://moodle.org/                                                                                
+                                                                                                                                    
+    Moodle is free software: you can redistribute it and/or modify                                                                  
+    it under the terms of the GNU General Public License as published by                                                            
+    the Free Software Foundation, either version 3 of the License, or                                                               
+    (at your option) any later version.                                                                                             
+                                                                                                                                    
+    Moodle is distributed in the hope that it will be useful,                                                                       
+    but WITHOUT ANY WARRANTY; without even the implied warranty of                                                                  
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                                                                   
+    GNU General Public License for more details.                                                                                    
+                                                                                                                                    
+    You should have received a copy of the GNU General Public License                                                               
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.     
+
+    @package mod_giportfolio
+    @copyright 2021 Veronica Bermegui
+    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later                                                            
+  }}
+<table class='giportfolio-legend-table'>
+   <tbody>
+      <tr>
+         <th>{{#str}} legends, mod_giportfolio {{/str}}</th>
+         <th></th>
+      </tr>
+      <tr>
+         <td>{{#str}} nocontrib, mod_giportfolio {{/str}} </td>
+         <td></td>
+        <td>
+            <span class="giportfolio-legend">
+                <i class="fa fa-minus fa-fw " aria-label="Student No contribution"></i>
+            </span>
+        </td>
+      </tr>
+      <tr>
+        <td>{{#str}} unseencontrib, mod_giportfolio {{/str}}</td>
+            <td></td>
+        <td>
+            <span class="giportfolio-legend">
+             <i class=" fa fa-square-o fa-fw " aria-hidden="true"></i>
+            </span>
+        </td>
+      </tr>
+      <tr>
+         <td>{{#str}} multipleunseen, mod_giportfolio {{/str}}</td>
+         <td></td>
+         <td>
+            <span class="giportfolio-legend">
+                <i class=" fa fa-square-o fa-fw " aria-hidden="true"></i>
+                 <i class=" fa fa-square-o fa-fw " aria-hidden="true"></i>
+            </span> 
+          
+        </td>
+      </tr>
+      <tr>
+         <td>{{#str}} seencontrib, mod_giportfolio {{/str}}</td>
+         <td></td>
+         <td>
+            <span class="giportfolio-legend">
+                <i class=" fa fa-check-square-o fa-fw " aria-label="Seen contribution"></i>
+            </span>
+        </td>
+      </tr>
+      <tr>
+        <td>{{#str}} multipleseen, mod_giportfolio {{/str}}</td>
+        <td></td>
+        <td>
+            <span class="giportfolio-legend">
+                <i class=" fa fa-check-square-o fa-fw "  aria-label="Seen contribution"></i>
+                <i class=" fa fa-check-square-o fa-fw "  aria-label="Seen contribution"></i>
+            </span> 
+    
+        </td>
+      </tr>
+      <tr>
+        <td>{{#str}} teachercontrib, mod_giportfolio {{/str}}</td> 
+        <td></td>
+        <td>
+            <span class="giportfolio-legend">
+            {{#pix}} i/groups, core, Teacher's Contribution {{/pix}}
+            </span>
+        </td>
+      </tr>
+      <tr>
+         <td>{{#str}} contrcomment, mod_giportfolio {{/str}}</td>
+         <td></td>
+         <td>
+            <span class="giportfolio-legend"> 
+                <i class=" fa fa-comment" aria-label="Commented"></i>
+            </span>
+         </td>
+      </tr>
+      <tr>
+         <td> {{#str}} contrnocomment, mod_giportfolio {{/str}} </td>
+         <td></td>
+         <td>
+            <span class="giportfolio-legend"><i class=" fa fa-comment-o" aria-hidden="true"></i></span>
+         </td>
+      </tr>
+      <tr>
+         <td>{{#str}} contrcomments, mod_giportfolio {{/str}}</td>
+         <td></td>
+         <td>
+            <span class="giportfolio-legend" ><i class=" fa fa-comments" aria-hidden="true"></i></span>
+         </td>
+      </tr>
+      <tr>
+         <td>{{#str}} additionstitle, mod_giportfolio {{/str}}</td>
+         <td></td>
+         <td>
+            {{{iconaddition}}}
+        </td>
+      </tr>
+      <tr>
+         <td> Chapter</td>
+         <td></td>
+         <td>
+           {{{iconchapter}}}
+         </td>
+      </tr>
+      <tr>
+         <td> Subchapter</td>
+         <td></td>
+         <td>
+           {{{iconsubchapter}}}
+         </td>
+      </tr>
+   </tbody>
+</table>

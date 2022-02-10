@@ -162,70 +162,17 @@ if ($currenttab == 'graphcontributors') {
 
     giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm);
 
-    $iconunseen = html_writer::span('<i class = "fa">&#xf096;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('unseencontrib', 'mod_giportfolio')]);
-    $iconseen = html_writer::span('<i class = "fa">&#xf046;</i>', '', ['class' => 'giportfolio-legend']);
-    $iconnocontrib = html_writer::span('<i class = "fa">&#xf068;</i>', '', ['class' => 'giportfolio-legend']);
-    $iconcomment =  html_writer::span('<i class = "fa">&#xf075;</i>', '', ['class' => 'giportfolio-legend']);
-    $iconnocomment = html_writer::span('<i class = "fa">&#xf0e5;</i>', '', ['class' => 'giportfolio-legend']);
-    $iconcomments = html_writer::span('<i class = "fa">&#xf086</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrcomments', 'mod_giportfolio')]);
     $iconaddition =  html_writer::img($OUTPUT->image_url('addition_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
     $iconchapter =  html_writer::img($OUTPUT->image_url('chapter', 'mod_giportfolio'), '', ['class' => 'icon']);
     $iconsubchapter =  html_writer::img($OUTPUT->image_url('subchapter_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
    
-    $out = html_writer::start_div();
-    $out .= "<table>
-             <tr>
-                <th>".get_string('legends', 'mod_giportfolio' )."</th>
-                <th></th>  
-            </tr>".
-            "<tr>
-                <td>".get_string('nocontrib', 'mod_giportfolio') ." </td>
-                <td>".$iconnocontrib ." </td>
-            </tr>".
-            "<tr>
-                <td>".get_string('unseencontrib', 'mod_giportfolio' )."</td>
-                <td>".$iconunseen. "</td>
-            </tr>".
-            "<tr>
-                <td>".get_string('multipleunseen', 'mod_giportfolio' )."</td>
-                <td>". $iconunseen.' '.$iconunseen. "</td>
-            </tr>".
-            "<tr>
-                <td>".get_string('seencontrib', 'mod_giportfolio' )."</td>
-                <td>". $iconseen. "</td>
-            </tr>".
-            "<tr>
-                <td>".get_string('multipleseen', 'mod_giportfolio' )."</td>
-                <td>". $iconseen.' '.$iconseen. "</td>
-            </tr>".
-            "<tr>
-                <td>".get_string('contrcomment', 'mod_giportfolio' )."</td>
-                <td>". $iconcomment. "</td>
-             </tr>".
-            "<tr>
-                <td>".get_string('contrnocomment', 'mod_giportfolio' )."</td>
-                <td>". $iconnocomment. "</td>
-            </tr>".
-            "<tr>
-                <td>".get_string('contrcomments', 'mod_giportfolio' )."</td>
-                <td>". $iconcomments. "</td>
-            </tr>".
-            "<tr>
-                <td>".get_string('additionstitle', 'mod_giportfolio' ). get_string('additionlegend', 'mod_giportfolio', $alias )."</td>
-                <td>".$iconaddition. "</td>               
-            </tr>".    
-            "<tr>
-                <td> Chapter</td>
-                <td>".$iconchapter.  "</td>               
-            </tr>". 
-            "<tr>
-                <td> Subchapter</td>
-                <td>".$iconsubchapter.  "</td>               
-            </tr>".
-    "</table>";
-    $out .= html_writer::end_div();
    
-    echo $out;
+    $data = [
+        'iconchapter' => $iconchapter,
+        'iconsubchapter' => $iconsubchapter,
+        'iconaddition' => $iconaddition
+    ];
+    echo $OUTPUT->render_from_template('mod_giportfolio/graph_legends_table', $data);
 
 }else {
     giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers,

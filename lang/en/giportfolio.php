@@ -218,11 +218,12 @@ $string['navigatebychapter'] = 'Navigate by chapter';
 $string['additionstitle'] = 'Additions';
 
 $string['legends'] = 'Legend';
-$string['nocontrib'] = 'No contribution';
+$string['nocontrib'] = 'Student no contribution';
 $string['unseencontrib'] = 'Unseen contribution';
 $string['multipleunseen'] = 'Multiple unseen';
 $string['seencontrib'] = 'Seen contribution';
 $string['multipleseen'] = 'Multiple seen';
+$string['teachercontrib'] = 'Teacher\'s Contribution';
 $string['contrcomment'] = 'Commented';
 $string['contrnocomment'] = ' Not commented ';
 $string['contrcomments'] = 'Multiple comments';

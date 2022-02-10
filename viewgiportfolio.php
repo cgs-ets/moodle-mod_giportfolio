@@ -554,7 +554,7 @@ if ($contriblist) {
             
         }
 
-        if (empty(giportfolio_has_seen_contribution($contrib->id))) { // First time the user sees the contrib.
+        if ($contrib->teacherid == 0 && empty(giportfolio_has_seen_contribution($contrib->id))) { // First time the user sees the contrib.
             giportfolio_follow_updates_entry($contrib);
         }
     }
