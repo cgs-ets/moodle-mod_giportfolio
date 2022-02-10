@@ -1578,7 +1578,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
                 $offset++;
 
                 list($legends, $additions) = giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $puser, $cm);
-               // print_object($legends);
+               
                 $row = array_merge(array($picture, $userlink), $legends, $additions);
                 $table->add_data($row, $rowclass);
             }
@@ -1613,7 +1613,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
     $teachercontributions = array_combine(array_map(function ($o) { return $o->chapterid; }, $teachercontributions), $teachercontributions);
     $teachercontributions = array_keys($teachercontributions);
    
-    $nocontribution = html_writer::span('<i class = "fa">&#xf068;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('nocontrib', 'mod_giportfolio')]);
+    $nocontribution = html_writer::span('<i class = "fa">&#xf068;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('notstarted', 'mod_giportfolio')]);
     $unseencontribution = html_writer::span('<i class = "fa">&#xf096;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('unseencontrib', 'mod_giportfolio')]);
     $seencontribution = html_writer::span('<i class = "fa">&#xf046;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('seencontrib', 'mod_giportfolio')]);
     $iconcomment =  html_writer::span('<i class = "fa">&#xf075;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrcomment', 'mod_giportfolio')]);
