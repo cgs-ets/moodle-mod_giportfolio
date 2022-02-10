@@ -218,7 +218,8 @@ $string['navigatebychapter'] = 'Navigate by chapter';
 $string['additionstitle'] = 'Additions';
 
 $string['legends'] = 'Legend';
-$string['nocontrib'] = 'Student no contribution';
+$string['nocontrib'] = 'No contribution made by {$a->name}';
+$string['nocontrib_legend'] = 'No contribution made by student';
 $string['unseencontrib'] = 'Unseen contribution';
 $string['multipleunseen'] = 'Multiple unseen';
 $string['seencontrib'] = 'Seen contribution';

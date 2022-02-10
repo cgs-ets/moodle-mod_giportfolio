@@ -164,14 +164,14 @@ if ($currenttab == 'graphcontributors') {
 
     $iconaddition =  html_writer::img($OUTPUT->image_url('addition_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
     $iconchapter =  html_writer::img($OUTPUT->image_url('chapter', 'mod_giportfolio'), '', ['class' => 'icon']);
-    $iconsubchapter =  html_writer::img($OUTPUT->image_url('subchapter_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
-   
+    $iconsubchapter =  html_writer::img($OUTPUT->image_url('subchapter_icon', 'mod_giportfolio'), '', ['class' => 'icon']);  
    
     $data = [
         'iconchapter' => $iconchapter,
         'iconsubchapter' => $iconsubchapter,
-        'iconaddition' => $iconaddition
+        'iconaddition' => $iconaddition,       
     ];
+
     echo $OUTPUT->render_from_template('mod_giportfolio/graph_legends_table', $data);
 
 }else {
