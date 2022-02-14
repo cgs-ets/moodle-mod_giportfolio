@@ -69,12 +69,14 @@ $allurl->remove_params('tab');
 $sincelastloginurl = new moodle_url($PAGE->url, array('tab' => 'sincelastlogin'));
 $nocommentsurl = new moodle_url($PAGE->url, array('tab' => 'nocomments'));
 $graphcontributorsurl = new moodle_url($PAGE->url, array('tab' => 'graphcontributors'));
+// $userwithnocontributionurl = new moodle_url($PAGE->url, array('tab' => 'contributionreminder'));
 
 $tabs = array(
     new tabobject('all', $allurl, get_string('allusers', 'mod_giportfolio', $alias)),
     new tabobject('sincelastlogin', $sincelastloginurl, get_string('sincelastlogin', 'mod_giportfolio')),
     new tabobject('nocomments', $nocommentsurl, get_string('nocomments', 'mod_giportfolio')),
     new tabobject('graphcontributors', $graphcontributorsurl, get_string('graphofcontributors', 'mod_giportfolio')),
+    // new tabobject('contributionreminder', $userwithnocontributionurl, get_string('userwithnocontrib', 'mod_giportfolio', $alias)),
 );
 
 echo get_string('studentgiportfolios', 'mod_giportfolio', $alias);
@@ -131,9 +133,10 @@ if ($fastg) { // Update the grade and the feedback.
 
 $mform = new giportfolio_search_form(null, array('id' => $id, 'tab' => $currenttab));
 $mform->display();
+$customtabs = ['graphcontributors', 'contributionreminder'];
 
 // Print quickgrade form around the table.
-if ($quickgrade && $currenttab != 'graphcontributors') {
+if ($quickgrade && !in_array($currenttab, $customtabs)) {
 
     $formattrs = array();
     $formattrs['action'] = new moodle_url('/mod/giportfolio/submissions.php');
@@ -158,25 +161,17 @@ foreach ($allusers as $user) {
 
 $listusersids = "'" . implode("', '", $alluserids) . "'";
 // Generate table.
-if ($currenttab == 'graphcontributors') {
 
-    giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm);
+switch ($currenttab) {
+    case 'graphcontributors':
+        giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm);
+        break;
+    
 
-    $iconaddition =  html_writer::img($OUTPUT->image_url('addition_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
-    $iconchapter =  html_writer::img($OUTPUT->image_url('chapter', 'mod_giportfolio'), '', ['class' => 'icon']);
-    $iconsubchapter =  html_writer::img($OUTPUT->image_url('subchapter_icon', 'mod_giportfolio'), '', ['class' => 'icon']);  
-   
-    $data = [
-        'iconchapter' => $iconchapter,
-        'iconsubchapter' => $iconsubchapter,
-        'iconaddition' => $iconaddition,       
-    ];
-
-    echo $OUTPUT->render_from_template('mod_giportfolio/graph_legends_table', $data);
-
-}else {
-    giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers,
-    $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter);
+    default:
+        giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers,
+        $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter);
+        break;
 }
 
 

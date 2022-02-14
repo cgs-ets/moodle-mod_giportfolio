@@ -6,4 +6,6 @@ M.mod_giportfolio_collapse = {
         console.log(toc);
         toc.render();
     }
+
 };
+

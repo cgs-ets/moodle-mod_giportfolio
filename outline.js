@@ -5,3 +5,4 @@ $('#toggleoutline').click(function() {
 	});
 $('#togglehide').toggle();
 $('#giportfolio_outline').toggle();
+

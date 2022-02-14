@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
-require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->libdir . '/formslib.php');
 
 class giportfolio_chapter_edit_form extends moodleform {
 
@@ -46,6 +46,19 @@ class giportfolio_chapter_edit_form extends moodleform {
         $mform->addElement('editor', 'content_editor', get_string('content', 'mod_giportfolio'), null, $options);
         $mform->setType('content_editor', PARAM_RAW);
         $mform->addRule('content_editor', get_string('required'), 'required', null, 'client');
+
+        $mform->addElement(
+            'date_selector',
+            'sendreminder',
+            get_string('limitdatetocontribute', 'mod_giportfolio'),
+            array(
+                'startyear' => intval(userdate(time(), '%Y')),
+                'timezone'  => 99,
+                'optional'  => true
+            )
+        );
+
+     
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);

@@ -474,7 +474,7 @@ if ($contriblist) {
            
         } else if ($giportfolio->peersharing) {
             $actions = array(); // No actions when viewing another user's contribution.
-            $userfullname = $otherusers[$contrib->userid] . ': ';
+            $userfullname = isset($otherusers[$contrib->userid]) ? $otherusers[$contrib->userid]. ': ' : '';
         } else {
             // Do not show contribution if peersharing is disabled, even if the contribution was previously shared
             continue;

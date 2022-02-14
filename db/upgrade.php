@@ -677,5 +677,21 @@ function xmldb_giportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2021082701, 'giportfolio');
     }
 
+    if ($oldversion < 2022021100) {
+
+        // Define field sendreminder to be added to giportfolio_chapters.
+        $table = new xmldb_table('giportfolio_chapters');
+        $field = new xmldb_field('sendreminder', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'userid');
+
+        // Conditionally launch add field sendreminder.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2022021100, 'giportfolio');
+    }
+
+
     return true;
 }

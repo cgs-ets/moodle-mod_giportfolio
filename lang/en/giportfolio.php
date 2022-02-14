@@ -36,6 +36,7 @@ $string['chapter'] = 'Chapter {$a}';
 $string['chapters'] = 'Chapters';
 $string['chapterscount'] = 'Chapters';
 $string['chaptertitle'] = 'Chapter title';
+$string['limitdatetocontribute'] = 'Send contribution reminder after';
 $string['collapsesubchapters'] = 'Collapse subchapters';
 $string['confchapterdelete'] = 'Do you really want to delete this chapter?';
 $string['confchapterdeleteall'] = 'Do you really want to delete this chapter and all its subchapters?';
@@ -216,6 +217,8 @@ $string['teachercontribution'] = 'Teacher\'s contribution';
 $string['graphofcontributors'] = 'Graph of contributors';
 $string['navigatebychapter'] = 'Navigate by chapter';
 $string['additionstitle'] = 'Additions';
+
+$string['userwithnocontrib'] = '{$a} contribution reminder';
 
 $string['legends'] = 'Legend';
 $string['nocontrib'] = 'No contribution made by {$a->name}';
