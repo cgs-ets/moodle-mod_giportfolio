@@ -28,6 +28,7 @@ require_once("search_form.php");
 $id = optional_param('id', 0, PARAM_INT); // Course module ID.
 $p = optional_param('p', 0, PARAM_INT); // Giportfolio ID.
 $currenttab = optional_param('tab', 'all', PARAM_ALPHA); // What tab are we in?
+$chapterid = optional_param('chapterid', 0, PARAM_INT); // Filtering by this chapter
 $username = optional_param('username', '', PARAM_ALPHA); // Giportfolio ID.
 $url = new moodle_url('/mod/giportfolio/submissions.php');
 
@@ -69,14 +70,14 @@ $allurl->remove_params('tab');
 $sincelastloginurl = new moodle_url($PAGE->url, array('tab' => 'sincelastlogin'));
 $nocommentsurl = new moodle_url($PAGE->url, array('tab' => 'nocomments'));
 $graphcontributorsurl = new moodle_url($PAGE->url, array('tab' => 'graphcontributors'));
-// $userwithnocontributionurl = new moodle_url($PAGE->url, array('tab' => 'contributionreminder'));
+$userwithnocontributionurl = new moodle_url($PAGE->url, array('tab' => 'contributionreminder'));
 
 $tabs = array(
     new tabobject('all', $allurl, get_string('allusers', 'mod_giportfolio', $alias)),
     new tabobject('sincelastlogin', $sincelastloginurl, get_string('sincelastlogin', 'mod_giportfolio')),
     new tabobject('nocomments', $nocommentsurl, get_string('nocomments', 'mod_giportfolio')),
     new tabobject('graphcontributors', $graphcontributorsurl, get_string('graphofcontributors', 'mod_giportfolio')),
-    // new tabobject('contributionreminder', $userwithnocontributionurl, get_string('userwithnocontrib', 'mod_giportfolio', $alias)),
+    new tabobject('contributionreminder', $userwithnocontributionurl, get_string('userwithnocontrib', 'mod_giportfolio', $alias)),
 );
 
 echo get_string('studentgiportfolios', 'mod_giportfolio', $alias);
@@ -87,6 +88,8 @@ echo $OUTPUT->tabtree($tabs, $currenttab);
 // Find out current groups mode.
 $groupmode = groups_get_activity_groupmode($cm);
 $currentgroup = groups_get_activity_group($cm, true);
+
+
 
 // Change capability check to be able to display  users when context is frozen. CGS
 $allusers = get_users_by_capability($context, 'mod/giportfolio:printclassplan', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
@@ -107,6 +110,8 @@ if ($updatepref) {
     set_user_preference('giportfolio_quickgrade', optional_param('quickgrade', 0, PARAM_BOOL));
     set_user_preference('giportfolio_filter', $filter);
 }
+
+
 
 $perpage = get_user_preferences('giportfolio_perpage', 10);
 $quickgrade = get_user_preferences('giportfolio_quickgrade', 0);
@@ -150,9 +155,6 @@ if ($quickgrade && !in_array($currenttab, $customtabs)) {
     echo html_writer::empty_tag('input', array('type' => 'hidden', 'name' => 'sesskey', 'value' => sesskey()));
 }
 
-// Change capability check to be able to display  users when context is frozen. CGS
-// $allusers = get_users_by_capability($context, 'mod/giportfolio:printclassplan', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
-//     'u.firstname ASC', '', '', $currentgroup, '', false, true);
 
 $alluserids = array();
 foreach ($allusers as $user) {
@@ -164,11 +166,18 @@ $listusersids = "'" . implode("', '", $alluserids) . "'";
 
 switch ($currenttab) {
     case 'graphcontributors':
+
         giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm);
         break;
-    
+
+    case 'contributionreminder':
+        $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab . '&chapterid' . $chapterid;
+        giportfolio_reminder_chapter_selector($cm, $urlroot, false, $giportfolio, $chapterid);
+        giportfolio_reminder_table($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $chapterid, $cm->id);
+        break;
 
     default:
+    
         giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers,
         $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter);
         break;
@@ -270,7 +279,7 @@ function display_chapters_not_seen( $giportfolio, $contributorid, $cm) {
 
         if ($morethanthree) {
             $params = ["class" => "giportfolio-more", "id" => $contributorid, 'title' => 'Show More'];
-            $icon = '<i class = "fa">&#xf067;</i>'; //minus: &#xf068;
+            $icon = '<i class = "fa">&#xf067;</i>'; 
             $links .= html_writer::span($icon, '', $params);
             $jsmodule = array(
                 'name' => 'mod_giportfolio_morechapters',

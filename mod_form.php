@@ -40,11 +40,15 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         $mform->addElement('text', 'name', get_string('name'), array('size' => '64'));
+
+     
+
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
         } else {
             $mform->setType('name', PARAM_CLEANHTML);
         }
+
         $mform->addRule('name', null, 'required', null, 'client');
 
         if ($CFG->branch < 29) {
@@ -152,6 +156,7 @@ class mod_giportfolio_mod_form extends moodleform_mod {
             $mform->addElement('hidden', 'klassenbuchtrainer', 0);
             $mform->setType('klassenbuchtrainer', 0);
         }
+
 
         $this->standard_grading_coursemodule_elements();
 

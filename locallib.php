@@ -49,7 +49,7 @@ function giportfolio_preload_chapters($giportfolio) {
         'giportfolio_chapters',
         array('giportfolioid' => $giportfolio->id, 'userid' => 0),
         'pagenum',
-        'id, pagenum, subchapter, title, hidden, userid, sendreminder'
+        'id, pagenum, subchapter, title, hidden, userid'
     );
     if (!$chapters) {
         return array();
@@ -869,8 +869,6 @@ function giportfolio_get_user_contributions($chapterid, $giportfolioid, $ids, $s
 }
 
 
-
-
 function giportfolio_set_mentor_info($contributions, $menteeid) {
     $mentorids = giportfolio_get_mentees_mentor($menteeid);
     $mentorids = explode(',', $mentorids);
@@ -927,7 +925,6 @@ function giportfolio_get_user_contribution_status($giportfolioid, $userid) { // 
 
     return (int)max($contribtime, $chaptertime);
 }
-
 
 function giportfolio_get_giportfolios_number($giportfolioid, $cmid) {
     // Return (if exists) the number of student giportfolios for each activity.
@@ -1412,7 +1409,7 @@ function giportfolio_who_can_contribute_details($menteeid) {
         }
         return $mentorpictures;
     }
-    // get_string('studentgiportfolio', 'mod_giportfolio', get_student_alias($COURSE));
+
     $alias = get_student_alias($COURSE);
 
     return get_string('nomentorassociated', 'mod_giportfolio', $alias);
@@ -1596,7 +1593,6 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $jsmodule = array(
         'name' => 'mod_giportfolio_overflow',
         'fullpath' => new moodle_url('/mod/giportfolio/graphofcontributors.js'),
-
     );
 
     $PAGE->requires->js_init_call('M.mod_giportfolio_overflow.init', array(), false, $jsmodule);
@@ -1614,6 +1610,216 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     echo $OUTPUT->render_from_template('mod_giportfolio/graph_legends_table', $data);
 }
 
+// Render table to send reminders. CGS customisation
+
+function giportfolio_reminder_chapter_selector($cm, $urlroot, $return = false, $giportfolio, $chapterid) {
+    global $OUTPUT;
+
+    if ($urlroot instanceof moodle_url) {
+        // no changes necessary
+
+    } else {
+        if (strpos($urlroot, 'http') !== 0) { // Will also work for https
+            // Display error if urlroot is not absolute (this causes the non-JS version to break)
+            debugging(
+                'groups_print_activity_menu requires absolute URL for ' .
+                    '$urlroot, not <tt>' . s($urlroot) . '</tt>. Example: ' .
+                    'groups_print_activity_menu($cm, $CFG->wwwroot . \'/mod/mymodule/view.php?id=13\');',
+                DEBUG_DEVELOPER
+            );
+        }
+        $urlroot = new moodle_url($urlroot);
+    }
+
+    $chapters = giportfolio_preload_chapters($giportfolio);
+
+    $displaylist = ['Choose...'];
+
+    foreach ($chapters as $chapter) {
+        $displaylist[$chapter->id] = $chapter->title;
+    }
+
+    $output = '';
+
+    $select = new single_select($urlroot, 'chapterid', $displaylist, $chapterid, null, 'selectchapter');
+    $select->label = get_string("visiblechapter", 'mod_giportfolio');
+    $output = $OUTPUT->render($select);
+
+    echo $output . '<br><br><br>';
+}
+
+function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $chapterid, $cm) {
+    global $OUTPUT, $CFG, $DB, $USER, $COURSE;
+    
+    $dontremind = giportfolio_get_students_with_no_contributions($chapterid, $giportfolio->id);
+
+    define('DEFAULT_PAGE_SIZE', count($allusers)); // Show all the users at once.
+
+    $mastercheckbox = new \core\output\checkbox_toggleall('participants-table', true, [
+        'id' => 'select-all-participants',
+        'name' => 'select-all-participants',
+        'label' => get_string('selectall'),
+        'labelclasses' => 'sr-only',
+        'classes' => 'm-1',
+        'checked' => false,
+    ]);
+
+    $tableheaders = array_merge([$OUTPUT->render($mastercheckbox), '', 'fullname']);
+    $tablecolumns = array_merge(['', 'picture', 'fullname']);
+    $extrafields = get_extra_user_fields($context);
+
+    require_once($CFG->libdir . '/tablelib.php');
+
+    $table = new flexible_table('mod-giportfolio-reminder-table');
+
+    $table->initialbars(true); // Display the alphabet 
+    $table->define_columns($tablecolumns); //$tablecolumns
+    $table->define_headers($tableheaders);
+    $table->define_baseurl($PAGE->url);
+    $table->sortable(true, 'lastname'); // Sorted by lastname by default.
+    $table->column_class('picture', 'picture');
+    $table->column_class('fullname', 'fullname');
+
+    $table->set_attribute('cellspacing', '0');
+    $table->set_attribute('id', $table->uniqueid);
+    $table->set_attribute('class', 'generaltable flexible boxaligncenter');
+    $table->set_attribute('width', '100%');
+
+    // Start working -- this is necessary as soon as the niceties are over.
+    $table->setup();
+
+    $extratables = '';
+    list($where, $params) = $table->get_sql_where();
+
+    if ($where) {
+        $where .= ' AND ';
+    }
+
+    if ($username) {
+        $where .= ' (u.lastname like \'%' . $username . '%\' OR u.firstname like \'%' . $username . '%\' ) AND ';
+    }
+
+    $extratables = 'JOIN {giportfolio_chapters} ch ON ch.giportfolioid = :portfolioid';
+    $params['portfolioid'] = $giportfolio->id;
+
+    if ($sort = $table->get_sql_sort()) {
+        $sort = ' ORDER BY ' . $sort;
+    }
+
+    $ufields = user_picture::fields('u', $extrafields);
+
+    if (!empty($allusers) && $chapterid != 0) {
+        $select = "SELECT DISTINCT $ufields";
+
+        $sql = ' FROM {user} u ' . $extratables .
+            ' WHERE ' . $where . 'u.id IN (' . $listusersids . ') ';
+
+        $pusers = $DB->get_records_sql($select . $sql . $sort, $params, $table->get_page_start(), $table->get_page_size());
+        $table->pagesize($perpage, count($pusers));
+
+
+        $offset = $page * $perpage;
+        $rowclass = null;
+        $endposition = $offset + $perpage;
+        $currentposition = 0;
+
+        foreach ($pusers as $puser) {
+
+            if (in_array($puser->id, $dontremind)) continue;  // This students did contribute
+
+            if ($currentposition == $offset && $offset < $endposition) {
+                $options = array(
+                    'visibletoscreenreaders' => false,
+                    'includefullname' => false,          // New in Moodle 3.4. Setting to true will render the user's full name beside it. Defaults to false.
+                );
+                $picture = $OUTPUT->user_picture($puser, $options);
+                $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $puser->id . '&amp;course=' . $course->id . '">' .
+                    fullname($puser, has_capability('moodle/site:viewfullnames', $context)) . '</a>';
+                $checkboxes = giportfolio_reminder_checkbox($puser);
+                $offset++;
+                $row = array_merge($checkboxes, array($picture, $userlink));
+                $table->add_data($row, $rowclass);
+            }
+
+            $currentposition++;
+        }
+    }
+
+    $table->print_html();
+
+    echo '<br>';
+
+
+    echo html_writer::start_tag('form', [
+        'action' => 'action_redir.php',
+        'method' => 'post',
+        'id' => 'participantsform',
+        'data-course-id' => $course->id,
+        'data-table-unique-id' => $table->uniqueid,
+        'data-table-default-per-page' => ($perpage < DEFAULT_PAGE_SIZE) ? $perpage : DEFAULT_PAGE_SIZE,
+    ]);
+
+    if ($chapterid) {
+
+        $bulkoptions = (object) [
+            'uniqueid' => $table->uniqueid,
+            'chapterid' => $chapterid,
+            'chapter' => giportfolio_get_giportfolio_chaptertitle($giportfolio->id)[$chapterid]->title,
+            'portfolio' => $giportfolio->name,
+            'course' => $COURSE->fullname,
+            'cm' => $cm
+        ];
+
+
+        $displaylist = array();
+
+        if (has_all_capabilities(['mod/giportfolio:gradegiportfolios'], $context)) {
+            $displaylist['#messageselect'] = get_string('messageselectadd');
+        }
+
+        $selectactionparams = array(
+            'id' => 'formactionid',
+            'class' => 'ml-2',
+            'data-action' => 'toggle',
+            'data-togglegroup' => 'participants-table',
+            'data-toggle' => 'action',
+            'disabled' => 'disabled'
+        );
+
+        $label = html_writer::tag(
+            'label',
+            get_string("withselectedusers"),
+            ['for' => 'formactionid', 'class' => 'col-form-label d-inline']
+        );
+
+        $select = html_writer::select($displaylist, 'formaction', '', ['' => 'choosedots'], $selectactionparams);
+        echo html_writer::tag('div', $label . $select);
+
+        echo '<input type="hidden" name="id" value="' . $course->id . '" />
+             <input type="hidden" name="sesskey" value="' . $USER->sesskey . '" />';
+
+        echo '</form>';
+
+ 
+        $PAGE->requires->js_call_amd('mod_giportfolio/reminder_table_control', 'init', [$bulkoptions]);
+    }
+}
+
+
+function giportfolio_reminder_checkbox($user) {
+    global $OUTPUT;
+
+    $checkbox = new \core\output\checkbox_toggleall('participants-table', false, [
+        'classes' => 'usercheckbox m-1',
+        'id' => 'user' . $user->id,
+        'name' => 'user' . $user->id,
+        'checked' => false,
+        'label' => get_string('selectitem', 'moodle', fullname($user)),
+        'labelclasses' => 'accesshide',
+    ]);
+
+    return [$OUTPUT->render($checkbox)];
+}
 
 
 function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $user, $cm) {
@@ -1638,6 +1844,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
         return $o->chapterid;
     }, $teachercontributions), $teachercontributions);
     $teachercontributions = array_keys($teachercontributions);
+
     $nocontribution = html_writer::span('<i class = "fa">&#xf068;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('nocontrib', 'mod_giportfolio', ['name' => $user->firstname])]);
     $unseencontribution = html_writer::span('<i class = "fa">&#xf096;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('unseencontrib', 'mod_giportfolio')]);
     $seencontribution = html_writer::span('<i class = "fa">&#xf046;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('seencontrib', 'mod_giportfolio')]);
@@ -1768,7 +1975,6 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
 
     return [$links, $additions];
 }
-
 
 // Helper functions for giportfolio_get_contributions_to_display. 
 function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $userid, $cm) {
@@ -1905,7 +2111,7 @@ function giportfolio_count_contributions_comments($contributionid) {
     return $total;
 }
 
-// Bookmark CGS
+// Bookmark CGS.
 function giportfolio_get_last_chapter_seen($giportfolio) {
 
     global $DB, $USER;
@@ -1925,6 +2131,21 @@ function giportfolio_get_last_chapter_seen($giportfolio) {
     return null;
 }
 
+function giportfolio_all_chapters_hidden($giportfolio) {
+    global $DB;
+
+    $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE  giportfolioid = $giportfolio->id and userid = 0;";
+    $chapters = $DB->get_records_sql($sql);
+    $counthidden = 0;
+
+    foreach ($chapters as $chapter) {
+        if ($chapter->hidden) {
+            $counthidden++;
+        }
+    }
+
+    return count($chapters) == $counthidden;
+}
 
 function giportfolio_remove_last_chapter_seen($chapter) {
     global $DB;
@@ -2483,6 +2704,48 @@ function giportfolio_send_comment_notification_helper($userid, $contributionid, 
     message_send($eventdata);
 }
 
+function giportfolio_send_reminder($data) {
+    global $COURSE, $DB;
+    error_log(print_r($data, true));
+
+    $userids = implode(',', $data->users);
+    $sql = "SELECT * FROM mdl_user WHERE id in ($userids)";
+    $pusers = $DB->get_records_sql($sql);
+
+    foreach ($pusers as $user) {
+
+        $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', [
+            'id' => $data->chapter->cm, 'chapterid' => $data->chapter->chapterid
+        ]);
+       
+        $info = (object)array(
+            'course' => format_string($COURSE->fullname),
+            'portfolio' => format_string($data->chapter->portfolio),           
+            'chapter' => format_string($data->chapter->chapter),
+            'link' => $url,
+        );
+
+        $info->link = html_writer::link($url, $url->out(false));
+        $user = giportfolio_minimise_recipient_record($user);
+        $subj = get_string('remindernotification_subject', 'mod_giportfolio');
+        $fullmessage = get_string('remindernotificatione_body', 'mod_giportfolio', $info);
+        $fullmessagehtml = nl2br(get_string('remindernotificatione_body', 'mod_giportfolio', $info));
+        
+        $eventdata = new \core\message\message();
+        $eventdata->component = 'mod_giportfolio';
+        $eventdata->name = 'contributionreminder';
+        $eventdata->userfrom = get_admin();
+        $eventdata->userto = $user;
+        $eventdata->subject =  $subj;
+        $eventdata->fullmessage = $fullmessage;
+        $eventdata->fullmessageformat =  FORMAT_PLAIN;
+        $eventdata->fullmessagehtml = $fullmessagehtml;
+        $eventdata->notification = 1; 
+       
+        message_send($eventdata);
+    }
+}
+
 
 /**
  * Removes properties from user record that are not necessary for sending post notifications.
@@ -2515,4 +2778,17 @@ function giportfolio_minimise_recipient_record($recipient) {
     return $recipient;
 }
 
+// Get the students that did contribute 
+function giportfolio_get_students_with_no_contributions($chapterid, $giportfolioid) {
+    global $DB;
 
+    $sql = "SELECT distinct userid 
+            FROM mdl_giportfolio_contributions
+            WHERE  giportfolioid = $giportfolioid AND chapterid = $chapterid;";
+
+
+    $r = $DB->get_records_sql($sql);
+    $userids = array_keys($r);
+
+    return $userids;
+}

@@ -411,6 +411,10 @@ a.mentorfullname {
     margin-bottom: 0;
 }
 
+table#mod-giportfolio-reminder-table {
+    max-width: fit-content;
+}
+
 /* Media Query: large smartphone (Vertical) */
 /* Any screen that also has amax less than 600px*/
 @media screen and (max-width: 600px) {
@@ -437,5 +441,9 @@ a.mentorfullname {
 
     .graphcontributors-overflow {
         overflow: auto;
+    }
+
+    table#mod-giportfolio-reminder-table {
+        max-width: 100%;
     }
 }

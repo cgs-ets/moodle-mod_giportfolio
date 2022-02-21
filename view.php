@@ -228,6 +228,7 @@ $viewdata->skipintro = $giportfolio->skipintro;
 $viewdata->intro = format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
 $viewdata->chapternumbers = get_string('chapternumber', 'mod_giportfolio') . count($chapters);
 $viewdata->contextlocked = $context->is_locked();
+$viewdata->chapterishidden = giportfolio_all_chapters_hidden($giportfolio);
 
 echo $OUTPUT->render_from_template('mod_giportfolio/view_portfolio_entry', $viewdata);
 

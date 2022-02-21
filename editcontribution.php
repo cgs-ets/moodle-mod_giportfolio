@@ -294,8 +294,7 @@ if ($mform->is_cancelled()) {
             $eventdata = new \core\message\message();
             $eventdata->component = 'mod_giportfolio';
             $eventdata->name = 'addentry';
-            $eventdata->userfrom = get_admin();
-            $eventdata->userto = null; // To fill in below.
+            $eventdata->userfrom = get_admin();            
             $eventdata->subject = $subj;
             $eventdata->fullmessage = $messagetext;
             $eventdata->fullmessageformat = FORMAT_PLAIN;

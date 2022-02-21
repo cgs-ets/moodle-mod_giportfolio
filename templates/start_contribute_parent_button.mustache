@@ -22,12 +22,16 @@
 {{^contextlocked}}
     <div class = 'viewcontribute'>
         <br>
+    {{^chapterishidden}}
         {{#mentees}}
             <a href= "{{{url}}}" class="btn btn-secondary" role = "button">
                 {{text}}
             </a> 
             <br><br>
         {{/mentees}}
+    {{/chapterishidden}}
+
+    {{#chapterishidden}} <strong> {{#str}}studentchaptershiddenexception, mod_giportfolio {{/str}} </strong>{{/chapterishidden}}
     
     </div>
 {{/contextlocked}}

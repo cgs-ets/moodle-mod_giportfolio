@@ -74,6 +74,7 @@ if (!$chapter->subchapter) {
 \mod_giportfolio\event\chapter_updated::create_from_chapter($giportfolio, $context, $chapter)->trigger();
 
 giportfolio_preload_chapters($giportfolio); // Fix structure.
+
 $DB->set_field('giportfolio', 'revision', $giportfolio->revision + 1, array('id' => $giportfolio->id));
 
 redirect('viewgiportfolio.php?id='.$cm->id.'&chapterid='.$chapter->id.'&h='.$chapter->hidden);

@@ -67,6 +67,17 @@ $userid =  ($contribute == 'yes' || $ismentor ) ? $mentee : $USER->id; // To all
 if ((!is_enrolled($context, $USER->id, '') && $mentee == 0) && !is_siteadmin() ) { // 
     print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
 }
+
+// Check if all the chapters are hidden. If they are then a more explanatory message has to be display.
+if(giportfolio_all_chapters_hidden($giportfolio)) {
+    
+    if($cangrade) {
+        throw new moodle_exception('teacherchaptershiddenexception', 'mod_giportfolio') ;
+    } else {
+        throw new moodle_exception('studentchaptershiddenexception', 'mod_giportfolio');
+    }
+}
+
 if ($allowedit) {
     if ($edit != -1 and confirm_sesskey()) {
         $USER->editing = $edit;

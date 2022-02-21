@@ -36,7 +36,8 @@ $string['chapter'] = 'Chapter {$a}';
 $string['chapters'] = 'Chapters';
 $string['chapterscount'] = 'Chapters';
 $string['chaptertitle'] = 'Chapter title';
-$string['limitdatetocontribute'] = 'Send contribution reminder after';
+$string['limitdatetocontribute'] = 'Send contribution reminder date';
+$string['visiblechapter'] = 'Visible chapters';
 $string['collapsesubchapters'] = 'Collapse subchapters';
 $string['confchapterdelete'] = 'Do you really want to delete this chapter?';
 $string['confchapterdeleteall'] = 'Do you really want to delete this chapter and all its subchapters?';
@@ -106,6 +107,7 @@ $string['lastmodified'] = 'Last Modified:  ';
 $string['lastupdated'] = 'Last Updated:  ';
 $string['messageprovider:addentry'] = 'Notification of new Portfolio entries';
 $string['messageprovider:commentnotification'] = 'Notification of new comment entries';
+$string['messageprovider:contributionreminder'] = 'Contribution reminder';
 $string['modulename'] = 'Portfolio';
 $string['modulename_help'] = '<p>The portfolio module allows students to create portfolio contributions, with a structure set by the teacher.</p>
 <p>The course teacher(s) are able to create an overall structure for the students\' work via a series of chapters and subchapters, the same as the layout found in the book module.</p>
@@ -238,3 +240,21 @@ $string['nomentorassociated'] = 'No mentor associated to this {$a}';
 $string['nousersselected'] = 'No users selected';
 $string['filter'] = 'Filter';
 $string['nofilters'] = 'No filters';
+$string['messageselectadd'] = 'Send E-mail';
+$string['remindernotification_subject'] = 'Portfolio contribution reminder';
+$string['remindernotificationmodal_body'] = '<p>Hi, <br> 
+you have not contribute to \'{$a->chapter}\' in portfolio \'{$a->portfolio}\' in course \'{$a->course}\'. <br><br>
+You can view this chapter and make your contribution at: <a href="{$a->link}" target = "_blank">{$a->chapter}</a></p>' ;
+$string['teacherchaptershiddenexception'] = 'All chapters are hidden. Please return to the course page and turn editing on.';
+$string['studentchaptershiddenexception'] = 'All the chapters for this portfolio are hidden. Please contact the responsible for the
+course content.';
+$string['confirm'] = 'An E-mail will be sent to the students selected';
+$string['send'] = 'Send';
+$string['messageprovider:contributionreminder'] = 'Contribution reminder';
+$string['remindernotificatione_body'] = 'Hi,
+
+you have not contribute to \'{$a->chapter}\' in portfolio \'{$a->portfolio}\' in course \'{$a->course}\'.
+
+
+You can view this chapter and make your contribution at: {$a->link}' ;
+         
