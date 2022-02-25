@@ -127,6 +127,7 @@ $templatecontext = new \stdClass();
 
 $usercontribution = 0;
 $showupdates = false;
+
 // Teachers that are parents and can contribute
 $teacherandmentor =  $allowedit && $mentor;
 $viewdata = new \stdClass();
@@ -148,17 +149,16 @@ if ($allowcontribute) {  //Student.
 
         if ($usergrade->items && $userfinalgrade->grade) {
             $percentage = explode("/", $userfinalgrade->str_long_grade);
-            $viewdata->usergraded = get_string('usergraded', 'mod_giportfolio').number_format($userfinalgrade->grade, 2).
-                '  ('.$userfinalgrade->str_long_grade.') - '.round(($percentage[0] / $percentage[1]) * 100, 4).'%';
+            $viewdata->usergraded = get_string('usergraded', 'mod_giportfolio') . number_format($userfinalgrade->grade, 2) .
+                '  (' . $userfinalgrade->str_long_grade . ') - ' . round(($percentage[0] / $percentage[1]) * 100, 4) . '%';
             if ($userfinalgrade->feedback) {
-                $viewdata->finalfeedback =  get_string('usergradefeedback', 'mod_giportfolio').$userfinalgrade->feedback;
+                $viewdata->finalfeedback =  get_string('usergradefeedback', 'mod_giportfolio') . $userfinalgrade->feedback;
             }
         }
-    } 
+    }
 
     $viewdata->lastupdated = ($usercontribution) ? get_string('lastupdated', 'mod_giportfolio') . date('l jS \of F Y h:i:s A', $usercontribution) : '';
     $viewdata->chapternumber =  get_string('chapternumber', 'mod_giportfolio') . count($chapters);
-    
 } else if ($mentor) { // Parent
 
     $totalmenteesallowed = count(array_intersect_key($mentees, $userswithaccesstoportofolio));
@@ -175,27 +175,37 @@ if ($allowcontribute) {  //Student.
                 echo html_writer::end_tag('p');
             }
         } else {
-           
-            $form = new stdClass();
+
+            $form = new stdClass(); // TODO: CUando termine de organizar las URL borrar
 
             if (!$mentorcancontribute) {
-                $form->url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
-                    'id' => $cm->id,
-                    'userid' => $mentee->id, 'mentor' => $USER->id
-                ));
-                $form->text = get_string('viewmenteeportfolio', 'mod_giportfolio', ['name' => $mentee->firstname]);
-                $menteebuttons[] = $form;
-            } else {
-                $addurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array(
-                    'id' => $cm->id,
-                    'mentor' => $USER->id, 'mentee' => $mentee->id
-                ));
+                echo html_writer::start_tag('form', [
+                    'action' => 'viewcontribute.php',
+                    'method' => 'post',
+                ]);
 
-                $buttondata = new \stdClass();
-                $buttondata->url = $addurl;
-                $buttondata->text = get_string('onbehalf', 'mod_giportfolio', ['name' => $mentee->firstname]);
-                $menteebuttons[] = $buttondata;
+                echo'<input type="hidden" name="id" value="' . $cm->id . '" />
+                     <input type="hidden" name="userid" value="' . $mentee->id . '" /> 
+                     <input type="hidden" name="mentor" value="' . $USER->id . '" /> 
+                     <input type="hidden" name="sesskey" value="' . $USER->sesskey . '" />
+                     <input type="hidden" name="cont" value="no" />';
+                echo '<input class = "btn btn-secondary" type="submit"  value="' . get_string('viewmenteeportfolio', 'mod_giportfolio', ['name' => $mentee->firstname]) . '" />';
+            } else {
+
+                echo html_writer::start_tag('form', [
+                    'action' => 'viewgiportfolio.php',
+                    'method' => 'post',
+                ]);
+
+                echo '<input type="hidden" name="id" value="' . $cm->id . '" />
+                      <input type="hidden" name="mentee" value="' . $mentee->id . '" />             
+                      <input type="hidden" name="mentor" value="' . $USER->id . '" /> 
+                     <input type="hidden" name="sesskey" value="' . $USER->sesskey . '" />';
+                echo  '<input type="hidden" name="cont" value="yes" />';
+                echo '<input class = "btn btn-secondary" type="submit"  value="' . get_string('onbehalf', 'mod_giportfolio', ['name' => $mentee->firstname]) . '" />';
             }
+
+            echo '</form> <br>';
         }
     }
 }
@@ -214,16 +224,15 @@ if ($allowcontribute) {  //Student.
 
 //     echo $OUTPUT->single_button($f->url, $text, '', array());
 
-$allowviewgiportfolios = has_capability('mod/giportfolio:viewgiportfolios', $context); 
+$allowviewgiportfolios = has_capability('mod/giportfolio:viewgiportfolios', $context);
 $viewdata->admin = is_siteadmin($USER->id);
 $viewdata->student = $allowcontribute;
 $viewdata->teacher = $allowedit || $allowviewgiportfolios;
 $viewdata->teacherandmentor = $teacherandmentor;
 $viewdata->mentor = $mentor;
 $viewdata->playbutton = ($allowcontribute || $allowedit || $allowviewgiportfolios) && !$mentor;
-$viewdata->playbuttonurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id));
+$viewdata->playbuttonurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'sesskey' => $USER->sesskey));
 $viewdata->playparentbutton = $mentor;
-$viewdata->mentees = isset($menteebuttons) ? $menteebuttons : '';
 $viewdata->skipintro = $giportfolio->skipintro;
 $viewdata->intro = format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
 $viewdata->chapternumbers = get_string('chapternumber', 'mod_giportfolio') . count($chapters);

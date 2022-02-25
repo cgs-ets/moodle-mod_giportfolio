@@ -8,7 +8,7 @@
     margin-bottom: 20px;
 }
 
-.mod_giportfolio img.bigicon {
+.mod_giportfolio img.bigicon { /*TODO: remove after refactoring to use fontawesome instead of img*/
     vertical-align: middle;
     margin-right: 4px;
     margin-left: 4px;
@@ -17,9 +17,33 @@
     border: 0;
 }
 
+/* New style for the navigation buttons*/
+.chapter-navigation {
+    display: inline;
+}
+
+.mod_giportfolio button.bigicon {
+    vertical-align: middle;
+    margin-right: 4px;
+    margin-left: 4px;
+    width: 24px;
+    height: 24px;
+    border: 0;
+    background-color: white;
+    font-size: 1.9rem;
+    margin-bottom: 1rem;
+    outline: none;
+}
+
+button.bigicon.inactive {
+    color: grey;
+    cursor: default;
+}
+
 .mod_giportfolio .navtop {
     text-align: right;
     margin-bottom: 0.5em;
+    position: relative;
 }
 
 .mod_giportfolio .navbottom {

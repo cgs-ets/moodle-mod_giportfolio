@@ -199,8 +199,10 @@ function giportfolio_include_klassenbuchtrainer() {
 function giportfolio_user_outline($course, $user, $mod, $giportfolio) {
     global $DB;
 
-    if ($logs = $DB->get_records('log', array('userid' => $user->id, 'module' => 'giportfolio',
-        'action' => 'view', 'info' => $giportfolio->id), 'time ASC')) {
+    if ($logs = $DB->get_records('log', array(
+        'userid' => $user->id, 'module' => 'giportfolio',
+        'action' => 'view', 'info' => $giportfolio->id
+    ), 'time ASC')) {
 
         $numviews = count($logs);
         $lastlog = array_pop($logs);
@@ -243,8 +245,10 @@ function giportfolio_print_recent_activity($course, $isteacher, $timestart) {
 
 function giportfolio_regrade($instance) {
     global $DB;
-    $contributors = $DB->get_fieldset_sql('SELECT DISTINCT userid FROM {giportfolio_contributions} WHERE giportfolioid = ?',
-        array('id' => $instance->id));
+    $contributors = $DB->get_fieldset_sql(
+        'SELECT DISTINCT userid FROM {giportfolio_contributions} WHERE giportfolioid = ?',
+        array('id' => $instance->id)
+    );
     foreach ($contributors as $userid) {
         giportfolio_automatic_grading($instance, $userid);
     }
@@ -520,8 +524,14 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     }
 
     $params = $PAGE->url->params();
+    
     $alias = get_student_alias($COURSE);
-    $userid = !empty($params['mentee']) ? $params['mentee'] : $USER->id;
+    $userid = isset($params['mentee']) ? $params['mentee'] : $USER->id;
+    $mentor = 0;
+    if (in_array($USER->id, giportfolio_user_mentor_of_student($userid))) {
+        $mentor = $USER->id;
+    }
+    
     // SYNERGY - add grade console link.
     if (!empty($params['id']) and!empty($params['chapterid']) and
         has_capability('mod/giportfolio:viewgiportfolios', $context)) {
@@ -556,25 +566,24 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
         }
     }
 
-
-    // Turn student editing on.
+   
+    // Turn student editing on. has_capability('mod/giportfolio:gradegiportfolios', $context)
     if ((!empty($params['id']) && !empty($params['chapterid']) && (giportfolio_get_collaborative_status($giportfolio)))
-        && ( has_capability('mod/giportfolio:submitportfolio', $context) /*|| (!empty($params['mentor']) && $params['mentor']!= 0)*/
-            || (!empty($params['cont']) && $params['cont'] != 'no'))) {
+        && ( has_capability('mod/giportfolio:submitportfolio', $context) || $mentor!= 0 || (!empty($params['mentee']) && $params['mentee'] != 0))) {
 
         $useredit = optional_param('useredit', 0, PARAM_BOOL); // Edit mode.
         $urlparams = array('id' => $params['id'], 'chapterid' => $params['chapterid'], 'sesskey' => sesskey());
-
+       // $edit = 0;
         if (!empty($useredit)) {
             $tocedit = get_string('stopedit', 'mod_giportfolio');
             $edit = '0';
         } else {
-            if ((!empty($params['mentor']) && ($params['mentor'] != 0
-                && !is_enrolled($context))) || !empty($params['mentee'])){
+          
+            if (($mentor != 0 && !is_enrolled($context)) || !empty($params['mentee'])){
                 $menteename = $DB->get_field('user', 'firstname', ['id' => $params['mentee']]);
                 $tocedit = get_string('edityourmenteechapters', 'mod_giportfolio', ['name' => $menteename]);
                 $edit = '1';
-            } else {
+            } else if ( !(has_capability('mod/giportfolio:edit', $context))) {
                 $tocedit = get_string('edityourchapters', 'mod_giportfolio');
                 $edit = '1';
             }
@@ -592,17 +601,23 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
             $urlparams['cont'] = $params['cont'];
         }
 
-        $urlparams['useredit'] = $edit;
-        $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $urlparams);
+        if (isset($edit)) {
+            $urlparams['useredit'] = $edit;
+        }
+        
+        if(isset($tocedit)) {
 
-        $giportfolionode->add($tocedit, $url, navigation_node::TYPE_SETTING, null, null,
-            new pix_icon('editstatus', '', 'giportfoliotool_print', array('class' => 'icon')));
+            $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $urlparams);
+    
+            $giportfolionode->add($tocedit, $url, navigation_node::TYPE_SETTING, null, null,
+                new pix_icon('editstatus', '', 'giportfoliotool_print', array('class' => 'icon')));
+        }
     }
 
     // SYNERGY.
     if (!empty($params['id']) and !empty($params['chapterid'])
         and (has_capability('mod/giportfolio:edit', $context))
-            and $params['cont'] == 'no') { // Control the teacher is not contributing on behalf of a student. CGS customisation
+           /* and $params['cont'] == 'no'*/) { // Control the teacher is not contributing on behalf of a student. CGS customisation
         if (!empty($USER->editing)) {
             $string = get_string("turneditingoff");
             $edit = '0';
@@ -621,6 +636,8 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     }
 
 }
+
+
 
 /**
  * if return=html, then return a html string.
@@ -654,8 +671,14 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
             $filename = $file->get_filename();
             $mimetype = $file->get_mimetype();
             $iconimage = '<img src="' . $OUTPUT->image_url(file_mimetype_icon($mimetype)) . '" class="icon" alt="' . $mimetype . '" />';
-            $path = moodle_url::make_pluginfile_url($file->get_contextid(), $file->get_component(), $file->get_filearea(),
-                    $file->get_itemid(), $file->get_filepath(), $file->get_filename());
+            $path = moodle_url::make_pluginfile_url(
+                $file->get_contextid(),
+                $file->get_component(),
+                $file->get_filearea(),
+                $file->get_itemid(),
+                $file->get_filepath(),
+                $file->get_filename()
+            );
 
             if ($type == 'html') {
                 $output .= "<a href=\"$path\">$iconimage</a> ";
@@ -794,12 +817,11 @@ function giportfolio_pluginfile($course, $cm, $context, $filearea, $args, $force
     if ($filearea === 'contribution') {
         if (!$contribution = $DB->get_record('giportfolio_contributions', array(
             'id' => $chid, 'giportfolioid' => $giportfolio->id
-            ))
-        ) {
+        ))) {
             return false;
         }
 
-        if (($contribution->userid != $USER->id ) && $ismentor) {
+        if (($contribution->userid != $USER->id) && $ismentor) {
             // If the user trying to see the portfolio is the contributor mentor let it see images
             // The contribution belongs to another user.
             if (!$contribution->shared && !has_capability('mod/giportfolio:viewgiportfolios', $context)) {
@@ -808,8 +830,10 @@ function giportfolio_pluginfile($course, $cm, $context, $filearea, $args, $force
             }
         }
 
-        if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $contribution->chapterid,
-            'giportfolioid' => $giportfolio->id))) {
+        if (!$chapter = $DB->get_record('giportfolio_chapters', array(
+            'id' => $contribution->chapterid,
+            'giportfolioid' => $giportfolio->id
+        ))) {
             return false;
         }
 
@@ -821,7 +845,7 @@ function giportfolio_pluginfile($course, $cm, $context, $filearea, $args, $force
     }
 
     if (isset($chapter)) {
-        if ($chapter->hidden and!has_capability('mod/giportfolio:viewhiddenchapters', $context)) {
+        if ($chapter->hidden and !has_capability('mod/giportfolio:viewhiddenchapters', $context)) {
             return false;
         }
     }
@@ -860,7 +884,7 @@ function giportfolio_page_type_list($pagetype, $parentcontext, $currentcontext) 
 
 function mod_giportfolio_comment_validate($opts) {
     global $DB, $USER;
-  
+
     if ($opts->commentarea != 'giportfolio_contribution') {
         return false; // Invalid comment area.
     }
@@ -876,7 +900,7 @@ function mod_giportfolio_comment_validate($opts) {
             'giportfolioid' => $opts->cm->instance
         ));
 
-       
+
         if ($userid != $USER->id && !giportfolio_user_is_mentor($opts->context, $USER)) {
             return false;
         }

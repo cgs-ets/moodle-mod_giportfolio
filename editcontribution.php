@@ -36,23 +36,26 @@ $mentee = optional_param('mentee', 0, PARAM_INT); // Mentee ID
 $tid = optional_param('teacherid', 0, PARAM_INT); // Teacher ID
 // Contribution  means the teacher is contributing on behalf of a student. Help on navigation
 // when teacher can add chapters on behalf of the student.
-$contribute = optional_param('cont', 'no', PARAM_RAW);
+//$contribute = optional_param('cont', 'no', PARAM_RAW);
 
 $cm = get_coursemodule_from_id('giportfolio', $cmid, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
 
+
 $url = new moodle_url('/mod/giportfolio/editcontribution.php', array(
-    'id' => $cm->id, 'chapterid' => $chapterid, 'mentor' => $mentor, 'mentee' => $mentee,
-    'teacherid' => $tid, 'cont' => $contribute
+    'id' => $cm->id, 'chapterid' => $chapterid /*, 'mentor' => $mentor, 'mentee' => $mentee,
+    'teacherid' => $tid, 'cont' => $contribute*/
 ));
 
 if ($action) {
     $url->param('action', $action);
 }
-if ($contributionid) {
+
+if ($contributionid) { 
     $url->param('contributionid', $contributionid);
 }
+
 $PAGE->set_url($url);
 
 require_login($course, false, $cm);
@@ -96,13 +99,23 @@ giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, 0, 0, $mentor
 $editoroptions = array('noclean' => true, 'subdirs' => true, 'maxfiles' => -1, 'maxbytes' => 0, 'context' => $context);
 $attachmentoptions = array('subdirs' => false, 'maxfiles' => $maxfiles, 'maxbytes' => $maxbytes);
 
-$contribution = null;
+
 if ($contributionid) {
 
-    $contribution = $DB->get_record('giportfolio_contributions', array(
-        'id' => $contributionid, 'chapterid' => $chapterid,
+    $contribution = $DB->get_record('giportfolio_contributions', array('id' => $contributionid, 'chapterid' => $chapterid,
     ), '*', MUST_EXIST);
+    $contribution = $DB->get_record('giportfolio_contributions', array('id' => $contributionid), '*', MUST_EXIST);
+    $mentee = $contribution->userid;
     
+    if (in_array($USER->id, giportfolio_user_mentor_of_student($mentee))) {
+        $mentor = $USER->id;
+    } else if ($USER->id == $mentee) {
+        $mentee = 0; // Its either the student or the teacher
+    }
+
+    if  (!isset($formdata)) {
+        $formdata = new stdClass();
+    }
     $formdata->mentor = $contribution->mentorid;
     $formdata->mentee = $contribution->userid;
     $formdata->teacherid =  $contribution->teacherid;
@@ -127,14 +140,15 @@ if ($contributionid) {
     );
     $formdata->contributionid = $formdata->id;
     $formdata->teacherid = $contribution->teacherid;
-} else {
+}
+ else {
     $formdata = new stdClass();
     $formdata->teacherid = ($mentor == 0 && $mentee != 0 && $USER->id != $mentee) ? $USER->id : 0; // Teacher on behalf of the student
 }
 
 $formdata->mentor = $mentor;
 $formdata->mentee = $mentee;
-$formdata->cont = $contribute;
+//$formdata->cont = $contribute;
 
 $formdata->id = $cm->id;
 $formdata->chapterid = $chapter->id;
@@ -144,8 +158,8 @@ $PAGE->set_title(format_string($giportfolio->name));
 $PAGE->add_body_class('mod_giportfolio');
 $PAGE->set_heading(format_string($course->fullname));
 
-$params = array('id' => $cm->id, 'chapterid' => $chapter->id, 'mentor' => $mentor, 'mentee' => $mentee, 'cont' => $contribute);
-$redir = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $params);
+$params = array('id' => $cm->id, 'chapterid' => $chapter->id, /*'mentor' => $mentor,*/'mentee' => $mentee /*, 'cont' => $contribute*/);
+$redir = new moodle_url('/mod/giportfolio/viewgiportfolio.php' , $params);
 
 // Handle delete / show / hide actions.
 if ($action) {
@@ -273,7 +287,7 @@ if ($mform->is_cancelled()) {
     giportfolio_automatic_grading($giportfolio, $userid);
 
     if ($sendnotification) {
-        $graders =  giportfolio_filter_graders(get_users_by_capability($context, 'mod/giportfolio:gradegiportfolios'));
+        $graders =  giportfolio_filter_graders(get_users_by_capability($context, 'mod/giportfolio:gradegiportfolios', 'u.* '));
         if ($graders) {
             $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
                 'id' => $cm->id, 'chapterid' => $chapter->id,

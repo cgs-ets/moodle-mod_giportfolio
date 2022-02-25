@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 require(dirname(__FILE__) . '/../../config.php');
+
 global $CFG, $DB, $PAGE, $OUTPUT, $SITE, $USER, $SESSION;
 require_once($CFG->dirroot . '/mod/giportfolio/locallib.php');
 require_once($CFG->libdir . '/completionlib.php');
@@ -37,6 +38,12 @@ $mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID.
 $mentee = optional_param('mentee', 0, PARAM_INT);
 $contribute = optional_param('cont', 'no', PARAM_RAW); // When teacher is contributing.
 $h = optional_param('h', 0, PARAM_INT);
+
+
+if (in_array($USER->id, giportfolio_user_mentor_of_student($mentee))) {
+
+    $mentor = $USER->id;
+}
 
 // Security checks START - teachers edit; students view.
 
@@ -58,25 +65,18 @@ require_capability('mod/giportfolio:view', $context);
 
 $allowedit = has_capability('mod/giportfolio:edit', $context);
 $viewhidden = has_capability('mod/giportfolio:viewhiddenchapters', $context);
-$ismentor = giportfolio_user_mentor_of_student($context, $mentee);
+$ismentor = in_array($USER->id, giportfolio_user_mentor_of_student($mentee));
 $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context) || $ismentor;
 $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Allow a teacher to make a contrib on behalf of a student.
 
-$userid =  ($contribute == 'yes' || $ismentor ) ? $mentee : $USER->id; // To allow teachers/parents to print students portfolio
+$userid =  $ismentor ? $mentee : $USER->id; // To allow teachers/parents to print students portfolio
 
-if ((!is_enrolled($context, $USER->id, '') && $mentee == 0) && !is_siteadmin() ) { // 
+if ((!is_enrolled($context, $USER->id, '') && $mentee == 0) && !is_siteadmin()) { // 
     print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
-// Check if all the chapters are hidden. If they are then a more explanatory message has to be display.
-if(giportfolio_all_chapters_hidden($giportfolio)) {
-    
-    if($cangrade) {
-        throw new moodle_exception('teacherchaptershiddenexception', 'mod_giportfolio') ;
-    } else {
-        throw new moodle_exception('studentchaptershiddenexception', 'mod_giportfolio');
-    }
-}
+
+
 
 if ($allowedit) {
     if ($edit != -1 and confirm_sesskey()) {
@@ -150,7 +150,15 @@ if ($mentee != 0) {
 }
 
 if (!$chapterid) {
-    print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
+    // Check if all the chapters are hidden. If they are then a more explanatory message has to be display.
+    if (giportfolio_all_chapters_hidden($giportfolio)) { 
+
+        if ($cangrade) {
+            throw new moodle_exception('teacherchaptershiddenexception', 'mod_giportfolio');
+        } else {
+            throw new moodle_exception('studentchaptershiddenexception', 'mod_giportfolio');
+        }
+    }
 }
 
 if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id))) {
@@ -167,7 +175,8 @@ if ($isuserchapter && !$allowcontribute  && !$cangrade) {
 if ($chapter->hidden and !$viewhidden) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
 }
-$params = array('id' => $id, 'chapterid' => $chapterid, 'mentor' => $mentor, 'mentee' => $mentee, 'cont' => $contribute);
+
+$params = array('id' => $id, 'chapterid' => $chapterid, 'mentee' => $mentee); // We need the mentee param for the settings navigation.
 
 $PAGE->set_url('/mod/giportfolio/viewgiportfolio.php', $params);
 
@@ -214,23 +223,34 @@ foreach ($chapters as $ch) {
 }
 
 $chnavigation = '';
-$mentorid = '&amp;mentor=' . $mentor;
-$menteeid = '&amp;mentee=' . $mentee;
-$contribute  = '&amp;cont=' . $contribute;
+
+// This data is common for both prev and next forms
+$data = [
+    'cmid' => $cm->id,
+    'mentor' => $mentor,
+    'mentee' => $mentee,
+    'contribute' => $contribute,
+    'url' => new moodle_url('/mod/giportfolio/viewgiportfolio.php'),
+    'viewgiportfolio' => 1
+];
 
 if ($previd) {
-    $chnavigation .= '<a title="' . get_string('navprev', 'giportfolio') . '" href="viewgiportfolio.php?id=' . $cm->id .
-        '&amp;chapterid=' . $previd . $mentorid . $menteeid . $contribute . '">
-        <img src="' . $OUTPUT->image_url('nav_prev', 'mod_giportfolio') . '" class="bigicon" alt="' .
-        get_string('navprev', 'giportfolio') . $menteeid . '"/></a>';
+    $data['chapterid'] = $previd;
+    $data['prev'] = 1;
+    $chnavigation .= $OUTPUT->render_from_template('mod_giportfolio/chapter_navigation_prev', $data);
 } else {
-    $chnavigation .= '<img src="' . $OUTPUT->image_url('nav_prev_dis', 'mod_giportfolio') . '" class="bigicon" alt="" />';
+
+    $data['inactive'] = 1;
+    $chnavigation .= $OUTPUT->render_from_template('mod_giportfolio/chapter_navigation_prev', $data);
 }
+unset($data['chapterid']);
+unset($data['prev']);
+
 if ($nextid) {
-    $chnavigation .= '<a title="' . get_string('navnext', 'giportfolio') . '" href="viewgiportfolio.php?id=' . $cm->id .
-        '&amp;chapterid=' . $nextid . $mentorid . $menteeid . $contribute . '">
-        <img src="' . $OUTPUT->image_url('nav_next', 'mod_giportfolio') . '" class="bigicon" alt="' .
-        get_string('navnext', 'giportfolio') . '" /></a>';
+
+    $data['chapterid'] = $nextid;
+    $data['next'] = 1;
+    $chnavigation .= $OUTPUT->render_from_template('mod_giportfolio/chapter_navigation_next', $data);
 } else {
     $sec = '';
     if ($section = $DB->get_record('course_sections', array('id' => $cm->section))) {
@@ -239,11 +259,15 @@ if ($nextid) {
     if ($course->id == $SITE->id) {
         $returnurl = "$CFG->wwwroot/";
     } else {
-        $returnurl = "$CFG->wwwroot/course/view.php?id=$course->id#section-$sec";
+        $returnurl = "$CFG->wwwroot/course/view.php"; /*?id=$course->id#section-$sec*/
+        $data['id'] = "$course->id#section-$sec";
     }
-    $chnavigation .= '<a title="' . get_string('navexit', 'giportfolio') . '" href="' . $returnurl . '">
-    <img src="' . $OUTPUT->image_url('nav_exit', 'mod_giportfolio') . '" class="bigicon" alt="' .
-        get_string('navexit', 'giportfolio') . '" /></a>';
+    $data['url'] = $returnurl;
+
+
+    $data['exit'] = 1;
+
+    $chnavigation .= $OUTPUT->render_from_template('mod_giportfolio/chapter_navigation_next', $data);
 
     // We are cheating a bit here, viewing the last page means user has viewed the whole giportfolio.
     $completion = new completion_info($course);
@@ -253,7 +277,7 @@ if ($nextid) {
 // Add extra links.
 $extralinks = '';
 
-if (has_capability('giportfoliotool/print:print', $context) ) {
+if (has_capability('giportfoliotool/print:print', $context)) {
     // Print links.
     $printallurl = new moodle_url('/mod/giportfolio/tool/print/index.php', array('id' => $cm->id, 'userid' => $userid));
     $extralinks .= html_writer::link($printallurl, get_string('printgiportfolio', 'giportfoliotool_print'));
@@ -328,18 +352,18 @@ echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', 
 echo $OUTPUT->box_start('giportfolio_actions');
 
 if ((!$allowedit || $cangrade && $mentee != 0) && !$context->is_locked() || is_siteadmin($USER->id)) {
-    $params = array('id' => $cm->id, 'chapterid' => $chapter->id, 'mentor' => $mentor, 'mentee' => $mentee);
     if (!empty($contribution)) {
         $params['cont'] = $contribute;
     }
-    $addurl = new moodle_url('/mod/giportfolio/editcontribution.php', $params);
-    $label = html_writer::span('<i class = "fa"></i>', '');
+    $addurl = new moodle_url('/mod/giportfolio/editcontribution.php');
+
     $ctx = new \stdClass();
     $ctx->url = $addurl;
     $ctx->id = $params['id'];
     $ctx->chapterid = $params['chapterid'];
-    $ctx->mentor = $params['mentor'];
-    $ctx->mentee = $params['mentee'];
+    $ctx->mentor = $mentor;
+    $ctx->mentee = $mentee;
+
 
     echo $OUTPUT->render_from_template('mod_giportfolio/add_contribution_button', $ctx);
     echo '<br>';
@@ -368,7 +392,7 @@ if ($giportfolio->peersharing && $showshared) {
 }
 
 if (!$isuserchapter && $giportfolio->peersharing) {
-    
+
     // If this is not a user chapter, display a button to show/hide other users' shared contributions,
     // as long as peersharing is enabled.
     if ($showshared) {
@@ -418,15 +442,17 @@ if ($contriblist) {
     $align = 'right';
     $showicon = '';
     $showurl = '';
+
     foreach ($contriblist as $contrib) {
         $ismine = ($contrib->userid == $userid);
 
         if ($ismine) {
+
             $baseurl = new moodle_url(
                 '/mod/giportfolio/editcontribution.php',
                 array(
-                    'id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid,
-                    'mentee' => $userid, 'mentor' => $contrib->mentorid, 'teacher' => $contrib->teacherid
+                    'id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid /*,
+                    'mentee' => $userid, 'mentor' => $contrib->mentorid, 'teacher' => $contrib->teacherid*/
                 )
             );
 
@@ -436,7 +462,7 @@ if ($contriblist) {
             $delurl = new moodle_url($baseurl, array('action' => 'delete'));
             $delicon = $OUTPUT->pix_icon('t/delete', get_string('delete'));
             $delicon = html_writer::link($delurl, $delicon);
-          
+
             // Check if the show hide option is available for students.
             if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) {
 
@@ -448,10 +474,12 @@ if ($contriblist) {
                     $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
                 }
             }
-         
+
+
             $showicon = html_writer::link($showurl, $showicon);
             $shareicon = '';
             $actionsharing = array();
+
             if (!$isuserchapter && $giportfolio->peersharing) { // Only for chapters without a userid and if peersharing is enabled.
                 if ($contrib->shared) {
                     $shareurl = new moodle_url($baseurl, array('action' => 'unshare', 'sesskey' => sesskey()));
@@ -464,7 +492,8 @@ if ($contriblist) {
                 $actionsharing = array($shareicon);
             }
 
-            $actions = array();
+            $actions = array($editicon); // Always allow to edit.
+
 
             if (!$giportfolio->disabledeletebtn) {
                 // Only allow to edit contributions done by the user.
@@ -482,19 +511,20 @@ if ($contriblist) {
 
             $userfullname = '';
             $actions = array_merge($actions, $actionsharing);
-           
         } else if ($giportfolio->peersharing) {
             $actions = array(); // No actions when viewing another user's contribution.
-            $userfullname = isset($otherusers[$contrib->userid]) ? $otherusers[$contrib->userid]. ': ' : '';
+            $userfullname = $otherusers[$contrib->userid] . ': ';
         } else {
             // Do not show contribution if peersharing is disabled, even if the contribution was previously shared
             continue;
         }
 
         // if the context is frozen, no actions allowed
+
         if ($context->is_locked() && !is_siteadmin($USER->id)) {
             $actions = [];
         }
+
 
         $hidementortag = ($contrib->mentorid == 0) ? 'hidden' : '';
         $hideteachertag = ($contrib->teacherid == 0) ? 'hidden' : '';
@@ -528,7 +558,7 @@ if ($contriblist) {
             $cout .= "</td></tr></table>\n";
             $cout .= '<br>';
         }
-       
+
         if ($ismine) {
             $commentopts->itemid = $contrib->id;
             $commentbox = new comment($commentopts);
@@ -540,7 +570,7 @@ if ($contriblist) {
 
         $class = 'giportfolio-contribution';
         $class .= $ismine ? ' mine' : ' notmine';
-        $contribution_buffer .= html_writer::tag('article', $cout, array('class' => $class, 'id' => 'contribution'.$contribution_count));
+        $contribution_buffer .= html_writer::tag('article', $cout, array('class' => $class, 'id' => 'contribution' . $contribution_count));
 
         if ($giportfolio->displayoutline) {
 
@@ -550,7 +580,6 @@ if ($contriblist) {
                     . get_string('lastmodified', 'mod_giportfolio') . '<br/>'
                     . date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified)
                     . '</span></span>';
-                    
             }
 
             $contribution_outline .= html_writer::tag(
@@ -561,8 +590,6 @@ if ($contriblist) {
                     '<td class="badge badge-success"' . $hideteachertag . ' ><strong>' . format_string(get_string('teachercontribution', 'mod_giportfolio')) . '</td>',
                 array('class' => ($ismine ? 'mine' : 'notmine'))
             );
-
-            
         }
 
         if ($contrib->teacherid == 0 && empty(giportfolio_has_seen_contribution($contrib->id))) { // First time the user sees the contrib.

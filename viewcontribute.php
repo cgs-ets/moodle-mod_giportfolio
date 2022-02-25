@@ -28,13 +28,12 @@ require_once($CFG->dirroot.'/mod/giportfolio/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
 require_once($CFG->dirroot.'/comment/lib.php');
 
-$userid = required_param('userid', PARAM_INT);
+$userid = required_param('userid', PARAM_INT); // student
 $id = optional_param('id', 0, PARAM_INT); // Course Module ID.
 $bid = optional_param('b', 0, PARAM_INT); // Giportfolio id.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
-$mentor = optional_param('mentor', 0, PARAM_INT);
+//$mentor = optional_param('mentor', 0, PARAM_INT);
 $contribute = optional_param('cont', 'no', PARAM_RAW);
-
 
 // Security checks START - teachers edit; students view.
 
@@ -55,7 +54,13 @@ $context = context_module::instance($cm->id);
 require_capability('mod/giportfolio:view', $context);
 
 
-$cansee = giportfolio_user_mentor_of_student($context, $userid);
+$cansee = in_array($USER->id, giportfolio_user_mentor_of_student($userid));
+$mentor = 0;
+
+if ($cansee) {
+    $mentor = $USER->id;
+}
+
 if ($mentor == 0 || !$cansee) {
     require_capability('mod/giportfolio:viewgiportfolios', $context);
 } 
@@ -104,8 +109,8 @@ if ($chapter->hidden and !$viewhidden) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewcontribute.php', array('id' => $course->id)));
 }
 
-
-$PAGE->set_url('/mod/giportfolio/viewcontribute.php', array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid, 'cont' => $contribute));
+$params = array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid, 'cont' => $contribute);
+$PAGE->set_url('/mod/giportfolio/viewcontribute.php');
 
 // Unset all page parameters.
 unset($id);
@@ -149,35 +154,57 @@ foreach ($chapters as $ch) {
 }
 
 $chnavigation = '';
-$mentor = '&amp;mentor='. $mentor;
+//$mentor = '&amp;mentor='. $mentor;
+
+// This data is common for both prev and next forms
+$data = [
+    'cmid' => $cm->id,
+    'mentor' => $mentor ,
+    'userid' => $userid,
+    'contribute' => $contribute,
+    'viewcontribute' => 1
+];
+
+if ($mentor == 0) unset($data['mentor']); // teachers/admin
+
+
 if ($previd) {
-    $chnavigation .= '<a title="'.get_string('navprev', 'giportfolio').'" href="viewcontribute.php?id='.$cm->id.
-        '&amp;chapterid='.$previd.'&amp;userid='.$userid.$mentor.'">
-        <img src="'.$OUTPUT->image_url('nav_prev', 'mod_giportfolio').'" class="bigicon" alt="'.
-        get_string('navprev', 'giportfolio').'"/></a>';
+
+    $data['chapterid'] = $previd;
+    $data['prev'] = 1;
+    $chnavigation .= $OUTPUT->render_from_template('mod_giportfolio/chapter_navigation_prev', $data);
+   
+   
 } else {
-    $chnavigation .= '<img src="'.$OUTPUT->image_url('nav_prev_dis', 'mod_giportfolio').'" class="bigicon" alt="" />';
+    $data['inactive'] = 1;
+    $chnavigation .= $OUTPUT->render_from_template('mod_giportfolio/chapter_navigation_prev', $data);
 }
 if ($nextid) {
-    $chnavigation .= '<a title="'.get_string('navnext', 'giportfolio').'" href="viewcontribute.php?id='.$cm->id.
-        '&amp;chapterid='.$nextid.'&amp;userid='.$userid.$mentor.'">
-        <img src="'.$OUTPUT->image_url('nav_next', 'mod_giportfolio').'" class="bigicon" alt="'.
-        get_string('navnext', 'giportfolio').'" /></a>';
+    $data['chapterid'] = $nextid;
+    $data['next'] = 1;
+    $chnavigation .= $OUTPUT->render_from_template('mod_giportfolio/chapter_navigation_next', $data);
+
 } else {
     $sec = '';
     if ($section = $DB->get_record('course_sections', array('id' => $cm->section))) {
         $sec = $section->section;
     }
+
     if ($course->id == $SITE->id) {
         $returnurl = "$CFG->wwwroot/";
-    } else if ($mentor != 0){
+    } /*else if ($mentor != 0){
         $returnurl = "$CFG->wwwroot/mod/giportfolio/submissions.php?id=$cm->id";
-    } else {
+    } */
+    else {
         $returnurl = "$CFG->wwwroot/mod/giportfolio/view.php?id=$cm->id";
     }
-    $chnavigation .= '<a title="'.get_string('navexit', 'giportfolio').'" href="'.$returnurl.'">
-    <img src="'.$OUTPUT->image_url('nav_exit', 'mod_giportfolio').'" class="bigicon" alt="'.
-        get_string('navexit', 'giportfolio').'" /></a>';
+
+    $data['url'] = $returnurl;
+    $data['id'] = $cm->id;
+
+    $data['exit'] = 1;
+
+    $chnavigation .= $OUTPUT->render_from_template('mod_giportfolio/chapter_navigation_next', $data);
 
     // We are cheating a bit here, viewing the last page means user has viewed the whole giportfolio.
     $completion = new completion_info($course);
@@ -289,10 +316,8 @@ if ($contriblist) {
                 $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
                 $actionsharing = array($shareicon);
             }
+            $showicon = html_writer::link($showurl, $showicon);
         }
-
-        
-        $showicon = html_writer::link($showurl, $showicon);
        
         $actions = array();      
         if (!$contrib->hidden) {

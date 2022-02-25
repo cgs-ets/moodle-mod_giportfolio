@@ -15,18 +15,53 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.     
 
     @package mod_giportfolio
-    @copyright 2021 Veronica Bermegui
-    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later                                                            
+    @copyright 2022 Veronica Bermegui
+    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later                                                       
   }}
 
+{{#viewgiportfolio}}
+    <form action= "{{url}}" method = {{^exit}}"POST" {{/exit}} {{#exit}} "GET" {{/exit}} class='chapter-navigation'>
+    {{^exit}}
+    <input type="hidden" name="id" value ="{{cmid}}">
+    <input type="hidden" name="chapterid" value ="{{chapterid}}">
+    <input type="hidden" name="mentor" value ="{{mentor}}">
+    <input type="hidden" name="mentee" value ="{{mentee}}">
+    <input type="hidden" name="contribute" value ="{{contribute}}">
+            <button type="submit" class="bigicon" title = 'Next'>
+                <i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i>
+            </button>
+        {{/exit}}
 
-<form class="add-contrib" action= "{{url}}" method = "post" class='chapter-navigation'>
-   <input type="hidden" name="id" value ="{{id}}">
-   <input type="hidden" name="chapterid" value ="{{chapterid}}">
-   <input type="hidden" name="mentor" value ="{{mentor}}">
-   <input type="hidden" name="mentee" value ="{{mentee}}">
-   <input type="hidden" name="contribute" value ="{{contribute}}">
-    <button type="submit" class="bigicon">
-    <i class="fa fa-plus-circle add-contribution"></i>
+        {{#exit}}
+            <input type="hidden" name="id" value ="{{{id}}}">         
+            <button type="submit" class="bigicon" title = 'Exit portfolio'>
+                <i class="fa fa-level-up" aria-hidden="true"></i>
+            </button>
+        
+        {{/exit}}
+    </form>
+{{/viewgiportfolio}}
+
+{{#viewcontribute}}
+
+<form action= "{{url}}" method = "GET" class='chapter-navigation'>
+    {{^exit}}
+    <input type="hidden" name="id" value ="{{cmid}}">
+    <input type="hidden" name="chapterid" value ="{{chapterid}}">
+    <input type="hidden" name="userid" value ="{{userid}}">
+    {{#mentor}}
+        <input type="hidden" name="mentor" value ="{{mentor}}">
+    {{/mentor}}
+    <button type="submit" class="bigicon" title = 'Next'>
+        <i class="fa fa-arrow-circle-o-right" aria-hidden="true"></i>
     </button>
-</form>
+    
+    {{/exit}}
+        {{#exit}}
+            <input type="hidden" name="id" value ="{{{id}}}">         
+            <button type="submit" class="bigicon" title = 'Exit portfolio'>
+                <i class="fa fa-level-up" aria-hidden="true"></i>
+            </button>
+        {{/exit}}
+    </form>
+{{/viewcontribute}}

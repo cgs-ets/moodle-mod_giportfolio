@@ -234,7 +234,11 @@ function giportfolio_preload_userchapters($giportfolio, $userid = null) {
 
 function giportfolio_get_chapter_title($chid, $chapters, $giportfolio, $context) {
 
-    $ch = $chapters[$chid];
+    if (isset($chapters[$chid])) {
+        $ch = $chapters[$chid];
+    } else {
+        return;
+    }
 
     $title = trim(format_string($ch->title, true, array('context' => $context)));
     $numbers = array();
@@ -372,7 +376,7 @@ function giportfolio_add_fakeuser_block($chapters, $chapter, $giportfolio, $cm, 
  * @param bool $edit
  * @return string
  */
-function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $mentee) {
+function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
     global $USER, $OUTPUT;
 
     $toc = ''; // Representation of toc (HTML).
@@ -439,8 +443,7 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $men
             if ($ch->id == $chapter->id) {
                 $toc .= '<strong>' . $title . '</strong>';
             } else {
-                $toc .= '<a title="' . s($title) . '" href="viewgiportfolio.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id . '&amp;mentee=' . $mentee .
-                    '">' .
+                $toc .= '<a title="' . s($title) . '" href="viewgiportfolio.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id . '">' .
                     $title . '</a>';
             }
             $toc .= '&nbsp;&nbsp;';
@@ -729,8 +732,11 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
                     $toc .= '<strong>' . $title . '</strong>';
                 } else {
                     $toc .= '<a title="' . s($title) . '" href="viewgiportfolio.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id
-                        . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">' .
+                          . '&amp;mentee=' . $mentee . '">' .
                         $title . '</a>';
+                    // $toc .= '<a title="' . s($title) . '" href="viewgiportfolio.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id
+                    //     . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">' .
+                    //     $title . '</a>';
                 }
                 $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
                 $first = 0;
@@ -1322,10 +1328,11 @@ function giportfolio_user_is_mentor($context, $user) {
     return [null, false];
 }
 
-function giportfolio_user_mentor_of_student($context, $userid) {
+function giportfolio_user_mentor_of_student($userid) {
+    
     global $USER, $DB;
     $mentorrole = $DB->get_record('role', array('shortname' => 'parent'));
-    $sql = "SELECT ra.*, r.name, r.shortname
+    $sql = "SELECT  ra.userid, ra.*, r.name, r.shortname
                     FROM {role_assignments} ra
                     INNER JOIN {role} r ON ra.roleid = r.id
                     INNER JOIN {user} u ON ra.userid = u.id
@@ -1339,16 +1346,17 @@ function giportfolio_user_mentor_of_student($context, $userid) {
         $USER->id, //Where current user
         $mentorrole->id, // is a mentor
         CONTEXT_USER,
-        $userid,
+        $userid
     );
 
     $mentor = $DB->get_records_sql($sql, $params);
-
+    
     if (!empty($mentor)) {
-        return true;
+        
+        return array_keys($mentor);
     }
 
-    return false;
+    return [];
 }
 
 function giportfolio_mentor_allowed_to_contribute($instanceid) {
@@ -1515,6 +1523,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $table->define_headers($tableheaders);
     $table->define_baseurl($PAGE->url);
     $table->sortable(true, 'lastname'); // Sorted by lastname by default.
+    $table->no_sorting('completion-header');
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
 
@@ -1650,7 +1659,7 @@ function giportfolio_reminder_chapter_selector($cm, $urlroot, $return = false, $
 
 function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $chapterid, $cm) {
     global $OUTPUT, $CFG, $DB, $USER, $COURSE;
-    
+
     $dontremind = giportfolio_get_students_with_no_contributions($chapterid, $giportfolio->id);
 
     define('DEFAULT_PAGE_SIZE', count($allusers)); // Show all the users at once.
@@ -1800,7 +1809,7 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
 
         echo '</form>';
 
- 
+
         $PAGE->requires->js_call_amd('mod_giportfolio/reminder_table_control', 'init', [$bulkoptions]);
     }
 }
@@ -1906,7 +1915,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
         $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array(
             'id' => $cm->id, 'chapterid' => $chapterid,
             'mentee' =>  $user->id,
-            'cont' => 'yes'
+            /*'cont' => 'yes'*/
         ));
 
 
@@ -2355,7 +2364,7 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                 if ($usercontribution) {
                     $params = array('id' => $cm->id, 'userid' => $puser->id);
                     $cid = giportfolio_get_user_default_chapter($giportfolio->id);
-                    $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id, 'chapterid' => $cid->chapterid, 'cont' => 'yes');
+                    $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id, 'chapterid' => $cid->chapterid /*, 'cont' => 'yes'*/);
 
                     $viewurl = new moodle_url('/mod/giportfolio/viewcontribute.php', $params);
                     $gradeurl = new moodle_url('/mod/giportfolio/updategrade.php', $params);
@@ -2717,10 +2726,10 @@ function giportfolio_send_reminder($data) {
         $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', [
             'id' => $data->chapter->cm, 'chapterid' => $data->chapter->chapterid
         ]);
-       
+
         $info = (object)array(
             'course' => format_string($COURSE->fullname),
-            'portfolio' => format_string($data->chapter->portfolio),           
+            'portfolio' => format_string($data->chapter->portfolio),
             'chapter' => format_string($data->chapter->chapter),
             'link' => $url,
         );
@@ -2730,7 +2739,7 @@ function giportfolio_send_reminder($data) {
         $subj = get_string('remindernotification_subject', 'mod_giportfolio');
         $fullmessage = get_string('remindernotificatione_body', 'mod_giportfolio', $info);
         $fullmessagehtml = nl2br(get_string('remindernotificatione_body', 'mod_giportfolio', $info));
-        
+
         $eventdata = new \core\message\message();
         $eventdata->component = 'mod_giportfolio';
         $eventdata->name = 'contributionreminder';
@@ -2740,8 +2749,8 @@ function giportfolio_send_reminder($data) {
         $eventdata->fullmessage = $fullmessage;
         $eventdata->fullmessageformat =  FORMAT_PLAIN;
         $eventdata->fullmessagehtml = $fullmessagehtml;
-        $eventdata->notification = 1; 
-       
+        $eventdata->notification = 1;
+
         message_send($eventdata);
     }
 }

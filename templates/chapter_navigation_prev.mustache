@@ -15,18 +15,49 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.     
 
     @package mod_giportfolio
-    @copyright 2021 Veronica Bermegui
-    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later                                                            
+    @copyright 2022 Veronica Bermegui
+    @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later                                                       
   }}
 
+{{#viewgiportfolio}}
+    <form action= "{{url}}" method = "post" class='chapter-navigation'>
+    <input type="hidden" name="id" value ="{{cmid}}">
+    <input type="hidden" name="chapterid" value ="{{chapterid}}">
+    <input type="hidden" name="mentor" value ="{{mentor}}">
+    <input type="hidden" name="mentee" value ="{{mentee}}">
+    <input type="hidden" name="contribute" value ="{{contribute}}">
+        {{^inactive}}
+            <button type="submit" class="bigicon" title ="Prev">
+                <i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i>
+            </button>
+        {{/inactive}}
+        {{#inactive}}
+        
+            <button type="submit" class="bigicon inactive">
+                <i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i>
+            </button>
+        {{/inactive}}
+    </form>
+{{/viewgiportfolio}}
 
-<form class="add-contrib" action= "{{url}}" method = "post" class='chapter-navigation'>
-   <input type="hidden" name="id" value ="{{id}}">
-   <input type="hidden" name="chapterid" value ="{{chapterid}}">
-   <input type="hidden" name="mentor" value ="{{mentor}}">
-   <input type="hidden" name="mentee" value ="{{mentee}}">
-   <input type="hidden" name="contribute" value ="{{contribute}}">
-    <button type="submit" class="bigicon">
-    <i class="fa fa-plus-circle add-contribution"></i>
-    </button>
-</form>
+{{#viewcontribute}}
+  <form action= "{{url}}" method = "GET" class='chapter-navigation'>
+    <input type="hidden" name="id" value ="{{cmid}}">
+    <input type="hidden" name="chapterid" value ="{{chapterid}}">
+    {{#mentor}}
+        <input type="hidden" name="mentor" value ="{{mentor}}">
+    {{/mentor}}
+    <input type="hidden" name="userid" value ="{{userid}}">
+        {{^inactive}}
+            <button type="submit" class="bigicon" title ="Prev">
+                <i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i>
+            </button>
+        {{/inactive}}
+        {{#inactive}}
+        
+            <button type="submit" class="bigicon inactive">
+                <i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i>
+            </button>
+        {{/inactive}}
+    </form>
+{{/viewcontribute}}
