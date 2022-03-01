@@ -732,7 +732,7 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
                     $toc .= '<strong>' . $title . '</strong>';
                 } else {
                     $toc .= '<a title="' . s($title) . '" href="viewgiportfolio.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id
-                          . '&amp;mentee=' . $mentee . '">' .
+                        . '&amp;mentee=' . $mentee . '">' .
                         $title . '</a>';
                     // $toc .= '<a title="' . s($title) . '" href="viewgiportfolio.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id
                     //     . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">' .
@@ -890,9 +890,9 @@ function giportfolio_set_mentor_info($contributions, $menteeid) {
 function giportfolio_get_user_default_chapter($giportfolioid) {
     global $DB;
     // TOP(1)
-    $sql = "SELECT  chapterid  FROM mdl_giportfolio_contributions  
+    $sql = "SELECT TOP(1) chapterid  FROM mdl_giportfolio_contributions  
             WHERE  giportfolioid = {$giportfolioid}
-            LIMIT 1;
+           -- LIMIT 1;
            ";
 
     return  $DB->get_record_sql($sql);
@@ -1329,7 +1329,7 @@ function giportfolio_user_is_mentor($context, $user) {
 }
 
 function giportfolio_user_mentor_of_student($userid) {
-    
+
     global $USER, $DB;
     $mentorrole = $DB->get_record('role', array('shortname' => 'parent'));
     $sql = "SELECT  ra.userid, ra.*, r.name, r.shortname
@@ -1350,9 +1350,9 @@ function giportfolio_user_mentor_of_student($userid) {
     );
 
     $mentor = $DB->get_records_sql($sql, $params);
-    
+
     if (!empty($mentor)) {
-        
+
         return array_keys($mentor);
     }
 
@@ -1477,39 +1477,49 @@ function giportfolio_filter_graders($graders) {
  * Render graph of contributors table. CGS customisation.
  */
 function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm) {
-    global $CFG, $DB, $OUTPUT;
+    global $CFG, $DB, $OUTPUT, $USER;
 
     $chapters = giportfolio_preload_chapters($giportfolio);
     $chaptersid = [];
     $titles = [];
+    $chaptersubchap = [];
 
+    foreach ($chapters as $i => $chapter) {
+            $d = new stdClass();
+            $d->chapterid = $i;
+        if (isset($chapter->subchapters)) {
+            
+            $d->subchapters = array_values($chapter->subchapters);
+            $chaptersubchap[] = $d;
+        }
 
-    foreach ($chapters as $chapter) {
+        $titlectx =  new stdClass();
+        $titlectx->title = $chapter->title;
+        $titlectx->subchapters = isset($chapter->subchapters);
+        $titlectx->ischapter = !$chapter->subchapter;
+        $titlectx->chapterid = $chapter->id;
+        
         if (!$chapter->subchapter) {
-            $titles[] =  '<div id ="' . $chapter->id . '" class="rotated-text-container"><span class="rotated-text" title = "' . $chapter->title . '">' . shorten_text($chapter->title) . '</span></div>
-                            <div class = "subchapter-icon">
-                            <img class ="icon" alt ="Chapter" title = "Chapter" src="' . $OUTPUT->image_url('chapter', 'mod_giportfolio') . '"/>
-                        </div>';
-        } else {
-            $titles[] = '<div id ="' . $chapter->id . '"class="rotated-text-container">
-                                <span class="rotated-text" title = "' . $chapter->title . '">' . shorten_text($chapter->title) . '</span>
-                            </div>
-                            <div class = "subchapter-icon">
-                                <img class ="icon" alt ="Subchapter" title = "Subchapter" src="' . $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio') . '"/>
-                            </div>';
+            $titlectx->icon = $OUTPUT->image_url('chapter', 'mod_giportfolio');
+            $titles[] = $OUTPUT->render_from_template('mod_giportfolio/graph_title_header', $titlectx);
+        } else { // left caret displayed when expanded. right caret display when collapsed.
+            $titlectx->icon = $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio');
+            $titles[] = $OUTPUT->render_from_template('mod_giportfolio/graph_title_header', $titlectx);
         }
         $chaptersid[] = $chapter->id;
     }
 
     // Look for chapters created by the student.
-
     $titles[] =  '<div class="rotated-text-container">
-                     <span class="rotated-text">' . shorten_text(get_string('additionstitle', 'giportfolio')) . '</span>
+                     <span class="rotated-text" title = "Added by student">' . shorten_text(get_string('additionstitle', 'giportfolio')) . '</span>
                    </div>
                    <div class = "subchapter-icon">
                       <img class ="icon" alt ="Added by student" title = "Added by student" src="' . $OUTPUT->image_url('addition_icon', 'mod_giportfolio') . '"/>
                    </div>';
 
+   
+    //$icon = '<i class="fa fa-plus" aria-hidden="true"></i>';
+    
 
     $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
     $extrafields = get_extra_user_fields($context);
@@ -1523,13 +1533,14 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $table->define_headers($tableheaders);
     $table->define_baseurl($PAGE->url);
     $table->sortable(true, 'lastname'); // Sorted by lastname by default.
-    $table->no_sorting('completion-header');
+    $table->no_sorting($titles);
+    $table->collapsible(true);
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
 
     foreach ($table->column_class as $name => $column) {
         if (!in_array($name, ['picture', 'fullname', get_string('additionstitle', 'giportfolio')])) {  // These are the columns for the chapter titles          
-            $table->column_class($name, 'completion-header');
+            $table->column_class($name, 'ch-title');
         }
     }
 
@@ -1599,12 +1610,6 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
     $table->print_html();
 
-    $jsmodule = array(
-        'name' => 'mod_giportfolio_overflow',
-        'fullpath' => new moodle_url('/mod/giportfolio/graphofcontributors.js'),
-    );
-
-    $PAGE->requires->js_init_call('M.mod_giportfolio_overflow.init', array(), false, $jsmodule);
 
     $iconaddition =  html_writer::img($OUTPUT->image_url('addition_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
     $iconchapter =  html_writer::img($OUTPUT->image_url('chapter', 'mod_giportfolio'), '', ['class' => 'icon']);
@@ -1617,6 +1622,13 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     ];
 
     echo $OUTPUT->render_from_template('mod_giportfolio/graph_legends_table', $data);
+    $chaptersubchap = json_encode($chaptersubchap);
+    $params = (object) [
+        'chaptersubchap' =>json_encode($chaptersubchap),
+        'userid' => $USER->id];
+
+      
+    $PAGE->requires->js_call_amd('mod_giportfolio/graph_contributors_control', 'init', [$params]);
 }
 
 // Render table to send reminders. CGS customisation
@@ -1854,7 +1866,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
     }, $teachercontributions), $teachercontributions);
     $teachercontributions = array_keys($teachercontributions);
 
-    $nocontribution = html_writer::span('<i class = "fa">&#xf068;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('nocontrib', 'mod_giportfolio', ['name' => $user->firstname])]);
+    $nocontribution = html_writer::span('<i class = "fa">&#xf056;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('nocontrib', 'mod_giportfolio', ['name' => $user->firstname])]);
     $unseencontribution = html_writer::span('<i class = "fa">&#xf096;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('unseencontrib', 'mod_giportfolio')]);
     $seencontribution = html_writer::span('<i class = "fa">&#xf046;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('seencontrib', 'mod_giportfolio')]);
     $iconcomment =  html_writer::span('<i class = "fa">&#xf075;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrcomment', 'mod_giportfolio')]);
@@ -1907,16 +1919,18 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
 
     foreach ($chaptersid as $chapterid) {
 
-        if ($usercontrib == '') {
-            $links[] = $nocontribution;
-            continue;
-        }
-
         $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array(
             'id' => $cm->id, 'chapterid' => $chapterid,
             'mentee' =>  $user->id,
             /*'cont' => 'yes'*/
         ));
+
+        if ($usercontrib == '') {
+            html_writer::tag('a', "$nocontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
+            $links[] = html_writer::tag('a', "$nocontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
+            continue;
+        }
+
 
 
         if (giportfolio_in_array($chapterid, $contributionsseen)) {
@@ -1924,9 +1938,9 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             list($countseen, $countcomments, $countnocomments) = giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributionsseen);
 
             if ($countseen > 1) {
-                $links[] = html_writer::tag('a', "$seencontribution $seencontribution", ['href' => $url, 'target' => '_blank']);
+                $links[] = html_writer::tag('a', "$seencontribution $seencontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
             } else {
-                $links[] = html_writer::tag('a', " $seencontribution", ['href' => $url, 'target' => '_blank']);
+                $links[] = html_writer::tag('a', " $seencontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
             }
 
 
@@ -1934,27 +1948,27 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             if (giportfolio_in_array($chapterid, $cnotseen)) {
                 $link = array_pop($links);
                 if ($countnocomments == 0) {
-                    array_push($links, $link . html_writer::tag('a', " $unseencontribution $iconnocomment", ['href' => $url, 'target' => '_blank']));
+                    array_push($links, $link . html_writer::tag('a', " $unseencontribution $iconnocomment", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]));
                 } else {
-                    array_push($links, $link . html_writer::tag('a', "$unseencontribution", ['href' => $url, 'target' => '_blank']));
+                    array_push($links, $link . html_writer::tag('a', "$unseencontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]));
                 }
             }
 
             $link = array_pop($links);
 
             if ($countcomments == 0) {
-                array_push($links, $link . html_writer::tag('a', "$iconnocomment", ['href' => $url, 'target' => '_blank']));
+                array_push($links, $link . html_writer::tag('a', "$iconnocomment", ['href' => $url, 'target' => '_blank','data-chid' => $chapterid]));
             } else if ($countcomments == 1) {
-                array_push($links, $link . html_writer::tag('a', "$iconcomment", ['href' => $url, 'target' => '_blank']));
+                array_push($links, $link . html_writer::tag('a', "$iconcomment", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]));
             } else if ($countcomments > 1) {
-                array_push($links, $link . html_writer::tag('a', "$iconcomments", ['href' => $url, 'target' => '_blank']));
+                array_push($links, $link . html_writer::tag('a', "$iconcomments", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]));
             }
         } else if (giportfolio_in_array($chapterid, $cnotseen)) {
 
             list($countseen, $countcomments, $countnocomments) = giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $contributions);
 
             if ($countseen > 1) {
-                $links[] = html_writer::tag('a', "$unseencontribution $unseencontribution", ['href' => $url, 'target' => '_blank']);
+                $links[] = html_writer::tag('a', "$unseencontribution $unseencontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
             } else {
                 $links[] = html_writer::tag('a', "$unseencontribution", ['href' => $url, 'target' => '_blank']);
             }
@@ -1962,15 +1976,15 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             $link = array_pop($links);
 
             if ($countcomments == 0) {
-                array_push($links, $link . html_writer::tag('a', "$iconnocomment", ['href' => $url, 'target' => '_blank']));
+                array_push($links, $link . html_writer::tag('a', "$iconnocomment", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]));
             } else if ($countcomments == 1) {
-                array_push($links, $link . html_writer::tag('a', "$iconcomment", ['href' => $url, 'target' => '_blank']));
+                array_push($links, $link . html_writer::tag('a', "$iconcomment", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]));
             } else if ($countcomments > 1) {
-                array_push($links, $link . html_writer::tag('a', "$iconcomments", ['href' => $url, 'target' => '_blank']));
+                array_push($links, $link . html_writer::tag('a', "$iconcomments", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]));
             }
         } else {
 
-            $links[] =  $nocontribution;
+            $links[] =  html_writer::tag('a', "$nocontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);;
         }
 
         if (in_array($chapterid, $teachercontributions)) {

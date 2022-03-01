@@ -1,0 +1,27 @@
+{{#ischapter}}
+    <div id ="{{chapterid}}" class="rotated-text-container">
+        <span class="rotated-text" title = "{{title}}">{{title}}</span>
+    </div>
+    <div class = "subchapter-icon">
+        <img class ="icon" alt ="Chapter" title = "Chapter" src="{{icon}}"/>
+        {{#subchapters}}
+            <div class = "chapter-expand-collapse">
+                <span> <i class="fa fa-caret-left" aria-hidden="true" title = "Collapse Chapter" data-chapterid = "{{chapterid}}"></i></span>
+                <span hidden> <i class="fa fa-caret-right" aria-hidden="true" title = "Expand Chapter" data-chapterid =" {{chapterid}}"></i></span>                 
+        {{/subchapters}}
+
+    </div>
+    </div>
+{{/ischapter}}
+
+{{! Render subchapter }}
+
+{{^ischapter}}
+    <div id ="{{chapterid}}"class="rotated-text-container">
+         <span class="rotated-text" title = "{{title}}">{{title}}</span>
+    </div>
+    <div class = "subchapter-icon">
+        <img class ="icon" alt ="Subchapter" title = "Subchapter" src="{{icon}}"/>
+    </div>
+
+{{/ischapter}}

@@ -47,19 +47,6 @@ class giportfolio_chapter_edit_form extends moodleform {
         $mform->setType('content_editor', PARAM_RAW);
         $mform->addRule('content_editor', get_string('required'), 'required', null, 'client');
 
-        $mform->addElement(
-            'date_selector',
-            'sendreminder',
-            get_string('limitdatetocontribute', 'mod_giportfolio'),
-            array(
-                'startyear' => intval(userdate(time(), '%Y')),
-                'timezone'  => 99,
-                'optional'  => true
-            )
-        );
-
-     
-
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);
 

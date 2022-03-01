@@ -8,18 +8,15 @@
     margin-bottom: 20px;
 }
 
-.mod_giportfolio img.bigicon { /*TODO: remove after refactoring to use fontawesome instead of img*/
-    vertical-align: middle;
-    margin-right: 4px;
-    margin-left: 4px;
-    width: 24px;
-    height: 24px;
-    border: 0;
-}
-
 /* New style for the navigation buttons*/
 .chapter-navigation {
     display: inline;
+}
+
+div.chapter-expand-collapse {
+    font-size: 1.5rem;
+    display: inline;
+    vertical-align: middle;
 }
 
 .mod_giportfolio button.bigicon {
@@ -380,6 +377,11 @@ hr.outline-separator {
     margin-left: 2%;
 }
 
+th.collapse-chapter-column,
+td.collapse-chapter-column {
+    display: none;
+}
+
 span.show-hide-mentor {
     margin-left: 2%;
     font-size: 1.2rem;
@@ -463,11 +465,13 @@ table#mod-giportfolio-reminder-table {
         padding-right: 2%;
     }
 
-    .graphcontributors-overflow {
-        overflow: auto;
-    }
-
     table#mod-giportfolio-reminder-table {
         max-width: 100%;
+    }
+}
+
+@media screen and (max-width: 1920px) {
+    .graphcontributors-overflow {
+        overflow: auto;
     }
 }

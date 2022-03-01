@@ -21,6 +21,7 @@ require_once(dirname(__FILE__) . '/locallib.php');
 
 global $CFG, $DB, $USER, $DB, $OUTPUT, $PAGE;
 
+require_once($CFG->dirroot.'/user/filters/lib.php');
 require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->libdir . '/gradelib.php');
 require_once("search_form.php");
@@ -135,6 +136,8 @@ if ($fastg) { // Update the grade and the feedback.
     echo get_string('changessaved');
     echo html_writer::end_tag('div');
 }
+
+/// create the user filter form
 
 $mform = new giportfolio_search_form(null, array('id' => $id, 'tab' => $currenttab));
 $mform->display();
