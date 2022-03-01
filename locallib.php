@@ -1477,7 +1477,7 @@ function giportfolio_filter_graders($graders) {
  * Render graph of contributors table. CGS customisation.
  */
 function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm) {
-    global $CFG, $DB, $OUTPUT, $USER;
+    global $CFG, $DB, $OUTPUT;
 
     $chapters = giportfolio_preload_chapters($giportfolio);
     $chaptersid = [];
@@ -1623,12 +1623,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
     echo $OUTPUT->render_from_template('mod_giportfolio/graph_legends_table', $data);
     $chaptersubchap = json_encode($chaptersubchap);
-    $params = (object) [
-        'chaptersubchap' =>json_encode($chaptersubchap),
-        'userid' => $USER->id];
-
-      
-    $PAGE->requires->js_call_amd('mod_giportfolio/graph_contributors_control', 'init', [$params]);
+    $PAGE->requires->js_call_amd('mod_giportfolio/graph_contributors_control', 'init', [$chaptersubchap]);
 }
 
 // Render table to send reminders. CGS customisation
