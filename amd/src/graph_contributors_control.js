@@ -24,7 +24,7 @@
  */
 
 import jQuery from 'jquery';
-
+ 
 const Selectors = {
     headers: document.querySelectorAll('th.ch-title'),
     graph: document.getElementById('graphcontributors'),
@@ -34,11 +34,8 @@ const Selectors = {
 
 }
 
-export const init = ({
-    chaptersubchapmap,
-    userid
-}) => {
-  
+export const init = (chaptersubchapmap, userid) => {
+    Y.log(userid);
     Selectors.graph.parentElement.classList.remove('no-overflow'); // Remove the class given by Moodle.
     Selectors.graph.parentElement.classList.add('graphcontributors-overflow'); // Add my custom class.
     Selectors.chaptersMap = JSON.parse(chaptersubchapmap);
@@ -48,12 +45,12 @@ export const init = ({
 
             chapter.addEventListener('click', function (e) {
                 e.preventDefault();
-
-                if (!e.target.classList.contains("fa-caret-left") &&
-                    !e.target.classList.contains("fa-caret-right") &&
-                    !e.target.classList.contains("fa-minus") &&
-                    !e.target.classList.contains("fa-plus")) {
-
+                
+                if (!e.target.classList.contains("fa-caret-left")
+                    && !e.target.classList.contains("fa-caret-right")
+                    && !e.target.classList.contains("fa-minus")
+                    && !e.target.classList.contains("fa-plus")) {
+                  
                     return;
                 }
 
@@ -66,7 +63,7 @@ export const init = ({
 
                 if (e.target.classList.contains("fa-caret-left")) {
                     collapse(e.target);
-                } else if (e.target.classList.contains("fa-caret-right")) {
+                } else if (e.target.classList.contains("fa-caret-right")){
                     expand(e.target);
                 } else if (e.target.classList.contains("fa-minus")) {
                     hide(colIndex[colIndex.length - 1], this.firstElementChild);
@@ -157,10 +154,10 @@ export const init = ({
     const hide = (colIndex, chaptertitle) => {
         const t = document.querySelector("#graphcontributors tbody");
         if (t) {
-
+          
             Array.from(t.rows).forEach((tr) => {
                 jQuery(tr.cells[colIndex]).children().hide();
-
+                
             }, colIndex);
 
             jQuery(chaptertitle).hide();
@@ -170,9 +167,10 @@ export const init = ({
     const show = (colIndex, chaptertitle) => {
         const t = document.querySelector("#graphcontributors tbody");;
         if (t) {
-
+           
             Array.from(t.rows).forEach((tr) => {
                 jQuery(tr.cells[colIndex]).children().show();
+                
 
             }, colIndex);
 
