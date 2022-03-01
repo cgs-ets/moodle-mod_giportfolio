@@ -36,8 +36,8 @@ const Selectors = {
 
 export const init = (chaptersubchapmap) => {
     
-    Selectors.graph.parentElement.classList.remove('no-overflow'); // Remove the class given by Moodle.
-    Selectors.graph.parentElement.classList.add('graphcontributors-overflow'); // Add my custom class.
+    // Selectors.graph.parentElement.classList.remove('no-overflow'); // Remove the class given by Moodle.
+    // Selectors.graph.parentElement.classList.add('graphcontributors-overflow'); // Add my custom class.
     Selectors.chaptersMap = JSON.parse(chaptersubchapmap);
 
     const initListeners = () => {

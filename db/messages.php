@@ -32,7 +32,8 @@ $messageproviders = array(
 
     'contributionreminder' => [
         'defaults' => [
-            'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,MESSAGE_FORCED
+            'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,MESSAGE_FORCED,
+            'airnotifier' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_LOGGEDIN + MESSAGE_DEFAULT_LOGGEDOFF,
         ],
     ],
     'commentnotification' => [  // CGS custom.

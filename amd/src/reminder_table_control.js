@@ -61,10 +61,10 @@ export const init = ({
     chapterid,
     chapter,
     portfolio,
+    portfolioid,
     course,
     cm
 }) => {
-    const root = document.querySelector(Selectors.tableForm(uniqueid));
     /**
      * Private method.
      *'url' =>  new moodle_url('/mod/giportfolio/viewgiportfolio.php', ['id' => $cm, 'chapterid' => $chapterid]),
@@ -78,8 +78,12 @@ export const init = ({
             const action = bulkActionSelect.value;
             const tableRoot = document.getElementById(uniqueid);
             const checkboxes = tableRoot.querySelectorAll(Selectors.bulkUserSelectedCheckBoxes);
-            
-            const link = URL.relativeUrl('/mod/giportfolio/viewgiportfolio.php', { id: cm, chapterid: chapterid }, true);
+
+            const link = URL.relativeUrl('/mod/giportfolio/viewgiportfolio.php', {
+                id: cm,
+                chapterid: chapterid
+            }, true);
+
             const modalMessages = [{
                     key: 'confirm',
                     component: 'mod_giportfolio'
@@ -89,7 +93,7 @@ export const init = ({
                     component: 'mod_giportfolio',
                     param: {
                         chapter: chapter,
-                        portfolio: portfolio,
+                        portfolio: portfolio,                       
                         course: course,
                         link: link
                     }
@@ -116,14 +120,21 @@ export const init = ({
 
                     Str.get_strings(modalMessages).done(function (strs) {
                         Notification.confirm(strs[0], strs[1], strs[2], strs[3], function () {
-                           
+
+                            const reminder = document.querySelector('div.reminder');
+                            reminder.removeAttribute('hidden');
+                            
+
+                            //display animation
                                 const chapterd = {
                                     chapterid,
                                     chapter,
                                     portfolio,
+                                    portfolioid,
                                     course,
-                                    cm:cm
+                                    cm: cm
                                 }
+                            
                                 Ajax.call([{
 
                                     methodname: 'mod_giportfolio_send_reminder',
@@ -134,12 +145,16 @@ export const init = ({
                                     },
 
                                     done: function (response) {
-                                        Y.log(response);
-
+                                        //Remove animation
+                                        const reminderImg = document.querySelector('img.reminder-image');
+                                        jQuery(reminderImg).replaceWith(response.status);
+                                        jQuery(reminder).delay(2000).fadeOut(400);
                                     },
 
                                     fail: function (reason) {
-                                        // Y.error(reason);
+                                        const reminderImg = document.querySelector('img.reminder-image');
+                                        jQuery(reminderImg).replaceWith('<h1>Please try again later');
+                                        jQuery(reminder).delay(2000).fadeOut(400);
 
                                     }
 
@@ -167,6 +182,10 @@ export const init = ({
     const resetBulkAction = bulkActionSelect => {
         bulkActionSelect.value = '';
     };
+
+    const updateStatus = () => {
+
+    }
 
     registerEventListeners();
 };

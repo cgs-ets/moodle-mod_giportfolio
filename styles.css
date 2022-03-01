@@ -289,10 +289,6 @@ p.alert.alert-info.giportfolio-restricted-access {
     text-align: center;
 }
 
-.graphcontributors-overflow {
-    overflow: hidden;
-}
-
 /* Custom CSS for rotated header.. */
 #page-mod-giportfolio-submissions .rotated-text-container {
     display: inline-block;
@@ -441,6 +437,19 @@ table#mod-giportfolio-reminder-table {
     max-width: fit-content;
 }
 
+.reminder {
+    background-color: rgba(66, 64, 64, 0.36);
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+}
+
 /* Media Query: large smartphone (Vertical) */
 /* Any screen that also has amax less than 600px*/
 @media screen and (max-width: 600px) {
@@ -470,8 +479,3 @@ table#mod-giportfolio-reminder-table {
     }
 }
 
-@media screen and (max-width: 1920px) {
-    .graphcontributors-overflow {
-        overflow: auto;
-    }
-}

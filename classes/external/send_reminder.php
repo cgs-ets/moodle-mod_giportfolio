@@ -87,7 +87,7 @@ trait send_reminder {
       
 
         return array(
-            'status' => 'send msj'
+            'status' => '<h1>' . get_string('msg_sent', 'giportfolio') . '</h1>'
         );
     }
 

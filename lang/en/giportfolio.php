@@ -234,6 +234,8 @@ $string['contrcomment'] = 'Commented';
 $string['contrnocomment'] = ' Not commented ';
 $string['contrcomments'] = 'Multiple comments';
 $string['additionlegend'] = '(by {$a})';
+$string['remindersent'] = 'Reminder sent';
+$string['remindernotsent'] = 'Reminder not sent';
 $string['wcc'] = 'Who can contribute?';
 $string['wcchelp'] = 'If a portfolio is set to allow mentors to contribute, you can see who those mentors are';
 $string['nomentorassociated'] = 'No mentor associated to this {$a}';
@@ -243,18 +245,21 @@ $string['nofilters'] = 'No filters';
 $string['messageselectadd'] = 'Send E-mail';
 $string['remindernotification_subject'] = 'Portfolio contribution reminder';
 $string['remindernotificationmodal_body'] = '<p>Hi, <br> 
-you have not contribute to \'{$a->chapter}\' in portfolio \'{$a->portfolio}\' in course \'{$a->course}\'. <br><br>
+It is time to add your contribution to \'{$a->chapter}\' in  \'{$a->portfolio}\' in course \'{$a->course}\'. <br><br>
 You can view this chapter and make your contribution at: <a href="{$a->link}" target = "_blank">{$a->chapter}</a></p>' ;
 $string['teacherchaptershiddenexception'] = 'All chapters are hidden. Please return to the course page and turn editing on.';
 $string['studentchaptershiddenexception'] = 'All the chapters for this portfolio are hidden. Please contact the responsible for the
 course content.';
 $string['confirm'] = 'An E-mail will be sent to the students selected';
 $string['send'] = 'Send';
+$string['footer'] = 'You can edit the message by clicking on the textbox';
+$string['msg_sent'] = 'Reminder(s) sent';
 $string['messageprovider:contributionreminder'] = 'Contribution reminder';
 $string['remindernotificatione_body'] = 'Hi,
 
-you have not contribute to \'{$a->chapter}\' in portfolio \'{$a->portfolio}\' in course \'{$a->course}\'.
+It is time to add your contribution to \'{$a->chapter}\' in  \'{$a->portfolio}\' in course \'{$a->course}\'.
 
 
 You can view this chapter and make your contribution at: {$a->link}' ;
+
          

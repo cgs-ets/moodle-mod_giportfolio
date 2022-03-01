@@ -52,6 +52,7 @@ if ($currenttab !== 'all') {
 $PAGE->set_url($url);
 require_login($course->id, false, $cm);
 
+
 $context = context_module::instance($cm->id); 
 if (!$context->is_locked() ) {  // To be able to display submission page when context is frozen.
     require_capability('mod/giportfolio:gradegiportfolios', $context);
@@ -176,7 +177,7 @@ switch ($currenttab) {
     case 'contributionreminder':
         $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab . '&chapterid' . $chapterid;
         giportfolio_reminder_chapter_selector($cm, $urlroot, false, $giportfolio, $chapterid);
-        giportfolio_reminder_table($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $chapterid, $cm->id);
+        giportfolio_reminder_table($PAGE, $allusers, $context, $username, $listusersids, $page, $giportfolio, $course, $chapterid, $cm->id);
         break;
 
     default:
