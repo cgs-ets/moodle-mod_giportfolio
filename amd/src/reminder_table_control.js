@@ -148,6 +148,7 @@ export const init = ({
                                         //Replace the closed envelopes to open ones. 
                                         updateStatusColumn(ids, response.date);
                                         //Remove animation
+                                        
                                         const reminderImg = document.querySelector('img.reminder-image');
                                         jQuery(reminderImg).replaceWith(response.status);
                                         jQuery(reminder).delay(2000).fadeOut(400);
@@ -192,8 +193,8 @@ export const init = ({
                 user = user[user.length - 1];
                 if (ids.includes(user)) {
                     jQuery(tr.cells[3]).children().replaceWith('<span class="giportfolio-legend" title="Reminder sent"><i class="fa">&#xf2b7;</i></span>'); // Column 3 has the status. 
-                    jQuery(tr.cells[4]).append(date);
-
+                    jQuery(tr.cells[4]).children().replaceWith(date);
+                   
                 }
                 
             });

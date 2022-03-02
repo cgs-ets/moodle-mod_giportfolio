@@ -1769,8 +1769,8 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
                     $datemod = userdate($chapters->timemodified, get_string('strftimedaydate', 'core_langconfig'));
                     $row = array_merge($checkboxes, array($picture, $userlink, $reminder, $datemod));
                 } else {
-
-                    $row = array_merge($checkboxes, array($picture, $userlink, $remindernotsent, ''));
+                    $s = html_writer::span('', '', ['class' => 'giportfolio-legend', 'hidden' => true]);
+                    $row = array_merge($checkboxes, array($picture, $userlink, $remindernotsent, $s));
                 }
                 $rowclass = "user-row-$puser->id";
                 $table->add_data($row, $rowclass);
