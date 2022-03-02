@@ -1684,8 +1684,8 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
     echo html_writer::end_div();
    
     
-    $tableheaders = array_merge([$OUTPUT->render($mastercheckbox), '', 'fullname', 'Status']);
-    $tablecolumns = array_merge(['', 'picture', 'fullname', 'Status']);
+    $tableheaders = array_merge([$OUTPUT->render($mastercheckbox), '', 'fullname', 'Status', 'Date Sent']);
+    $tablecolumns = array_merge(['', 'picture', 'fullname', 'Status', 'Date Sent']);
     $extrafields = get_extra_user_fields($context);
 
     require_once($CFG->libdir . '/tablelib.php');
@@ -1696,7 +1696,7 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
     $table->define_columns($tablecolumns); //$tablecolumns
     $table->define_headers($tableheaders);
     $table->define_baseurl($PAGE->url);
-    $table->sortable(true, 'lastname'); // Sorted by lastname by default.
+  //  $table->sortable(true, 'lastname'); // Sorted by lastname by default.
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
 
@@ -1729,7 +1729,7 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
 
     $ufields = user_picture::fields('u', $extrafields);
     $reminder = html_writer::span('<i class = "fa">&#xf2b7</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindersent', 'mod_giportfolio')]);
-    $remindernotsent = html_writer::span('<i class = "fa">&#xf003;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindernotsent', 'mod_giportfolio')]);
+    $remindernotsent = html_writer::span('<i class = "fa">&#xf003;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindernotsent', 'mod_giportfolio'), 'hidden' => true]);
 
     if (!empty($allusers) && $chapterid != 0) {
         $select = "SELECT DISTINCT $ufields";
@@ -1763,12 +1763,14 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
                     fullname($puser, has_capability('moodle/site:viewfullnames', $context)) . '</a>';
                 $checkboxes = giportfolio_reminder_checkbox($puser);
                 $offset++;
-                $sql = "SELECT id FROM mdl_giportfolio_reminder_sent WHERE userid = $puser->id AND chapterid = $chapterid;";
+                $sql = "SELECT *  FROM mdl_giportfolio_reminder_sent WHERE userid = $puser->id AND chapterid = $chapterid;";
                 if ($chapters = $DB->get_record_sql($sql)) {
-                    $row = array_merge($checkboxes, array($picture, $userlink, $reminder));
+                                
+                    $datemod = userdate($chapters->timemodified, get_string('strftimedaydate', 'core_langconfig'));
+                    $row = array_merge($checkboxes, array($picture, $userlink, $reminder, $datemod));
                 } else {
 
-                    $row = array_merge($checkboxes, array($picture, $userlink, $remindernotsent));
+                    $row = array_merge($checkboxes, array($picture, $userlink, $remindernotsent, ''));
                 }
                 $rowclass = "user-row-$puser->id";
                 $table->add_data($row, $rowclass);
@@ -2799,6 +2801,7 @@ function giportfolio_send_reminder($data) {
                 $record->giportfolioid = $data->chapter->portfolioid;
                 $record->chapterid = $data->chapter->chapterid;
                 $record->userid = $user->id;
+                $record->timemodified = time();
                 $DB->insert_record('giportfolio_reminder_sent', $record);
             }
         } else {

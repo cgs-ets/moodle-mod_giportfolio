@@ -87,7 +87,8 @@ trait send_reminder {
       
 
         return array(
-            'status' => '<h1>' . get_string('msg_sent', 'giportfolio') . '</h1>'
+            'status' => '<h1>' . get_string('msg_sent', 'giportfolio') . '</h1>',
+            'date' => userdate(time(), get_string('strftimedaydate', 'core_langconfig'))
         );
     }
 
@@ -101,6 +102,7 @@ trait send_reminder {
         return new external_single_structure(
             array(
                 'status' => new external_value(PARAM_RAW, 'file id'),
+                'date' => new external_value(PARAM_RAW, 'date it was created'),
             )
         );
     }
