@@ -123,7 +123,6 @@ export const init = ({
 
                             const reminder = document.querySelector('div.reminder');
                             reminder.removeAttribute('hidden');
-                            
 
                             //display animation
                                 const chapterd = {
@@ -145,6 +144,8 @@ export const init = ({
                                     },
 
                                     done: function (response) {
+                                        //Replace the closed envelopes to open ones. 
+                                        updateStatusColumn(ids);
                                         //Remove animation
                                         const reminderImg = document.querySelector('img.reminder-image');
                                         jQuery(reminderImg).replaceWith(response.status);
@@ -179,13 +180,30 @@ export const init = ({
 
     };
 
+    const updateStatusColumn = (ids) => {
+                            
+        const t = document.querySelector('#mod-giportfolio-reminder-table tbody');
+
+        if (t) {
+          
+            Array.from(t.rows).forEach((tr) => {
+                let user = tr.classList.value.split("-");
+                user = user[user.length - 1];
+                if (ids.includes(user)) {
+                    jQuery(tr.cells[3]).children().replaceWith('<span class="giportfolio-legend" title="Reminder sent"><i class="fa">&#xf2b7;</i></span>'); // Column 3 has the status. 
+
+                }
+                
+            });
+
+        }
+      
+    }
+
     const resetBulkAction = bulkActionSelect => {
         bulkActionSelect.value = '';
     };
 
-    const updateStatus = () => {
-
-    }
 
     registerEventListeners();
 };

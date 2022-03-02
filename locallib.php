@@ -1770,6 +1770,7 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
 
                     $row = array_merge($checkboxes, array($picture, $userlink, $remindernotsent));
                 }
+                $rowclass = "user-row-$puser->id";
                 $table->add_data($row, $rowclass);
             }
 
