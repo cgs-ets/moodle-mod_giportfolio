@@ -664,15 +664,6 @@ function xmldb_giportfolio_upgrade($oldversion) {
 
     if ($oldversion < 2022030200) {
 
-        // Define field notifycommententry to be dropped from giportfolio.
-        $table = new xmldb_table('giportfolio');
-        $field = new xmldb_field('notifycommententry');
-
-        // Conditionally launch drop field notifycommententry.
-        if ($dbman->field_exists($table, $field)) {
-            $dbman->drop_field($table, $field);
-        }
-
          // Define table giportfolio_reminder_sent to be created.
         $table = new xmldb_table('giportfolio_reminder_sent');
 
@@ -693,6 +684,21 @@ function xmldb_giportfolio_upgrade($oldversion) {
 
         // Giportfolio savepoint reached.
         upgrade_mod_savepoint(true, 2022030200, 'giportfolio');
+    }
+
+    if ($oldversion < 2022040100) {
+
+        // Define field notifycommententry to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('notifycommententry', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'notifyaddentry');
+
+        // Conditionally launch add field notifycommententry.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2022040100, 'giportfolio');
     }
 
     return true;
