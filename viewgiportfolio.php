@@ -141,7 +141,9 @@ if ($chapterid == '0') {
 }
 
 if ($h != 1) { // If the chapter is set to hidden, when it comes back to this page, dont set it as last seen.
-    giportfolio_set_last_chapter_seen($giportfolio->id, $chapterid);
+    if ($chapterid != 0) {
+        giportfolio_set_last_chapter_seen($giportfolio->id, $chapterid);
+    }
 }
 
 // Display the Mentee info to make it clear which portfolio is the teacher or mentor contributing to. CGS. customisation.
@@ -366,7 +368,7 @@ if ((!$allowedit || $cangrade && $mentee != 0) && !$context->is_locked() || is_s
 
 
     echo $OUTPUT->render_from_template('mod_giportfolio/add_contribution_button', $ctx);
-    echo '<br>';
+    echo '<br><br>';
 }
 
 $otherusers = array();
@@ -601,6 +603,8 @@ if ($contriblist) {
 
         echo $contribution_outline . '</table><br><hr class ="outline-separator"><br>';
     }
+
+    $PAGE->requires->js_call_amd('mod_giportfolio/import_chapter_control', 'init',['']); // Drag and Drop.
 
     echo '<p class="giportfolio_outline" >Contributions</p>';
     echo $contribution_buffer;

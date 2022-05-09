@@ -1,0 +1,18 @@
+<br>
+<h4>Your students</h4>
+<div class="mentees">
+   {{#menteebuttons}}
+   <div class="mentee">
+      <img class="userphoto" src="{{photolarge}}">
+        <br><br>
+      <form action = "{{action}}" method = "POST">
+         <input type="hidden" name="id" value="{{cmid}}">
+         <input type="hidden" name="{{inputname}}" value="{{userid}}"> 
+         <input type="hidden" name="mentor" value="{{mentorid}}"> 
+         <input type="hidden" name="sesskey" value="{{sesskey}}">
+         <input type="hidden" name="cont" value="{{allowcontribution}}">
+         <input class="btn btn-primary text-wrap" type="submit" value="{{textvalue}}">
+      </form>
+   </div>
+   {{/menteebuttons}}
+</div>

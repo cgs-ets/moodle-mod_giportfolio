@@ -1,5 +1,5 @@
 <?php
-// This file is part of giportfolio module for Moodle - http://moodle.org/
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -15,18 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * giportfolio plugin version info
+ * Book import plugin version info
  *
- * @package    mod_giportfolio
- * @copyright  2013 Synergy Learning / Manolescu Dorel based on book module
+ * @package    giportfoliotool_importhtml
+ * @copyright  2011 Petr Skoda {@link http://skodak.org}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
+defined('MOODLE_INTERNAL') || die;
 
-$plugin->version   = 2022050900; // The current module version (Date: YYYYMMDDXX).
-$plugin->requires  = 2017051500; // Requires this Moodle version (2.7).
-$plugin->cron      = 0;          // Period for cron to check this module (secs).
-$plugin->component = 'mod_giportfolio'; // Full name of the plugin (used for diagnostics).
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = "3.3+ (2020032200)"; // User-friendly version number.
+$plugin->component = 'giportfoliotool_importhtml'; // Full name of the plugin (used for diagnostics).
+$plugin->version   = 2022031501; // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2020060900; // Requires this Moodle version.

@@ -74,6 +74,7 @@ $string['eventchapterupdated'] = 'Chapter updated';
 $string['eventchapterviewed'] = 'Chapter viewed';
 $string['exportpdf'] = 'Export to PDF';
 $string['exportzip'] = 'Export to ZIP';
+$string['exportchapterzip'] = 'Export chapter to ZIP';
 $string['faq'] = 'Portfolio FAQ';
 $string['faq_help'] = '
 **
@@ -178,7 +179,7 @@ $string['showshared'] = 'Show other {$a}s\' contributions'; // Students.'
 $string['showtimeofday'] = 'Show time of day on dates';
 $string['noshared'] = 'No contributions from other {$a}s'; // Students.
 $string['sincelastlogin'] = 'Updated since your last login';
-$string['skipintro'] = 'Students skip intro page';
+$string['skipintro'] = 'Skip intro page';
 $string['startcontrib'] = 'Start Contributing  ';
 $string['stopedit'] = 'Turn off editing';
 $string['studentgiportfolio'] = '{$a} portfolios'; // Students.
@@ -187,6 +188,7 @@ $string['subchapter'] = 'Subchapter';
 $string['submitedporto'] = 'Submitted portfolios:  ';
 $string['toc'] = 'Table of contents';
 $string['top'] = 'top';
+$string['drag'] = 'Drag. IMPORTANT: Only works to add this chapter into another portfolio';
 $string['unpublish'] = 'Unpublish';
 $string['unshare'] = 'Stop sharing with other {$a}s'; // Students.
 $string['updatecontrib'] = 'Update Contribution';
@@ -200,7 +202,7 @@ $string['view'] = 'View';
 $string['showinstructions'] = 'Show/Hide Instructions';
 $string['viewgiportfolio'] = 'View Portfolio:  ';
 $string['viewtemplate'] = 'View/Edit portfolio template';
-$string['viewmenteeportfolio'] = 'View portfolio for {$a->name}';
+$string['viewmenteeportfolio'] = 'View  {$a->name}\'s portfolio';
 $string['noaccessformentee'] = '{$a->name} cannot access this activity.';
 $string['visibility'] = 'Visibility';
 $string['visibilityexplain'] = 'setting visibility for the contribution';
@@ -211,7 +213,8 @@ $string['visibilityexplain_help'] = '
 $string['allowmentorcontrib'] = 'Allow Mentor contribution';
 $string['allownetcontribute'] = 'Allow Non-editing teachers contribution';
 $string['disabledeletebtn'] = 'Disable delete button from contributions and comments';
-$string['onbehalf'] = 'Contribute on behalf of {$a->name}';
+$string['onbehalf'] = 'Contribute on behalf 
+of {$a->name}';
 $string['contribute'] = 'Contribute';
 $string['chaptersupdated'] = 'Updated Chapters';
 $string['mentorcontribution'] = 'Mentor\'s contribution';
@@ -261,5 +264,7 @@ It is time to add your contribution to \'{$a->chapter}\' in  \'{$a->portfolio}\'
 
 
 You can view this chapter and make your contribution at: {$a->link}' ;
+
+
 
          

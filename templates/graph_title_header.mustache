@@ -4,14 +4,19 @@
     </div>
     <div class = "subchapter-icon">
         <img class ="icon" alt ="Chapter" title = "Chapter" src="{{icon}}"/>
+    </div>
+    <div>    
+        {{#importedch}}
+         <img class ="icon" alt ="Import" title = "Imported" src="{{importedch}}"/>
+        {{/importedch}}
+
+    </div>
         {{#subchapters}}
             <div class = "chapter-expand-collapse">
                 <span> <i class="fa fa-caret-left" aria-hidden="true" title = "Collapse Chapter" data-chapterid = "{{chapterid}}"></i></span>
                 <span hidden> <i class="fa fa-caret-right" aria-hidden="true" title = "Expand Chapter" data-chapterid =" {{chapterid}}"></i></span>                 
+        </div>
         {{/subchapters}}
-
-    </div>
-    </div>
 {{/ischapter}}
 
 {{! Render subchapter }}
@@ -23,5 +28,9 @@
     <div class = "subchapter-icon">
         <img class ="icon" alt ="Subchapter" title = "Subchapter" src="{{icon}}"/>
     </div>
-
+    <div>
+          {{#importedch}}
+         <img class ="icon" alt ="Import" title = "Imported" src="{{importedch}}"/>
+        {{/importedch}}
+    </div>
 {{/ischapter}}

@@ -1,0 +1,53 @@
+<h5>Drop the chapters you want to add to this portfolio</h5>
+<br>
+<div class="video-overlay"></div>
+<div id="droptarget">
+    <div id ='toc' class="p-3"></div>
+</div>
+
+<div id = 'overlay' hidden>
+    <div id= 'gi-processing-overlay' class='d-flex flex-column align-items-center justify-content-center overlay giportfolio-merge'>
+    <div class='spinner-border processing' role='status'>
+        <span class='sr-only'>Loading...</span>
+    </div>
+    <span class ="merging-message">Saving Chapters</span>
+    </div>
+</div>
+
+<br>
+
+<div class="alert alert-danger gi-notallowed" role="alert" hidden>
+  <a class="close giportfolio-alert">&times;</a>
+  {{#str}} samechapterdd, giportfoliotool_importhtml{{/str}} 
+</div>
+
+
+<div class="alert alert-success gi-success" hidden>
+  <a class="close giportfolio-alert gi-import-success">&times;</a>
+  {{#str}} importsuccess, giportfoliotool_importhtml{{/str}} 
+  
+</div>
+
+<div class="alert alert-danger" role="alert" hidden>
+  <a class="close giportfolio-alert  gi-import-fail">&times;</a>
+  {{#str}} importfail, giportfoliotool_importhtml{{/str}} 
+</div>
+
+
+<br>
+
+<form id='merge-form' action = "{{actionurl}}" method = "POST" >
+    <input type="hidden" name="chapters" value ="">
+    <input type="hidden" name="chapterids" value ="">
+    <input type="hidden" name="chcm" value ="">
+    <input type="hidden" name="giportfolioid" value ="{{giportfolioid}}">
+     <input type="hidden" name="cm" value ="{{cm}}">
+    <input type="hidden" name="sesskey" value =  "{{sesskey}}">
+     <input type="hidden" name="viewurl" value =  "{{viewurl}}">
+    <button type="button" disabled class="btn btn-primary merge-chapters">Save</button>
+    <button type="button" class="btn btn-secondary merge-chapters-cancel">Cancel</button>
+</form>
+
+
+
+

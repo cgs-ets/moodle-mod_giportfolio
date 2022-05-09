@@ -49,8 +49,9 @@ function giportfolio_preload_chapters($giportfolio) {
         'giportfolio_chapters',
         array('giportfolioid' => $giportfolio->id, 'userid' => 0),
         'pagenum',
-        'id, pagenum, subchapter, title, hidden, userid'
+        'id, pagenum, subchapter, title, hidden, userid, importsrc'
     );
+
     if (!$chapters) {
         return array();
     }
@@ -95,7 +96,7 @@ function giportfolio_preload_chapters($giportfolio) {
             $hidesub = $ch->hidden;
             $parent = $ch->id;
             $ch->parent = null;
-            $ch->subchpaters = array();
+            // $ch->subchpaters = array();
         } else {
             $ch->prev = $prevsub;
             $ch->next = null;
@@ -326,6 +327,9 @@ function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edi
         );
 
         $PAGE->requires->js_init_call('M.mod_giportfolio_collapse.init', array(), true, $jsmodule);
+    } else {
+
+        $PAGE->requires->js_call_amd('mod_giportfolio/drag', 'init', ['']);
     }
     // SYNERGY - add javascript to control subchapter collapsing.
 }
@@ -471,6 +475,28 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
                     '&amp;sesskey=' . $USER->sesskey . '">
                     <img src="' . $OUTPUT->image_url('t/hide') . '" class="iconsmall" alt="' . get_string('hide') . '" /></a>';
             }
+
+
+            if (isset($ch->subchapters) && count($ch->subchapters) > 0 || !$ch->subchapter) { // Add drag icon only to chapters. CGS
+                $chaux = [];
+                if (isset($ch->subchapters)) {
+
+                    foreach ($ch->subchapters as $sc) {
+                        $schdet = new stdClass();
+                        $schdet->id = $sc;
+                        $schdet->title = $chapters[$sc]->title;
+                        $chaux[] = $schdet;
+                    }
+                    $ch->subchapteraux = $chaux;
+                }
+                $ch->coursemodule = $cm->id;
+                $ch->giportfolio = $giportfolio->id;
+                $json = (json_encode($ch)); //TODO 
+
+                $drag = html_writer::tag('img', '', ['src' => $OUTPUT->image_url('i/move_2d'), 'class' => 'icon drag-action', 'draggable' => true, 'data-chapter' => $json]);
+                $toc .= html_writer::tag('a', $drag, ['class' => 'drag-chapter-action', 'title' => get_string('drag', 'giportfolio'),  'draggable' => true,]);
+            }
+
             // Synergy  only if the giportfolio activity has not yet contributions.
             $toc .= ' <a title="' . get_string('addafter', 'mod_giportfolio') . '" href="edit.php?cmid=' . $cm->id .
                 '&amp;pagenum=' . $ch->pagenum . '&amp;subchapter=' . $ch->subchapter . '">
@@ -889,8 +915,7 @@ function giportfolio_set_mentor_info($contributions, $menteeid) {
 // Part of Allow a teacher to make a contribution on behalf of a student.
 function giportfolio_get_user_default_chapter($giportfolioid) {
     global $DB;
-    // TOP(1)
-    $sql = "SELECT TOP(1) chapterid  FROM mdl_giportfolio_contributions  
+    $sql = "SELECT  TOP(1) chapterid  FROM mdl_giportfolio_contributions  
             WHERE  giportfolioid = {$giportfolioid}
            -- LIMIT 1;
            ";
@@ -1499,10 +1524,12 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
         $titlectx->ischapter = !$chapter->subchapter;
         $titlectx->chapterid = $chapter->id;
 
+        $titlectx->importedch = ($chapter->importsrc != '') ? $OUTPUT->image_url('import_icon', 'mod_giportfolio') : false;
         if (!$chapter->subchapter) {
             $titlectx->icon = $OUTPUT->image_url('chapter', 'mod_giportfolio');
             $titles[] = $OUTPUT->render_from_template('mod_giportfolio/graph_title_header', $titlectx);
         } else {
+
             $titlectx->icon = $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio');
             $titles[] = $OUTPUT->render_from_template('mod_giportfolio/graph_title_header', $titlectx);
         }
@@ -1610,11 +1637,13 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $iconaddition =  html_writer::img($OUTPUT->image_url('addition_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
     $iconchapter =  html_writer::img($OUTPUT->image_url('chapter', 'mod_giportfolio'), '', ['class' => 'icon']);
     $iconsubchapter =  html_writer::img($OUTPUT->image_url('subchapter_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
+    $iconimported =  html_writer::img($OUTPUT->image_url('import_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
 
     $data = [
         'iconchapter' => $iconchapter,
         'iconsubchapter' => $iconsubchapter,
         'iconaddition' => $iconaddition,
+        'iconimported' => $iconimported
     ];
 
     echo $OUTPUT->render_from_template('mod_giportfolio/graph_legends_table', $data);
@@ -1666,7 +1695,7 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
     $dontremind = giportfolio_get_students_with_no_contributions($chapterid, $giportfolio->id);
 
     define('DEFAULT_PAGE_SIZE', count($allusers)); // Show all the users at once.
-    $perpage =  count($allusers) > 100 ? count($allusers) /2 : count($allusers); 
+    $perpage =  count($allusers) > 100 ? count($allusers) / 2 : count($allusers);
 
 
     $mastercheckbox = new \core\output\checkbox_toggleall('participants-table', true, [
@@ -1682,8 +1711,8 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
     echo html_writer::start_div('reminder', ['hidden' => true]);
     echo html_writer::start_tag('img', ['src' => $OUTPUT->image_url('mail', 'mod_giportfolio'), 'class' => 'reminder-image']);
     echo html_writer::end_div();
-   
-    
+
+
     $tableheaders = array_merge([$OUTPUT->render($mastercheckbox), '', 'fullname', 'Status', 'Date Sent']);
     $tablecolumns = array_merge(['', 'picture', 'fullname', 'Status', 'Date Sent']);
     $extrafields = get_extra_user_fields($context);
@@ -1696,7 +1725,7 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
     $table->define_columns($tablecolumns); //$tablecolumns
     $table->define_headers($tableheaders);
     $table->define_baseurl($PAGE->url);
-  //  $table->sortable(true, 'lastname'); // Sorted by lastname by default.
+    //  $table->sortable(true, 'lastname'); // Sorted by lastname by default.
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
 
@@ -1765,7 +1794,7 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
                 $offset++;
                 $sql = "SELECT *  FROM mdl_giportfolio_reminder_sent WHERE userid = $puser->id AND chapterid = $chapterid;";
                 if ($chapters = $DB->get_record_sql($sql)) {
-                                
+
                     $datemod = userdate($chapters->timemodified, get_string('strftimedaydate', 'core_langconfig'));
                     $row = array_merge($checkboxes, array($picture, $userlink, $reminder, $datemod));
                 } else {
@@ -2005,7 +2034,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
         } else {
 
             $sql = "SELECT id FROM mdl_giportfolio_reminder_sent WHERE userid = $user->id AND chapterid = $chapterid;";
-           
+
             if ($DB->get_record_sql($sql)) {
                 $links[] =  html_writer::tag('a', "$reminder", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
             } else {
@@ -2755,7 +2784,7 @@ function giportfolio_send_comment_notification_helper($userid, $contributionid, 
 
 function giportfolio_send_reminder($data) {
     global $COURSE, $DB;
-   
+
     $userids = implode(',', $data->users);
     $sql = "SELECT * FROM mdl_user WHERE id in ($userids)";
     $pusers = $DB->get_records_sql($sql);
@@ -2805,7 +2834,6 @@ function giportfolio_send_reminder($data) {
                 $DB->insert_record('giportfolio_reminder_sent', $record);
             }
         } else {
-
         }
     }
 }

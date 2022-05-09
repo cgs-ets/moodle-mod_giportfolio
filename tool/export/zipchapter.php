@@ -32,7 +32,6 @@ global $CFG, $DB, $USER, $PAGE, $SITE;
 $id = required_param('id', PARAM_INT); // Course Module ID.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
 $userid = optional_param('userid', $USER->id, PARAM_INT); // user ID.
-$zipchapter = optional_param('zipchapter', 0, PARAM_INT); // Zip by chapter
 // Security checks START - teachers and students view.
 
 $cm = get_coursemodule_from_id('giportfolio', $id, 0, false, MUST_EXIST);
@@ -62,12 +61,7 @@ if ($chapterid) {
     $chapter = false;
 }
 
-$PAGE->set_url('/mod/giportfolio/zipgiportfolio.php', array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid));
-
-if (!$zipchapter) {
-    unset($id);
-    unset($chapterid);
-}
+$PAGE->set_url('/mod/giportfolio/zipchapter.php', array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid));
 
 // Security checks END.
 
@@ -110,23 +104,18 @@ $intro = str_replace('@@PLUGINFILE@@', 'intro/', $giportfolio->intro);
 
 $output .= "<div class='giportfolio_intro'>$intro</div>";
 
-$output .= giportfoliotool_export_get_summary($context, $course, $giportfolio);
+// $output .= giportfoliotool_export_get_summary($context, $course, $giportfolio);
 
 
-list($toc, $titles) = giportfoliotool_export_get_toc($chapters, $giportfolio, $cm);
-$output .= $toc;
+ list($toc, $titles) = giportfoliotool_export_get_toc($chapters, $giportfolio, $cm);
+// $output .= $toc;
 
 $link1 = $CFG->wwwroot . '/mod/giportfolio/viewgiportfolio.php?id=' . $course->id . '&chapterid=';
 $link2 = $CFG->wwwroot . '/mod/giportfolio/viewgiportfolio.php?id=' . $course->id;
 
 foreach ($chapters as $ch) {
     
-    if ($zipchapter) {
-        $chapter = $allchapters[$chapterid];   
-      
-    } else {
-        $chapter = $allchapters[$ch->id];
-    }
+    $chapter = $allchapters[$chapterid];   
 
     // Skip hidden chapters
     if ($chapter->hidden) {
@@ -153,10 +142,9 @@ foreach ($chapters as $ch) {
     }
 
     // Only ziping the current chapter.
-    if ($zipchapter == 1) {
+    
         
         break;
-    }
 }
 
 $zipfile->add_file_from_pathname('styles.css', dirname(__FILE__) . '/styles.css');

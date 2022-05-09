@@ -45,6 +45,26 @@ button.bigicon.inactive {
 
 .mod_giportfolio .navbottom {
     text-align: right;
+    clear: both;
+}
+
+
+.icon-chapter {
+    display: block;
+    height: 22px;
+    padding-left: 20px;
+    background: transparent url([[pix:giportfolio|chapter]]) 0 2px no-repeat;
+}
+
+.icon-subchapter {
+    display: block;
+    height: 22px;
+    padding-left: 20px;
+    background: transparent url([[pix:giportfolio|subchapter_icon_tree]]) 0 0px no-repeat;
+}
+
+.htmlnodelabel {
+    margin-left: 20px;
 }
 
 /* == Fake toc block == */
@@ -292,7 +312,7 @@ p.alert.alert-info.giportfolio-restricted-access {
 /* Custom CSS for rotated header.. */
 #page-mod-giportfolio-submissions .rotated-text-container {
     display: inline-block;
-    width: 16px;
+    width: 2rem;
 }
 
 /*rtl:begin:ignore*/
@@ -323,9 +343,37 @@ p.alert.alert-info.giportfolio-restricted-access {
     outline: none;
 }
 
-i.fa.fa-play-circle-o.start-bt {
+i.fa.fa-arrow-circle-o-right.start-bt {
     font-size: 6rem;
     color: #66A8D8;
+}
+
+.path-mod-giportfolio .timeline-body .mentees {
+    text-align: center;
+    padding: 20px;
+}
+
+.path-mod-giportfolio .mentees .mentee {
+    background: #fff;
+    margin: 20px;
+    display: inline-block;
+    width: 200px;
+    border-radius: 4px;
+    border: 1px solid #e0e0e0;
+    padding: 25px 10px 20px;
+    text-align: center;
+    box-shadow: 0px 2px 13px -8px rgba(0, 0, 0, 0.5);
+}
+
+.path-mod-giportfolio .userphoto {
+    border-radius: 50%;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.path-mod-giportfolio .userphoto img {
+    display: block;
+    width: 100%;
 }
 
 .show-hide-instructions,
@@ -450,6 +498,62 @@ table#mod-giportfolio-reminder-table {
     display: flex;
 }
 
+/* Drag and drop */
+
+div#droptarget {
+    background-color: rgb(190, 218, 243);
+    min-height: 250px;
+    overflow: hidden;
+}
+
+.dropeffect {
+    border-style: dashed;
+}
+
+a.drag-chapter-action {
+    cursor: all-scroll;
+    margin-left: 0.5rem;
+}
+
+/* Merge tree */
+
+p.ch-sub-title {
+    display: inline;
+    margin-right: 1rem;
+}
+
+a.close.giportfolio-alert,
+a.removech-from-tree {
+    cursor: pointer;
+}
+
+a.removech-from-tree {
+    margin-left: 0.5rem;
+}
+
+.spinner-border.processing {
+    width: 120px;
+    height: 120px;
+    border: 16px solid #f3f3f3;
+    border-top: 16px solid #3498db;
+}
+
+.d-flex.flex-column.align-items-center.justify-content-center.overlay.giportfolio-merge {
+    background-color: rgba(204, 204, 204, 0.35);
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+}
+
+span.merging-message {
+    font-size: larger;
+    margin: 1rem;
+    font-weight: 600;
+}
+
 /* Media Query: large smartphone (Vertical) */
 /* Any screen that also has amax less than 600px*/
 @media screen and (max-width: 600px) {
@@ -479,3 +583,4 @@ table#mod-giportfolio-reminder-table {
     }
 }
 
+/* https://www.flaticon.com/free-icons/import Import icons created by Freepik - Flaticon</a> */

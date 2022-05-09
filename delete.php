@@ -70,6 +70,7 @@ if ($confirm) { // The operation was confirmed.
             }
         }
     }
+    
     $fs->delete_area_files($context->id, 'mod_giportfolio', 'chapter', $chapter->id);
     $DB->delete_records('giportfolio_chapters', array('id' => $chapter->id));
     giportfolio_delete_chapter_contributions($chapter->id, $cm->id, $giportfolio->id);

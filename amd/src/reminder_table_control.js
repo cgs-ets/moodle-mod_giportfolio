@@ -15,7 +15,6 @@
 
 /**
  * Reminder table functions
- * This is also used by the report/participants/index.php because it has the same functionality.
  *
  * @module     mod/mod_giportfolio
  * @package    mod_giportfolio

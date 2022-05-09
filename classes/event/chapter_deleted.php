@@ -70,8 +70,12 @@ class chapter_deleted extends \core\event\base {
      * @return array|null
      */
     protected function get_legacy_logdata() {
-        $chapter = $this->get_record_snapshot('giportfolio_chapters', $this->objectid);
-        return array($this->courseid, 'giportfolio', 'update', 'view.php?id=' . $this->contextinstanceid, $chapter->giportfolioid, $this->contextinstanceid);
+      
+        //$chapter = $this->get_record_snapshot('giportfolio_chapters', $this->objectid);
+        if ($chapter = $this->get_record_snapshot('giportfolio_chapters', $this->objectid)) {
+
+            return array($this->courseid, 'giportfolio', 'update', 'view.php?id=' . $this->contextinstanceid, $chapter->giportfolioid, $this->contextinstanceid);
+        }
     }
 
     /**

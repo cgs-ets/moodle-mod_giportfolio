@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/mod/giportfolio/lib.php');
 require_once($CFG->dirroot . '/mod/giportfolio/locallib.php');
 
 /**
- * Trait implementing the external function mod_googledocs_create_groups_file
+ * Trait implementing the external function mod_giportfolio_send_reminder
  */
 trait send_reminder {
 
