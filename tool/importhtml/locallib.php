@@ -35,7 +35,7 @@ function toolgiportfolio_importhtml_add_chapters_to_portfolio(stdClass $data) {
 
     $chapterids = implode(',', $data->chapterids);
 
-    $sql = "SELECT * FROM mdl_giportfolio_chapters where id in ($chapterids) ORDER BY pagenum;";
+    $sql = "SELECT * FROM mdl_giportfolio_chapters where id in ($chapterids) ORDER BY pagenum ";
     $rs = $DB->get_recordset_sql($sql);
 
     $qry = "SELECT max(pagenum) as pagenum FROM mdl_giportfolio_chapters where giportfolioid = $data->giportfolioid";
@@ -44,55 +44,58 @@ function toolgiportfolio_importhtml_add_chapters_to_portfolio(stdClass $data) {
 
     $mapchapterids = []; // Set a link between the cloned chapter id and the original chapter id.
     $result = 'OK';
-    try {
+    $fs = get_file_storage();
+    $component = 'mod_giportfolio';
+    $hasitems = false;
 
-        $fs = get_file_storage();
-        $component = 'mod_giportfolio';
+    foreach ($rs as $record) {
+        $hasitems = true;
+        $chid = $record->id;
+        unset($record->id);
+        $record->giportfolioid = $data->giportfolioid;
 
-        foreach ($rs as $record) {
-            $chid = $record->id;
-            unset($record->id);
-            $record->giportfolioid = $data->giportfolioid;
+        // Set the title again, it might have been changed on the UI.
 
-            // Set the title again, it might have been changed on the UI.
+        $newtitle = toolgiportfolio_importhtml_chapter_title($chid, $data->chaptersdetails);
+        $record->title = $newtitle == null ? $record->title : $newtitle;
+        $numpage++;
+        $record->pagenum = $numpage;
+        $record->importsrc = "Chapter ID: $chid";
 
-            $newtitle = toolgiportfolio_importhtml_chapter_title($chid, $data->chaptersdetails);
-            $record->title = $newtitle == null ? $record->title : $newtitle;
-            $numpage++;
-            $record->pagenum = $numpage;
-            $record->importsrc = "Chapter ID: $chid";
+        $mapchapterids[$chid] = $DB->insert_record('giportfolio_chapters', $record, true, true);
+    }
 
-            $mapchapterids[$chid] = $DB->insert_record('giportfolio_chapters', $record, true, true);
-        }
+    if(!$hasitems) { // In this case, the dragged chapter was from a portfolio that is not in this DB.
+        throw new Exception ("Fail"); 
+    }
 
-        // Copy the files that are in the chapter intro (if they are).
+    // Copy the files that are in the chapter intro (if they are).
 
-        foreach ($mapchapterids as $originalchid => $newchid) {
-            $cmodule = toolgiportfolio_importhtml_get_course_module($data->chapterandcoursemodule, $originalchid);
-            if ($cmodule != null) {
+    foreach ($mapchapterids as $originalchid => $newchid) {
+        $cmodule = toolgiportfolio_importhtml_get_course_module($data->chapterandcoursemodule, $originalchid);
+        if ($cmodule != null) {
 
-                $context = \context_module::instance($cmodule);
+            $context = \context_module::instance($cmodule);
 
-                if ($files = $fs->get_area_files($context->id, $component, 'chapter', false, "filename", true)) {
-                    $contexttarget = \context_module::instance($data->cm);
-                    foreach ($files as $file) {
-                        $newrecord = new \stdClass();
-                        $newrecord->contextid = $contexttarget->id;
-                        $newrecord->itemid = $newchid; // Is the contribution id.
-                        $fs->create_file_from_storedfile($newrecord, $file);
-                    }
+            if ($files = $fs->get_area_files($context->id, $component, 'chapter', false, "filename", true)) {
+                $contexttarget = \context_module::instance($data->cm);
+                foreach ($files as $file) {
+                    $newrecord = new \stdClass();
+                    $newrecord->contextid = $contexttarget->id;
+                    $newrecord->itemid = $newchid; // Is the contribution id.
+                    $fs->create_file_from_storedfile($newrecord, $file);
                 }
             }
         }
+    }
 
-        $contributions = toolgiportfolio_importhtml_copy_contributions($data->chapterids, $mapchapterids, $data->giportfolioid, $data->chapterandcoursemodule);
+    $contributions = toolgiportfolio_importhtml_copy_contributions($data->chapterids, $mapchapterids, $data->giportfolioid, $data->chapterandcoursemodule);
+    if (!empty($contributions)) {
         toolgiportfolio_importhtml_copy_files($data->cm, $contributions);
         toolgiportfolio_importhtml_copy_comments($data->cm, $contributions);
         toolgiportfolio_importhtml_copy_graph_contributors($contributions);
-    } catch (Exception $e) {
-
-        $result = get_string('importfail', 'giportfoliotool_importhtml');
     }
+
 
     $rs->close();
 
@@ -154,7 +157,6 @@ function toolgiportfolio_importhtml_copy_contributions($chapterids, $newchapteri
             $contributions[$originalcid] = $data;
         }
     } catch (Exception $e) {
-
     }
 
     $rs->close();
@@ -210,6 +212,10 @@ function toolgiportfolio_importhtml_copy_files($cm, $contributions) {
 function toolgiportfolio_importhtml_copy_comments($cm, $contributions) {
 
     global $DB;
+   
+    if (count($contributions) == 0) {
+        return;
+    }
 
     $contexttarget = \context_module::instance($cm);
     $commentarea = "giportfolio_contribution";

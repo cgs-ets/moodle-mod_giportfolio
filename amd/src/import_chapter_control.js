@@ -82,7 +82,7 @@ export const init = ({
 
                 tree.subscribe('clickEvent', function (event) {
                     var self = this; // Keep the reference of the tree.
-            
+
                     const chapterid = document.getElementById(event.node.contentElId).firstChild.getAttribute('id');
                     const isSubchapter = document.getElementById(event.node.contentElId).firstChild.classList.contains('is-subch');
                     const data = {
@@ -215,9 +215,9 @@ export const init = ({
                 //         chapterid: chapterid,
                 //         isSubchapter: isSubchapter
                 //     }
-  
+
                 //     // add the edit ch-sub-title
-  
+
                 //     $(document.getElementById(event.node.contentElId).firstChild).on("click", data, function () {
                 //         // add the edit ch-sub-title
                 //         var txt = $("#" + chapterid).text();
@@ -225,31 +225,31 @@ export const init = ({
                 //             if (data.isSubchapter) {
                 //                 $("#" + chapterid).replaceWith(`<input type = 'text' class='mytxt ch-sub-title  is-subch htmlnodelabel' id='${chapterid}' maxlength='255' value ='${txt}'/>`);
                 //             } else {
-  
+
                 //                 $("#" + chapterid).replaceWith(`<input type = 'text' class='mytxt ch-sub-title htmlnodelabel' id='${chapterid}' maxlength='255' value ='${txt}'/>`);
                 //             }
                 //             $("#" + chapterid).val(txt);
                 //         }
                 //     });
-  
-  
+
+
                 //     $("input#" + chapterid).on("blur", data, function () {
                 //         var txt = $(this).val();
                 //         if ($(this).val() != '') {
                 //             if (data.isSubchapter) {
                 //                 $(this).replaceWith(`<span class='mytxt ch-sub-title is-subch htmlnodelabel' id= '${chapterid}'>${txt}</span>`);
                 //             } else {
-  
+
                 //                 $(this).replaceWith(`<span class='mytxt ch-sub-title htmlnodelabel' id= '${chapterid}'>${txt}</span>`);
                 //             }
                 //         }
-  
+
                 //         chaptercollection.forEach(function (chapter) {
                 //             if (!data.isSubchapter) {
                 //                 if (chapter.id == data.chapterid.toString()) {
                 //                     chapter.title = $('#' + data.chapterid).html();
                 //                 }
-  
+
                 //             } else {
                 //                 chapter.subchapteraux.forEach(function (subchapter) {
                 //                     if (subchapter.id == data.chapterid) {
@@ -257,9 +257,9 @@ export const init = ({
                 //                     }
                 //                 }, data);
                 //             }
-  
+
                 //         }, data);
-  
+
                 //         document.querySelector('input[name="chapters"]').value = JSON.stringify(chaptercollection);
                 //     });
                 // });
@@ -309,7 +309,7 @@ export const init = ({
                     $(".gi-notallowed").fadeOut(2600, function () {
                         // Animation complete.
                     });
-                    
+
                 } else {
 
                     var chaptercollection = [];
@@ -378,7 +378,12 @@ export const init = ({
 
         $(".gi-import-success").on('click', function (e) {
             (e.target).closest('div').setAttribute('hidden', true);
+        });
+
+        $(".gi-import-fail").on('click', function (e) {
+            (e.target).closest('div').setAttribute('hidden', true);
         })
+
 
     }
 
@@ -416,12 +421,13 @@ export const init = ({
             done: function (response) {
 
                 document.querySelector('.gi-import-success').closest('div').removeAttribute('hidden');
-
-                $(".gi-success").fadeOut(1600, function () {
-                    // Animation complete.
+                $(".gi-success").fadeOut(2600, function () {
+                    // Animation complete. We need to be able to display it again if the user keeps adding chapters after saving others.
+                    $(this).attr('hidden', true);
+                    $(this).css('display', '');
                 });
-                document.getElementById('toc').removeChild(document.querySelector('.ygtvitem'));
 
+                document.getElementById('toc').removeChild(document.querySelector('.ygtvitem'));
                 document.querySelector('input[name="chapters"]').value = '';
                 document.querySelector('input[name="chapterids"]').value = '';
                 document.querySelector('input[name="chcm"]').value = '';
@@ -436,22 +442,43 @@ export const init = ({
                         tree = null;
                         document.querySelector('button.merge-chapters').setAttribute('disabled', true);
 
+
+                        const toc = document.getElementById("toc");
+                        while (toc.lastChild) { // Remove the children elements from the div.
+                            toc.removeChild(toc.lastChild);
+                        }
+
+                        document.querySelector('input[name="chapterids"]').value = '';
+                        document.querySelector('input[name="chapters"]').value = '';
+                        document.querySelector('input[name="chcm"]').value = '';
+
                     });
-                
+
 
             },
 
             fail: function (reason) {
                 document.querySelector('.gi-import-fail').closest('div').removeAttribute('hidden');
-                document.getElementById('gi-processing-overlay').remove();
+                document.getElementById('overlay').setAttribute('hidden', true);
 
                 Y.use('yui2-treeview', 'node-event-simulate',
                     function (Y) {
 
-                        let tree = Y.YUI2.widget.TreeView.getTree('toc')
+                        let tree = Y.YUI2.widget.TreeView.getTree('toc');
                         tree.destroy();
                         tree = null;
                         document.querySelector('button.merge-chapters').setAttribute('disabled', true);
+
+                        const toc = document.getElementById("toc");
+                        while (toc.lastChild) { // Remove the children elements from the div.
+                            toc.removeChild(toc.lastChild);
+                        }
+
+                        document.querySelector('input[name="chapterids"]').value = '';
+                        document.querySelector('input[name="chapters"]').value = '';
+                        document.querySelector('input[name="chcm"]').value = '';
+
+
 
                     });
             }

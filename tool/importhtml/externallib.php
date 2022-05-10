@@ -103,7 +103,7 @@ class giportfoliotool_external extends external_api {
     public static function import_chapters_returns() {
         return new external_single_structure(
             array(
-                'status' => new external_value(PARAM_RAW, 'file id'),
+                'status' => new external_value(PARAM_RAW, 'Result of saving records'),
             )
         );
     }
