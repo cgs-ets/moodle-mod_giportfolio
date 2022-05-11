@@ -77,7 +77,7 @@ function toolgiportfolio_importhtml_add_chapters_to_portfolio(stdClass $data) {
 
             $context = \context_module::instance($cmodule);
 
-            if ($files = $fs->get_area_files($context->id, $component, 'chapter', false, "filename", true)) {
+            if ($files = $fs->get_area_files($context->id, $component, 'chapter', $originalchid, "filename", true)) {
                 $contexttarget = \context_module::instance($data->cm);
                 foreach ($files as $file) {
                     $newrecord = new \stdClass();
