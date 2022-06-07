@@ -86,9 +86,9 @@ class giportfoliotool_external extends external_api {
         $data->cm = $cm;
         $data->chapterandcoursemodule = $chapterandcoursemodule;
         $data->chaptersdetails = $chaptersdetails;
-
-        $result = toolgiportfolio_importhtml_add_chapters_to_portfolio($data);
-
+        session_write_close();
+         $result = toolgiportfolio_importhtml_add_chapters_to_portfolio($data);
+        sleep(4); // This avoids the redis session lock error.
         return array(
             'status' => $result,
         );
