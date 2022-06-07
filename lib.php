@@ -505,7 +505,7 @@ function giportfolio_supports($feature) {
  * @return void
  */
 function giportfolio_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $giportfolionode) {
-    global $USER, $PAGE, $DB, $COURSE; 
+    global $USER, $PAGE, $DB, $COURSE;
     if ($PAGE->cm->modname !== 'giportfolio') {
         return;
     }
@@ -524,71 +524,100 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     }
 
     $params = $PAGE->url->params();
-    
+
     $alias = get_student_alias($COURSE);
     $userid = isset($params['mentee']) &&  ($params['mentee'] != 0) ? $params['mentee'] : $USER->id;
-    
+
     $mentor = 0;
     if (in_array($USER->id, giportfolio_user_mentor_of_student($userid))) {
         $mentor = $USER->id;
     }
-    
+
     // SYNERGY - add grade console link.
-    if (!empty($params['id']) and!empty($params['chapterid']) and
-        has_capability('mod/giportfolio:viewgiportfolios', $context)) {
+    if (
+        !empty($params['id']) and !empty($params['chapterid']) and
+        has_capability('mod/giportfolio:viewgiportfolios', $context)
+    ) {
 
         $gradeconsole = get_string('studentgiportfolio', 'mod_giportfolio', $alias);
         $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $params['id']));
-        $giportfolionode->add($gradeconsole, $url, navigation_node::TYPE_SETTING, null, null,
-            new pix_icon('console', '', 'giportfoliotool_print', array('class' => 'icon')));
+        $giportfolionode->add(
+            $gradeconsole,
+            $url,
+            navigation_node::TYPE_SETTING,
+            null,
+            null,
+            new pix_icon('console', '', 'giportfoliotool_print', array('class' => 'icon'))
+        );
     }
 
     // Add publish- unpublish links only if the user has at least one contribution.
     $allowedit = has_capability('mod/giportfolio:edit', $context);
     $giportfolio = $DB->get_record('giportfolio', array('id' => $PAGE->cm->instance), '*', MUST_EXIST);
 
-    if (!empty($params['id'])
+    if (
+        !empty($params['id'])
         && !empty($params['chapterid'])
-        && !$allowedit && giportfolio_get_user_contribution_status($giportfolio->id, $userid)) { //$USER->id
-        
+        && !$allowedit && giportfolio_get_user_contribution_status($giportfolio->id, $userid)
+    ) { //$USER->id
+
         if (!$giportfolio->klassenbuchtrainer) {
             // Add pdf export link.
             $url = new moodle_url('/mod/giportfolio/tool/print/pdfgiportfolio.php', array('id' => $params['id'], 'sesskey' => sesskey(), 'userid' => $userid));
             // Open as new window.
             $action = new action_link($url, get_string('exportpdf', 'mod_giportfolio'), new popup_action('click', $url));
-            $giportfolionode->add(get_string('exportpdf', 'mod_giportfolio'), $action, navigation_node::TYPE_SETTING, null, null,
-                new pix_icon('pdf', '', 'giportfoliotool_print', array('class' => 'icon')));
-              
+            $giportfolionode->add(
+                get_string('exportpdf', 'mod_giportfolio'),
+                $action,
+                navigation_node::TYPE_SETTING,
+                null,
+                null,
+                new pix_icon('pdf', '', 'giportfoliotool_print', array('class' => 'icon'))
+            );
+
             // SYNERGY LEARNING - Export as zip option.
             $url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array('id' => $params['id'], 'userid' => $userid)); // Add zip export link.
-            $giportfolionode->add(get_string('exportzip', 'mod_giportfolio'), $url, navigation_node::TYPE_SETTING, null, null,
-                new pix_icon('zip', '', 'giportfoliotool_export', array('class' => 'icon')));
+            $giportfolionode->add(
+                get_string('exportzip', 'mod_giportfolio'),
+                $url,
+                navigation_node::TYPE_SETTING,
+                null,
+                null,
+                new pix_icon('zip', '', 'giportfoliotool_export', array('class' => 'icon'))
+            );
             // CGS - Export  chapter as zip option
             $url = new moodle_url('/mod/giportfolio/tool/export/zipchapter.php', array('id' => $params['id'], 'userid' => $userid, 'chapterid' => $params['chapterid'])); // Add zip export link.
-            $giportfolionode->add(get_string('exportchapterzip', 'mod_giportfolio'), $url, navigation_node::TYPE_SETTING, null, null,
-                    new pix_icon('zip', '', 'giportfoliotool_export', array('class' => 'icon')));
+            $giportfolionode->add(
+                get_string('exportchapterzip', 'mod_giportfolio'),
+                $url,
+                navigation_node::TYPE_SETTING,
+                null,
+                null,
+                new pix_icon('zip', '', 'giportfoliotool_export', array('class' => 'icon'))
+            );
             // END SYNERGY LEARNING - Export as zip option.
         }
     }
 
-   
+
     // Turn student editing on. has_capability('mod/giportfolio:gradegiportfolios', $context)
     if ((!empty($params['id']) && !empty($params['chapterid']) && (giportfolio_get_collaborative_status($giportfolio)))
-        && ( has_capability('mod/giportfolio:submitportfolio', $context) || $mentor!= 0 || (!empty($params['mentee']) && $params['mentee'] != 0))) {
+        && (has_capability('mod/giportfolio:submitportfolio', $context) || $mentor != 0 || (!empty($params['mentee']) && $params['mentee'] != 0))
+    ) {
 
         $useredit = optional_param('useredit', 0, PARAM_BOOL); // Edit mode.
         $urlparams = array('id' => $params['id'], 'chapterid' => $params['chapterid'], 'sesskey' => sesskey());
-       // $edit = 0;
+        // $edit = 0;
         if (!empty($useredit)) {
             $tocedit = get_string('stopedit', 'mod_giportfolio');
             $edit = '0';
         } else {
-          
-            if (($mentor != 0 && !is_enrolled($context)) || !empty($params['mentee'])){
+
+            if (($mentor != 0 && !is_enrolled($context)) || !empty($params['mentee'])) {
                 $menteename = $DB->get_field('user', 'firstname', ['id' => $params['mentee']]);
                 $tocedit = get_string('edityourmenteechapters', 'mod_giportfolio', ['name' => $menteename]);
                 $edit = '1';
-            } else if ( !(has_capability('mod/giportfolio:edit', $context))) {
+            } else if (!(has_capability('mod/giportfolio:edit', $context))) {
                 $tocedit = get_string('edityourchapters', 'mod_giportfolio');
                 $edit = '1';
             }
@@ -609,20 +638,28 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
         if (isset($edit)) {
             $urlparams['useredit'] = $edit;
         }
-        
-        if(isset($tocedit)) {
+
+        if (isset($tocedit)) {
 
             $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $urlparams);
-    
-            $giportfolionode->add($tocedit, $url, navigation_node::TYPE_SETTING, null, null,
-                new pix_icon('editstatus', '', 'giportfoliotool_print', array('class' => 'icon')));
+
+            $giportfolionode->add(
+                $tocedit,
+                $url,
+                navigation_node::TYPE_SETTING,
+                null,
+                null,
+                new pix_icon('editstatus', '', 'giportfoliotool_print', array('class' => 'icon'))
+            );
         }
     }
 
     // SYNERGY.
-    if (!empty($params['id']) and !empty($params['chapterid'])
+    if (
+        !empty($params['id']) and !empty($params['chapterid'])
         and (has_capability('mod/giportfolio:edit', $context))
-           /* and $params['cont'] == 'no'*/) { // Control the teacher is not contributing on behalf of a student. CGS customisation
+        /* and $params['cont'] == 'no'*/
+    ) { // Control the teacher is not contributing on behalf of a student. CGS customisation
         if (!empty($USER->editing)) {
             $string = get_string("turneditingoff");
             $edit = '0';
@@ -639,7 +676,6 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
 
         $giportfolionode->add($string, $url, navigation_node::TYPE_SETTING);
     }
-
 }
 
 
