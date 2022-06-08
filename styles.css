@@ -500,6 +500,14 @@ table#mod-giportfolio-reminder-table {
 
 /* Drag and drop */
 
+div#giportfolio-import-chapter-overlay {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(128,125,125,.5);
+    z-index: 20;
+}
 div#droptarget {
     background-color: rgb(190, 218, 243);
     min-height: 250px;
@@ -538,7 +546,8 @@ a.removech-from-tree {
     border-top: 16px solid #3498db;
 }
 
-.d-flex.flex-column.align-items-center.justify-content-center.overlay.giportfolio-merge {
+/* Check */
+.d-flex.flex-column.align-items-center.justify-content-center.giportfolio-merge {
     background-color: rgba(204, 204, 204, 0.35);
     position: fixed;
     height: 100%;
