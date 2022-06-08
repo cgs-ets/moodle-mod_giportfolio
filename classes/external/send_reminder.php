@@ -52,6 +52,7 @@ trait send_reminder {
             array(
                 'users' => new external_value(PARAM_RAW, 'list of user uds'),
                 'chapter' => new external_value(PARAM_RAW, 'chapter to remind'),
+                'textmsg' => new external_value(PARAM_RAW, 'message to send'),
             )
         );
     }
@@ -64,7 +65,7 @@ trait send_reminder {
      * @param string $chapters
      * @return array
      */
-    public static function send_reminder($users, $chapter) {
+    public static function send_reminder($users, $chapter, $textmsg) {
         global $COURSE, $DB;
 
         $context = \context_course::instance($COURSE->id);
@@ -75,13 +76,15 @@ trait send_reminder {
             self::send_reminder_parameters(),
             array(
                 'users' => $users,
-                'chapter' => $chapter
+                'chapter' => $chapter,
+                'textmsg' => $textmsg
             )
         );
 
         $data = new stdClass();
         $data->users = json_decode($users);
         $data->chapter = json_decode($chapter);
+        $data->textmsg = $textmsg;
 
         giportfolio_send_reminder($data);
       

@@ -2801,12 +2801,13 @@ function giportfolio_send_reminder($data) {
             'chapter' => format_string($data->chapter->chapter),
             'link' => $url,
         );
-
+        
         $info->link = html_writer::link($url, $url->out(false));
+        $messagewithlink = $data->textmsg . get_string('linktochapter', 'giportfolio', $info);
         $user = giportfolio_minimise_recipient_record($user);
         $subj = get_string('remindernotification_subject', 'mod_giportfolio');
-        $fullmessage = get_string('remindernotificatione_body', 'mod_giportfolio', $info);
-        $fullmessagehtml = nl2br(get_string('remindernotificatione_body', 'mod_giportfolio', $info));
+        $fullmessage = nl2br($messagewithlink);
+        $fullmessagehtml = nl2br($messagewithlink); 
 
         $eventdata = new \core\message\message();
         $eventdata->component = 'mod_giportfolio';

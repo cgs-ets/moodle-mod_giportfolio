@@ -258,12 +258,7 @@ $string['send'] = 'Send';
 $string['footer'] = 'You can edit the message by clicking on the textbox';
 $string['msg_sent'] = 'Reminder(s) sent';
 $string['messageprovider:contributionreminder'] = 'Contribution reminder';
-$string['remindernotificatione_body'] = 'Hi,
-
-It is time to add your contribution to \'{$a->chapter}\' in  \'{$a->portfolio}\' in course \'{$a->course}\'.
-
-
-You can view this chapter and make your contribution at: {$a->link}' ;
+$string['linktochapter'] = 'Link to chapter: {$a->link}' ;
 
 
 

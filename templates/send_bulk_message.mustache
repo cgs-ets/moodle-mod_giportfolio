@@ -1,0 +1,19 @@
+<form>
+<p>
+<label for="bulk-message">
+<span class="sr-only">{{#str}}message, core_message{{/str}} HOLA</span>
+</label>
+<textarea id="bulk-message" rows="3" data-max-rows="10" data-auto-rows="true" cols="30" class="form-control">
+  Hi,
+    It is time to add your contribution to {{chapter}} in  {{portfolio}} in course {{course}}.
+</textarea>
+</p>
+<div class="text-danger" data-role="messagetextrequired" hidden>
+    {{#str}} messagetextrequired, core_message {{/str}}
+</div>
+</form>
+{{#js}}
+require(['core/auto_rows'], function(AutoRows) {
+    AutoRows.init(document.getElementById('bulk-message'));
+});
+{{/js}}

@@ -28,6 +28,9 @@ import jQuery from 'jquery';
 import Ajax from 'core/ajax';
 import * as Str from 'core/str';
 import URL from 'core/url';
+import Templates from 'core/templates';
+import ModalEvents from 'core/modal_events';
+import ModalFactory from 'core/modal_factory';
 
 const Selectors = {
     bulkActionSelect: "#formactionid",
@@ -83,30 +86,6 @@ export const init = ({
                 chapterid: chapterid
             }, true);
 
-            const modalMessages = [{
-                    key: 'confirm',
-                    component: 'mod_giportfolio'
-                },
-                {
-                    key: 'remindernotificationmodal_body',
-                    component: 'mod_giportfolio',
-                    param: {
-                        chapter: chapter,
-                        portfolio: portfolio,                       
-                        course: course,
-                        link: link
-                    }
-                },
-                {
-                    key: 'send',
-                    component: 'mod_giportfolio'
-                },
-                {
-                    key: 'no'
-                },
-
-            ];
-
             if (action.indexOf('#') !== -1) {
                 e.preventDefault();
 
@@ -116,60 +95,7 @@ export const init = ({
                 });
 
                 if (action === '#messageselect') {
-
-                    Str.get_strings(modalMessages).done(function (strs) {
-                        Notification.confirm(strs[0], strs[1], strs[2], strs[3], function () {
-
-                            const reminder = document.querySelector('div.reminder');
-                            reminder.removeAttribute('hidden');
-
-                            //display animation
-                                const chapterd = {
-                                    chapterid,
-                                    chapter,
-                                    portfolio,
-                                    portfolioid,
-                                    course,
-                                    cm: cm
-                                }
-                            
-                                Ajax.call([{
-
-                                    methodname: 'mod_giportfolio_send_reminder',
-
-                                    args: {
-                                        users: JSON.stringify(ids),
-                                        chapter: JSON.stringify(chapterd),
-                                    },
-
-                                    done: function (response) {
-                                        Y.log(response);
-                                        //Replace the closed envelopes to open ones. 
-                                        updateStatusColumn(ids, response.date);
-                                        //Remove animation
-                                        
-                                        const reminderImg = document.querySelector('img.reminder-image');
-                                        jQuery(reminderImg).replaceWith(response.status);
-                                        jQuery(reminder).delay(2000).fadeOut(400);
-                                    },
-
-                                    fail: function (reason) {
-                                        const reminderImg = document.querySelector('img.reminder-image');
-                                        jQuery(reminderImg).replaceWith('<h1>Please try again later');
-                                        jQuery(reminder).delay(2000).fadeOut(400);
-
-                                    }
-
-                                }]);
-
-
-                            },
-                            function () {
-                                // For the cancel btn.
-                                return;
-                            });
-                    });
-
+                    showSendMessage(ids);
                 }
             } else if (action !== '' && checkboxes.length) {
                 bulkActionSelect.form.submit();
@@ -182,30 +108,131 @@ export const init = ({
     };
 
     const updateStatusColumn = (ids, date) => {
-                            
+
         const t = document.querySelector('#mod-giportfolio-reminder-table tbody');
 
         if (t) {
-          
+
             Array.from(t.rows).forEach((tr) => {
                 let user = tr.classList.value.split("-");
                 user = user[user.length - 1];
                 if (ids.includes(user)) {
                     jQuery(tr.cells[3]).children().replaceWith('<span class="giportfolio-legend" title="Reminder sent"><i class="fa">&#xf2b7;</i></span>'); // Column 3 has the status. 
                     jQuery(tr.cells[4]).children().replaceWith(date);
-                   
+
                 }
-                
+
             });
 
         }
-      
+
     }
 
     const resetBulkAction = bulkActionSelect => {
         bulkActionSelect.value = '';
     };
 
+    const showSendMessage = users => {
+        if (!users.length) {
+            // Nothing to do.
+            return Promise.resolve();
+        }
+
+        let titlePromise;
+
+        let bodyPromise = Str.get_string('sendbulkmessage', 'core_message', );
+
+        if (users.length === 1) {
+            titlePromise = Str.get_string('sendbulkmessagesingle', 'core_message');
+        } else {
+            titlePromise = Str.get_string('sendbulkmessage', 'core_message', users.length);
+        }
+
+        const link = URL.relativeUrl('/mod/giportfolio/viewgiportfolio.php', {
+            id: cm,
+            chapterid: chapterid
+        }, true);
+
+        const context = {
+            chapter: chapter,
+            portfolio: portfolio,
+            course: course,
+            link: link
+        };
+
+        return ModalFactory.create({
+                type: ModalFactory.types.SAVE_CANCEL,
+                body: Templates.render('mod_giportfolio/send_bulk_message', context),
+                title: titlePromise,
+                buttons: {
+                    save: titlePromise,
+                },
+                removeOnClose: true,
+            })
+            .then(modal => {
+                modal.getRoot().on(ModalEvents.save, (e) => {
+                    const text = modal.getRoot().find('form textarea').val();
+                    if (text.trim() === '') {
+                        modal.getRoot().find('[data-role="messagetextrequired"]').removeAttr('hidden');
+                        e.preventDefault();
+                        return;
+                    }
+
+                    submitSendMessage(modal, users, text);
+                });
+
+                modal.show();
+
+                return modal;
+            });
+    };
+
+    const submitSendMessage = (modal, users, text) => {
+
+        const reminder = document.querySelector('div.reminder');
+        reminder.removeAttribute('hidden');
+
+        //display animation
+        const chapterd = {
+            chapterid,
+            chapter,
+            portfolio,
+            portfolioid,
+            course,
+            cm: cm
+        }
+
+        Ajax.call([{
+
+            methodname: 'mod_giportfolio_send_reminder',
+
+            args: {
+                users: JSON.stringify(users),
+                chapter: JSON.stringify(chapterd),
+                textmsg: text
+            },
+
+            done: function (response) {
+
+                //Replace the closed envelopes to open ones. 
+                updateStatusColumn(users, response.date);
+                //Remove animation
+
+                const reminderImg = document.querySelector('img.reminder-image');
+                jQuery(reminderImg).replaceWith(response.status);
+                jQuery(reminder).delay(2000).fadeOut(400);
+            },
+
+            fail: function (reason) {
+                const reminderImg = document.querySelector('img.reminder-image');
+                jQuery(reminderImg).replaceWith('<h1>Please try again later');
+                jQuery(reminder).delay(2000).fadeOut(400);
+
+            }
+
+        }]);
+
+    };
 
     registerEventListeners();
 };
