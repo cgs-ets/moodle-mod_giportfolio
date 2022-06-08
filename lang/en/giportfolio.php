@@ -259,6 +259,7 @@ $string['footer'] = 'You can edit the message by clicking on the textbox';
 $string['msg_sent'] = 'Reminder(s) sent';
 $string['messageprovider:contributionreminder'] = 'Contribution reminder';
 $string['linktochapter'] = 'Link to chapter: {$a->link}' ;
+$string['linktochapter_desc'] = 'A link to this chapter will automatically be included in the message.';
 
 
 
