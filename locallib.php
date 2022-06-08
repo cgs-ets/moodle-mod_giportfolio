@@ -2794,16 +2794,9 @@ function giportfolio_send_reminder($data) {
         $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', [
             'id' => $data->chapter->cm, 'chapterid' => $data->chapter->chapterid
         ]);
-
-        $info = (object)array(
-            'course' => format_string($COURSE->fullname),
-            'portfolio' => format_string($data->chapter->portfolio),
-            'chapter' => format_string($data->chapter->chapter),
-            'link' => $url,
-        );
-        
-        $info->link = html_writer::link($url, $url->out(false));
-        $messagewithlink = $data->textmsg . get_string('linktochapter', 'giportfolio', $info);
+      
+        $link = html_writer::link($url, $url->out(false));
+        $messagewithlink = $data->textmsg . get_string('linktochapter', 'giportfolio', $link);
         $user = giportfolio_minimise_recipient_record($user);
         $subj = get_string('remindernotification_subject', 'mod_giportfolio');
         $fullmessage = nl2br($messagewithlink);
