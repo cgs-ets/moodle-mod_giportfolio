@@ -76,8 +76,6 @@ if ((!is_enrolled($context, $USER->id, '') && $mentee == 0) && !is_siteadmin()) 
 }
 
 
-
-
 if ($allowedit) {
     if ($edit != -1 and confirm_sesskey()) {
         $USER->editing = $edit;

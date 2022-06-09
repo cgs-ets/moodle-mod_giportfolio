@@ -27,7 +27,6 @@ require_once(__DIR__ . '/locallib.php');
 
 $id        = required_param('id', PARAM_INT);           // Course Module ID.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
-$chapters  = optional_param('chapters', '0', PARAM_RAW); // Chapter ID.
 
 $cm = get_coursemodule_from_id('giportfolio', $id, 0, false, MUST_EXIST);
 
@@ -39,15 +38,9 @@ require_login($course, false, $cm);
 $context = \context_module::instance($cm->id);
 require_capability('giportfoliotool/importhtml:import', $context);
 
-$PAGE->set_url('/mod/giportfolio/tool/importhtml/index.php', array('id' => $id, 'chapterid' => $chapterid));
 
-if ($chapterid) {
-    if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id))) {
-        $chapterid = 0;
-    }
-} else {
-    $chapter = false;
-}
+$PAGE->set_url('/mod/giportfolio/tool/importhtml/index.php', array('id' => $id));
+
 
 $PAGE->set_title($giportfolio->name);
 $PAGE->set_heading($course->fullname);
@@ -60,12 +53,13 @@ $strgiportfolios = get_string('modulenameplural', 'mod_giportfolio');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($giportfolio->name));
 
+$posturl = $chapterid == 0 ? $CFG->wwwroot . "/mod/giportfolio/view.php?id=$cm->id" :  $CFG->wwwroot ."/mod/giportfolio/viewgiportfolio.php?id=$cm->id&chapterid=$chapterid";
 $data = new stdClass();
-$data->actionurl = $PAGE->url;
+$data->actionurl = $posturl;
 $data->sesskey = sesskey();
 $data->cm = $id;
 $data->giportfolioid = $giportfolio->id;
-$data->viewurl = $CFG->wwwroot . "/mod/giportfolio/view.php?id=$cm->id";
+$data->viewurl = $posturl;
 
 echo $OUTPUT->render_from_template('mod_giportfolio/import_chapter_droptarget', $data);
 

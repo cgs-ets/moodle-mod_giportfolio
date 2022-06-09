@@ -32,9 +32,12 @@ defined('MOODLE_INTERNAL') || die;
  */
 function giportfoliotool_importhtml_extend_settings_navigation(settings_navigation $settings, navigation_node $node) {
     global $PAGE;
+    $params =$PAGE->url->params();
+    unset($params['mentee']);
 
     if (has_capability('giportfoliotool/importhtml:import', $PAGE->cm->context)) {
-        $url = new moodle_url('/mod/giportfolio/tool/importhtml/index.php', array('id' => $PAGE->cm->id));
+
+        $url = new moodle_url('/mod/giportfolio/tool/importhtml/index.php', $params);
         $node->add(get_string('import', 'giportfoliotool_importhtml'), $url, navigation_node::TYPE_SETTING, null, null, null);
     }
 }

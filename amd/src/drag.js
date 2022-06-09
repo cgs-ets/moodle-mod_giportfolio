@@ -14,10 +14,8 @@ export const init = ({
           
             jQuery(el).on('dragstart', function (e) {
                 Y.log('drag starts...');
-                Y.log(e);
                 e.originalEvent.dataTransfer.setData('text/plain', e.target.getAttribute('data-chapter'));
                 e.originalEvent.dataTransfer.effectAllowed = "copy"
-                Y.log(e.originalEvent.dataTransfer.getData("text/plain"));
 
             });
         }

@@ -511,7 +511,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     }
 
     $context = context_module::instance($PAGE->cm->id);
-    $plugins = core_component::get_plugin_list('giportfoliotool'); //get_plugin_list('giportfoliotool');
+    $plugins = core_component::get_plugin_list('giportfoliotool');
 
     foreach ($plugins as $plugin => $dir) {
         if (file_exists("$dir/lib.php")) {
@@ -529,15 +529,13 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     $userid = isset($params['mentee']) &&  ($params['mentee'] != 0) ? $params['mentee'] : $USER->id;
 
     $mentor = 0;
+
     if (in_array($USER->id, giportfolio_user_mentor_of_student($userid))) {
         $mentor = $USER->id;
     }
 
     // SYNERGY - add grade console link.
-    if (
-        !empty($params['id']) and !empty($params['chapterid']) and
-        has_capability('mod/giportfolio:viewgiportfolios', $context)
-    ) {
+    if (!empty($params['id']) and !empty($params['chapterid']) and has_capability('mod/giportfolio:viewgiportfolios', $context)) {
 
         $gradeconsole = get_string('studentgiportfolio', 'mod_giportfolio', $alias);
         $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $params['id']));
@@ -577,14 +575,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
 
             // SYNERGY LEARNING - Export as zip option.
             $url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array('id' => $params['id'], 'userid' => $userid)); // Add zip export link.
-            $giportfolionode->add(
-                get_string('exportzip', 'mod_giportfolio'),
-                $url,
-                navigation_node::TYPE_SETTING,
-                null,
-                null,
-                new pix_icon('zip', '', 'giportfoliotool_export', array('class' => 'icon'))
-            );
+            $giportfolionode->add(get_string('exportzip', 'mod_giportfolio'), $url, navigation_node::TYPE_SETTING, null, null, new pix_icon('zip', '', 'giportfoliotool_export', array('class' => 'icon')));
             // CGS - Export  chapter as zip option
             $url = new moodle_url('/mod/giportfolio/tool/export/zipchapter.php', array('id' => $params['id'], 'userid' => $userid, 'chapterid' => $params['chapterid'])); // Add zip export link.
             $giportfolionode->add(

@@ -376,9 +376,6 @@ export const init = ({
                 document.querySelector('input[name="chapterids"]').value = '';
                 document.querySelector('input[name="chcm"]').value = '';
 
-               
-                document.querySelector('button.merge-chapters').style.display = 'none';
-                document.querySelector('button.merge-chapters-cancel').innerText = 'Close';
 
                 Y.use('yui2-treeview', 'node-event-simulate',
                     function (Y) {
@@ -395,10 +392,9 @@ export const init = ({
                         document.querySelector('input[name="chapterids"]').value = '';
                         document.querySelector('input[name="chapters"]').value = '';
                         document.querySelector('input[name="chcm"]').value = '';
-
                     });
-
-
+                
+                    document.forms["merge-form"].submit(); // after doing the saving. Redirect to where I started
             },
 
             fail: function (reason) {
@@ -426,6 +422,8 @@ export const init = ({
             }
 
         }]);
+
+        
 
     }
 
