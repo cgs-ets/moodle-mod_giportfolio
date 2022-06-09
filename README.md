@@ -80,11 +80,14 @@ Intentionally omitted features:
 * Display student role name by alias (if set)
 * Bookmark
 * Comments notification.
+* Import chapters from different portfolios
+* Send custumised contributions reminder message to participants.
 
 > Settings
 >>
 * Change on students skip intro page default to true.
 * Enable/Disable students to hide their contributions.
 * Disable delete button from contributions and comments.
+* Notify students of new comment
 
 
