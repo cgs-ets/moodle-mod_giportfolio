@@ -88,7 +88,7 @@ echo $OUTPUT->tabtree($tabs, $currenttab);
 
 // Check to see if groups are being used in this assignment.
 // Find out current groups mode.
-$groupmode = groups_get_activity_groupmode($cm);
+$groupmode = groups_get_activity_groupmode($cm); //Separate groups: 1 No groups: 0 // visible groups: 2
 $currentgroup = groups_get_activity_group($cm, true);
 
 

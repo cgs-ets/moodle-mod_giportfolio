@@ -57,6 +57,7 @@ if ($additionalchapters) {
 
 $context = context_module::instance($cm->id);
 
+
 require_capability('mod/giportfolio:view', $context);
 
 // Parent view of own child's activity functionality

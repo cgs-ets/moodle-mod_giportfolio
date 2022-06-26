@@ -287,7 +287,13 @@ if ($mform->is_cancelled()) {
     giportfolio_automatic_grading($giportfolio, $userid);
 
     if ($sendnotification) {
-        $graders =  giportfolio_filter_graders(get_users_by_capability($context, 'mod/giportfolio:gradegiportfolios', 'u.* '));
+
+        if (count(groups_get_course_data($COURSE->id)->groups) == 0) { // There are no groups in the course, then send the notification to all the teachers in this course
+            $graders =  giportfolio_filter_graders(get_users_by_capability($context, 'mod/giportfolio:gradegiportfolios', 'u.* '));
+        } else {
+            $graders = giportfolio_filter_graders_by_group($context); // Filter teacher by group
+        }
+           
         if ($graders) {
             $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
                 'id' => $cm->id, 'chapterid' => $chapter->id,

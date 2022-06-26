@@ -1486,8 +1486,8 @@ function giportfolio_users_with_access($users, $course, $cmid) {
 function giportfolio_filter_graders($graders) {
     global $COURSE;
     $context = \context_course::instance($COURSE->id);
-    $roles = [1, 3, 4];
-    $courseteacherids = array_keys(get_role_users($roles, $context, false, 'u.id'));
+    $roles = [1, 3, 4]; //1 : manager 3: editingteacher 4: noneditingteacher
+    $courseteacherids = array_keys(get_role_users($roles, $context, false, 'ra.id, u.id, u.lastname, u.firstname'));
     $receiver = [];
     foreach ($graders as $grader) {
         if ((in_array($grader->id, $courseteacherids))) {
@@ -1496,6 +1496,36 @@ function giportfolio_filter_graders($graders) {
     }
 
     return $receiver;
+}
+
+function giportfolio_filter_graders_by_group($context) {
+    global $COURSE, $USER;
+    $groups = groups_get_user_groups($COURSE->id, $USER->id);
+    $groups = $groups[0]; //it has all the groups this user belongs to;
+    $teachers = get_users_by_capability($context, 'mod/giportfolio:gradegiportfolios', 'u.* ');
+  
+    $ctx = \context_course::instance($COURSE->id); 
+    $roles = [1, 3, 4]; //1 : manager 3: editingteacher 4: noneditingteacher
+    $courseteacherids = array_keys(get_role_users($roles, $ctx, false, 'ra.id, u.id, u.lastname, u.firstname'));
+    $teachersaux = [];
+   
+    foreach ($teachers as $teacher) {
+
+        if ((in_array($teacher->id, $courseteacherids))) {
+            
+            foreach($groups as $group) {
+
+                if (groups_is_member($group, $teacher->id)) {
+
+                    $teachersaux[] = $teacher;
+                }
+            }
+        }
+    }
+
+    
+    return $teachersaux;
+
 }
 
 /**
@@ -1663,7 +1693,7 @@ function giportfolio_reminder_chapter_selector($cm, $urlroot, $return = false, $
         if (strpos($urlroot, 'http') !== 0) { // Will also work for https
             // Display error if urlroot is not absolute (this causes the non-JS version to break)
             debugging(
-                'groups_print_activity_menu requires absolute URL for ' .
+                'giportfolio_reminder_chapter_selector requires absolute URL for ' .
                     '$urlroot, not <tt>' . s($urlroot) . '</tt>. Example: ' .
                     'groups_print_activity_menu($cm, $CFG->wwwroot . \'/mod/mymodule/view.php?id=13\');',
                 DEBUG_DEVELOPER
@@ -2783,7 +2813,7 @@ function giportfolio_send_comment_notification_helper($userid, $contributionid, 
 }
 
 function giportfolio_send_reminder($data) {
-    global $COURSE, $DB;
+    global $DB;
 
     $userids = implode(',', $data->users);
     $sql = "SELECT * FROM mdl_user WHERE id in ($userids)";
@@ -2827,7 +2857,6 @@ function giportfolio_send_reminder($data) {
                 $record->timemodified = time();
                 $DB->insert_record('giportfolio_reminder_sent', $record);
             }
-        } else {
         }
     }
 }

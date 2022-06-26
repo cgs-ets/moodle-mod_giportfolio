@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
-require_once($CFG->dirroot.'/mod/giportfolio/locallib.php');
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/mod/giportfolio/locallib.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
 
 class mod_giportfolio_mod_form extends moodleform_mod {
 
@@ -41,7 +41,7 @@ class mod_giportfolio_mod_form extends moodleform_mod {
 
         $mform->addElement('text', 'name', get_string('name'), array('size' => '64'));
 
-     
+
 
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
@@ -113,18 +113,9 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->setType('chapternumber', PARAM_INT);
         $mform->addRule('chapternumber', 'must be numeric', 'numeric', null, 'client');
         $mform->addRule('chapternumber', 'add valid number', 'nonzero', null, 'client');
-        $mform->addRule('chapternumber', 'add positive number', 'regex', '|^[1-9][0-9]*$|', 'client'); // Positive number.
-
+        $mform->addRule('chapternumber', 'add positive number', 'regex', '/^[1-9][0-9]*$/', 'client'); // Positive number. 
         $mform->addElement('checkbox', 'publishnotification', get_string('publishnotification', 'giportfolio'));
         $mform->setDefault('publishnotification', 0);
-
-        $mform->addElement('selectyesno', 'notifyaddentry', get_string('notifyaddentry', 'giportfolio'));
-        $mform->setDefault('newentrynotification', 0);
-
-        // Notify comment
-        $mform->addElement('selectyesno', 'notifycommententry', get_string('notifycommententry', 'giportfolio'));
-        $mform->setDefault('newcommentnotification', 1);
-
 
         $mform->addElement('selectyesno', 'automaticgrading', get_string('automaticgrading', 'giportfolio'));
         $mform->setDefault('automaticgrading', 0);
@@ -139,7 +130,7 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->addElement('selectyesno', 'allowmentorcontrib', get_string('allowmentorcontrib', 'giportfolio'));
         $mform->setDefault('allowmentorcontrib', 1);
 
-        
+
         //Allow Non-editing teachers to contribute
         $mform->addElement('selectyesno', 'allownetcontribute', get_string('allownetcontribute', 'giportfolio'));
         $mform->setDefault('allownetcontribute', 1);
@@ -147,7 +138,7 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         //Disable delete buttons on contributions.
         $mform->addElement('selectyesno', 'disabledeletebtn', get_string('disabledeletebtn', 'giportfolio'));
         $mform->setDefault('disabledeletebtn', 1);
-        
+
         if (giportfolio_include_klassenbuchtrainer()) {
             $mform->addElement('selectyesno', 'klassenbuchtrainer', get_string('klassenbuchtrainer', 'giportfolio'));
             $mform->addHelpButton('klassenbuchtrainer', 'klassenbuchtrainer', 'mod_giportfolio');
@@ -156,6 +147,17 @@ class mod_giportfolio_mod_form extends moodleform_mod {
             $mform->addElement('hidden', 'klassenbuchtrainer', 0);
             $mform->setType('klassenbuchtrainer', 0);
         }
+
+        // Notifications
+        $mform->addElement('header', 'notifications', get_string('notifications', 'giportfolio'));
+
+        // Notify comment
+        $mform->addElement('selectyesno', 'notifycommententry', get_string('notifycommententry', 'giportfolio'));
+        $mform->setDefault('newcommentnotification', 1);
+
+        $mform->addElement('selectyesno', 'notifyaddentry', get_string('notifyaddentry', 'giportfolio'));
+        $mform->setDefault('newentrynotification', 0);
+
 
 
         $this->standard_grading_coursemodule_elements();
@@ -174,5 +176,4 @@ class mod_giportfolio_mod_form extends moodleform_mod {
             $mform->hardFreeze('klassenbuchtrainer');
         }
     }
-
 }

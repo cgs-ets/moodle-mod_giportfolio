@@ -123,6 +123,7 @@ $string['navprev'] = 'Previous';
 $string['nocomments'] = 'Without teacher comments';
 $string['nosubmisson'] = 'No Submisson';
 $string['notifyaddentry'] = 'Notify teachers of new entries';
+$string['notifications'] = 'Notifications';
 $string['notifyaddentry_subject'] = 'New portfolio contribution from {$a}';
 $string['notifyaddentry_body'] = 'Hi,
 
