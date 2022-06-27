@@ -1488,44 +1488,42 @@ function giportfolio_filter_graders($graders) {
     $context = \context_course::instance($COURSE->id);
     $roles = [1, 3, 4]; //1 : manager 3: editingteacher 4: noneditingteacher
     $courseteacherids = array_keys(get_role_users($roles, $context, false, 'ra.id, u.id, u.lastname, u.firstname'));
-    $receiver = [];
-    foreach ($graders as $grader) {
-        if ((in_array($grader->id, $courseteacherids))) {
-            $receiver[] = $grader;
+
+    if (count(groups_get_course_data($COURSE->id)->groups) == 0) { //  NO groups in the course --> Send to all teachers in the course.
+
+        foreach ($graders as $grader) {
+            if ((in_array($grader->id, $courseteacherids))) {
+                $receiver[] = $grader;
+            }
         }
+    } else {
+        $receiver =  giportfolio_filter_graders_by_group($graders);
     }
 
+  
     return $receiver;
 }
 
-function giportfolio_filter_graders_by_group($context) {
+function giportfolio_filter_graders_by_group($teachers) {
     global $COURSE, $USER;
     $groups = groups_get_user_groups($COURSE->id, $USER->id);
-    $groups = $groups[0]; //it has all the groups this user belongs to;
-    $teachers = get_users_by_capability($context, 'mod/giportfolio:gradegiportfolios', 'u.* ');
-  
-    $ctx = \context_course::instance($COURSE->id); 
-    $roles = [1, 3, 4]; //1 : manager 3: editingteacher 4: noneditingteacher
-    $courseteacherids = array_keys(get_role_users($roles, $ctx, false, 'ra.id, u.id, u.lastname, u.firstname'));
+    $groups = $groups[0]; // It has all the groups this user belongs to.
     $teachersaux = [];
-   
-    foreach ($teachers as $teacher) {
+    if (count($groups) > 0) {  // The student belongs to a group --> Get the teacher that belongs to that course.
 
-        if ((in_array($teacher->id, $courseteacherids))) {
-            
-            foreach($groups as $group) {
-
+        foreach ($teachers as $teacher) {
+            foreach ($groups as $group) {
                 if (groups_is_member($group, $teacher->id)) {
-
                     $teachersaux[] = $teacher;
                 }
             }
         }
+    } else {  //  The student doesnt belong to any group --> Send to all teachers in the course.
+        return $teachers;
     }
 
-    
-    return $teachersaux;
 
+    return $teachersaux;
 }
 
 /**
@@ -2824,13 +2822,13 @@ function giportfolio_send_reminder($data) {
         $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', [
             'id' => $data->chapter->cm, 'chapterid' => $data->chapter->chapterid
         ]);
-      
+
         $link = html_writer::link($url, $url->out(false));
         $messagewithlink = $data->textmsg . get_string('linktochapter', 'giportfolio', $link);
         $user = giportfolio_minimise_recipient_record($user);
         $subj = get_string('remindernotification_subject', 'mod_giportfolio');
         $fullmessage = nl2br($messagewithlink);
-        $fullmessagehtml = nl2br($messagewithlink); 
+        $fullmessagehtml = nl2br($messagewithlink);
 
         $eventdata = new \core\message\message();
         $eventdata->component = 'mod_giportfolio';
