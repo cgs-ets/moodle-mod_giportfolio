@@ -1483,25 +1483,16 @@ function giportfolio_users_with_access($users, $course, $cmid) {
 
 // Filter graders.
 // To avoid sending notifications to users that have approved archetype at category level
-function giportfolio_filter_graders($graders) {
+function giportfolio_filter_graders() {
     global $COURSE;
-    $context = \context_course::instance($COURSE->id);
-    $roles = [1, 3, 4]; //1 : manager 3: editingteacher 4: noneditingteacher
-    $courseteacherids = array_keys(get_role_users($roles, $context, false, 'ra.id, u.id, u.lastname, u.firstname'));
+    
+    $ctxt = \context_course::instance($COURSE->id); // get the users in the course context to avoid getting users at module level.
+    $graders =  get_role_users(3, $ctxt, false, 'ra.id, u.id, u.lastname, u.firstname', null, false); // Get editing teachers enrolled in this course.
+    if (count(groups_get_course_data($COURSE->id)->groups) > 0) { //  Are there groups in the course?, check the teachers that are  part of this group.
+            $graders = giportfolio_filter_graders_by_group($graders);
+    } 
 
-    if (count(groups_get_course_data($COURSE->id)->groups) == 0) { //  NO groups in the course --> Send to all teachers in the course.
-
-        foreach ($graders as $grader) {
-            if ((in_array($grader->id, $courseteacherids))) {
-                $receiver[] = $grader;
-            }
-        }
-    } else {
-        $receiver =  giportfolio_filter_graders_by_group($graders);
-    }
-
-  
-    return $receiver;
+    return $graders;
 }
 
 function giportfolio_filter_graders_by_group($teachers) {

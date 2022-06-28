@@ -287,8 +287,8 @@ if ($mform->is_cancelled()) {
     giportfolio_automatic_grading($giportfolio, $userid);
 
     if ($sendnotification) {
-        $graders =  giportfolio_filter_graders(get_users_by_capability($context, 'mod/giportfolio:gradegiportfolios', 'u.* '));
-      
+        
+        $graders =  giportfolio_filter_graders();
            
         if ($graders) {
             $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
