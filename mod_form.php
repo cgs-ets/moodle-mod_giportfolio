@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/course/moodleform_mod.php');
 class mod_giportfolio_mod_form extends moodleform_mod {
 
     public function definition() {
-        global $CFG;
+        global $CFG, $PAGE;
 
         $mform = $this->_form;
 
@@ -40,8 +40,6 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->addElement('header', 'general', get_string('general', 'form'));
 
         $mform->addElement('text', 'name', get_string('name'), array('size' => '64'));
-
-
 
         if (!empty($CFG->formatstringstriptags)) {
             $mform->setType('name', PARAM_TEXT);
@@ -148,18 +146,19 @@ class mod_giportfolio_mod_form extends moodleform_mod {
             $mform->setType('klassenbuchtrainer', 0);
         }
 
-        // Notifications
+        // Notifications header.
         $mform->addElement('header', 'notifications', get_string('notifications', 'giportfolio'));
-
+        $mform->setExpanded('notifications', true);
         // Notify comment
         $mform->addElement('selectyesno', 'notifycommententry', get_string('notifycommententry', 'giportfolio'));
-        $mform->setDefault('newcommentnotification', 1);
+        $mform->setDefault('notifycommententry', 0);
+
+        $mform->addElement('selectyesno', 'notifycommententryteacher', get_string('notifycommententryteacher', 'giportfolio'));
+        $mform->setDefault('notifycommententryteacher', 0);
 
         $mform->addElement('selectyesno', 'notifyaddentry', get_string('notifyaddentry', 'giportfolio'));
-        $mform->setDefault('newentrynotification', 0);
-
-
-
+        $mform->setDefault('notifyaddentry', 0);
+       
         $this->standard_grading_coursemodule_elements();
 
         $this->standard_coursemodule_elements();
@@ -175,5 +174,6 @@ class mod_giportfolio_mod_form extends moodleform_mod {
             // Do not allow the 'klassenbuchtrainer' field to change after the portfolio has been created.
             $mform->hardFreeze('klassenbuchtrainer');
         }
+    
     }
 }

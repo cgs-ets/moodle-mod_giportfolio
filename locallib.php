@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+use core_availability\info_module;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -1483,37 +1485,52 @@ function giportfolio_users_with_access($users, $course, $cmid) {
 
 // Filter graders.
 // To avoid sending notifications to users that have approved archetype at category level
-function giportfolio_filter_graders() {
+function giportfolio_filter_graders($userid, $cm) {
     global $COURSE;
-    
+  
+    $cminfo = new info_module(cm_info::create($cm));
+  
     $ctxt = \context_course::instance($COURSE->id); // get the users in the course context to avoid getting users at module level.
+   
     $graders =  get_role_users(3, $ctxt, false, 'ra.id, u.id, u.lastname, u.firstname', null, false); // Get editing teachers enrolled in this course.
+    $graders = $cminfo->filter_user_list($graders); // Filter in case the restric access is set
+    $data = new \stdClass();
+    $data->userid = $userid;
+    $data->cm = $cm;
+    $data->teachers = $graders;
     if (count(groups_get_course_data($COURSE->id)->groups) > 0) { //  Are there groups in the course?, check the teachers that are  part of this group.
-            $graders = giportfolio_filter_graders_by_group($graders);
-    } 
-
+        $graders = giportfolio_filter_graders_by_grouping($data);
+    }
+    
     return $graders;
 }
 
-function giportfolio_filter_graders_by_group($teachers) {
-    global $COURSE, $USER;
-    $groups = groups_get_user_groups($COURSE->id, $USER->id);
-    $groups = $groups[0]; // It has all the groups this user belongs to.
+// Filter graders
+function giportfolio_filter_graders_by_grouping($data) {
+    global $COURSE;
+   
+    $groups = groups_get_user_groups($COURSE->id, $data->userid);
+    $teachersaux = $data->teachers;
+    
+    if (($data->cm)->groupingid != 0 ) { // The activity has a grouping set in the common settings.
+        $groups = isset($groups[($data->cm)->groupingid]) ? $groups[($data->cm)->groupingid] :  []; // Get the group from the grouping collection.
+    }  else {
+        $groups = $groups[0]; // The activity doesnt have a grouping selected but the course has groups. Only send notification to teachers in the groups this user belongs to.
+    }
+  
     $teachersaux = [];
-    if (count($groups) > 0) {  // The student belongs to a group --> Get the teacher that belongs to that course.
 
-        foreach ($teachers as $teacher) {
+    if (count($groups) > 0) {  
+
+        foreach ($data->teachers as $teacher) {
             foreach ($groups as $group) {
                 if (groups_is_member($group, $teacher->id)) {
                     $teachersaux[] = $teacher;
                 }
             }
         }
-    } else {  //  The student doesnt belong to any group --> Send to all teachers in the course.
-        return $teachers;
-    }
-
-
+    } 
+    
     return $teachersaux;
 }
 
@@ -2720,10 +2737,10 @@ function giportfolio_send_comment_notification($userid, $contributionid) {
 
     global $DB, $COURSE;
 
-    $sql = "SELECT cont.id, gp.id as 'giportfolioid', gp.name, gc.id as 'chapterid', 
-            gc.title,  cont.title as 'contributiontitle', cont.userid, gp.allowmentorcontrib, gp.notifycommententry
-            FROM mdl_giportfolio as gp 
-            JOIN mdl_giportfolio_chapters as gc on gp.id = gc.giportfolioid 
+    $sql = "SELECT cont.id, gp.id AS 'giportfolioid', gp.name, gc.id AS 'chapterid', 
+            gc.title,  cont.title AS 'contributiontitle', cont.userid, gp.allowmentorcontrib, gp.notifycommententry, gp.notifycommententryteacher
+            FROM mdl_giportfolio AS gp 
+            JOIN mdl_giportfolio_chapters AS gc ON gp.id = gc.giportfolioid 
             JOIN mdl_giportfolio_contributions AS cont ON cont.chapterid = gc.id
             WHERE cont.id =  $contributionid;";
 
@@ -2733,29 +2750,51 @@ function giportfolio_send_comment_notification($userid, $contributionid) {
     $cm = get_coursemodule_from_instance("giportfolio", $giportfolioid, $COURSE->id, false, MUST_EXIST);
     $context = context_module::instance($cm->id);
     $context = $context->get_course_context();
-
-    $chapterid = ($contribution[$contributionid])->chapterid;
     $studentid = ($contribution[$contributionid])->userid;
     $notifycomment = ($contribution[$contributionid])->notifycommententry;
-    // Check if the user is a teacher. Only send notifications when the teacher makes the comment.
-
+    $notifycommentteacher = ($contribution[$contributionid])->notifycommententryteacher;
+   
+    $recipient = giportfolio_set_comment_notification_recipients($studentid);
+ 
+    
     if (has_capability('mod/giportfolio:gradegiportfolios', $context) && $notifycomment) {
+        giportfolio_send_comment_notification_to_students($contribution, $cm, $contributionid, $recipient);
+    } else if ($notifycommentteacher) {
+        giportfolio_send_comment_notification_to_teachers($contribution, $cm, $contributionid, $userid, $recipient);
+    }
+}
 
-        // Send notification to student
-        $recipient = giportfolio_set_comment_notification_recipients($studentid);
-        $url = new \moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'chapterid' => $chapterid));
+function giportfolio_send_comment_notification_to_students($contribution,  $cm, $contributionid, $recipient) {
 
-        giportfolio_send_comment_notification_helper($userid, $contributionid, $contribution, $recipient, $url);
-
-        // Check if the parent is allow to contribute.
-        if (($contribution[$contributionid])->allowmentorcontrib) {
-            $mentorsid = explode(',',  giportfolio_get_mentees_mentor(($contribution[$contributionid])->userid));
-            foreach ($mentorsid as $id => $mentor) {
-                $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'userid' => $studentid, 'mentor' => $mentor));
-                $recipient = giportfolio_set_comment_notification_recipients($mentor);
-                giportfolio_send_comment_notification_helper($userid, $contributionid, $contribution, $recipient, $url);
-            }
+    $url = new \moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'chapterid' => ($contribution[$contributionid])->chapterid));
+    giportfolio_send_comment_notification_helper(($contribution[$contributionid])->userid, $contributionid, $contribution, $recipient, $url);
+    // Check if the parent is allow to contribute.
+    if (($contribution[$contributionid])->allowmentorcontrib) {
+        $mentorsid = explode(',',  giportfolio_get_mentees_mentor(($contribution[$contributionid])->userid));
+        foreach ($mentorsid as $id => $mentor) {
+            $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'userid' => ($contribution[$contributionid])->userid, 'mentor' => $mentor));
+            $recipient = giportfolio_set_comment_notification_recipients($mentor);
+            giportfolio_send_comment_notification_helper(($contribution[$contributionid])->userid, $contributionid, $contribution, $recipient, $url);
         }
+    }
+}
+
+function giportfolio_send_comment_notification_to_teachers($contribution, $cm, $contributionid,  $recipient) {
+    global $USER;
+    // Get the teachers that are part of the course and group.
+    $recipients = giportfolio_filter_graders(($contribution[$contributionid])->userid, $cm) ;
+    $studentmentor = false;
+    // Check if the user making the comment is the parent.
+    $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'userid' => ($contribution[$contributionid])->userid));
+    
+    if (($contribution[$contributionid])->allowmentorcontrib && ($contribution[$contributionid])->userid != $USER->id) {
+        $mentorsid = explode(',',  giportfolio_get_mentees_mentor(($contribution[$contributionid])->userid));
+        $studentmentor = in_array($USER->id, $mentorsid);
+    }
+
+    foreach ($recipients as $recipient) {
+        error_log(print_r($recipient, true));
+        giportfolio_send_comment_notification_helper(($contribution[$contributionid])->userid, $contributionid, $contribution, $recipient, $url, $studentmentor);
     }
 }
 
@@ -2766,11 +2805,11 @@ function giportfolio_set_comment_notification_recipients($id) {
     return $recipient;
 }
 
-function giportfolio_send_comment_notification_helper($userid, $contributionid, $contribution, $recipient, $url) {
+function giportfolio_send_comment_notification_helper($userid, $contributionid, $contribution, $recipient, $url, $ismentor = false) {
 
-    global $COURSE, $USER;
-
-
+    global $COURSE, $USER, $DB;
+ 
+    $student = $DB->get_record('user', ['id' => $userid], 'firstname, lastname');
     $info = (object)array(
         'course' => format_string($COURSE->fullname),
         'portfolio' => format_string(($contribution[$contributionid])->name),
@@ -2778,14 +2817,17 @@ function giportfolio_send_comment_notification_helper($userid, $contributionid, 
         'contribution' => format_string(($contribution[$contributionid])->contributiontitle),
         'chapter' =>  format_string(($contribution[$contributionid])->title),
         'link' => $url->out(false),
+        'student' => $student->firstname . ' ' . $student->lastname
     );
 
+    
+
     $commenter = \core_user::get_user($userid);
-    $subj = get_string('commentnotification_subject', 'mod_giportfolio', fullname($USER));
+    $subj = get_string('commentnotification_subject', 'mod_giportfolio',  fullname($USER));
 
     $messagetext = get_string('commentnotification_body', 'mod_giportfolio', $info);
     $info->link = \html_writer::link($url, $url->out(false));
-    $messagehtml = nl2br(get_string('commentnotification_body', 'mod_giportfolio', $info));
+    $messagehtml = !$ismentor ? nl2br(get_string('commentnotification_body', 'mod_giportfolio', $info)) :  nl2br(get_string('commentnotification_body_mentor', 'mod_giportfolio', $info));
 
     $eventdata = new \core\message\message();
     $eventdata->component = 'mod_giportfolio';

@@ -664,7 +664,7 @@ function xmldb_giportfolio_upgrade($oldversion) {
 
     if ($oldversion < 2022030200) {
 
-         // Define table giportfolio_reminder_sent to be created.
+        // Define table giportfolio_reminder_sent to be created.
         $table = new xmldb_table('giportfolio_reminder_sent');
 
         // Adding fields to table giportfolio_reminder_sent.
@@ -701,5 +701,21 @@ function xmldb_giportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022040100, 'giportfolio');
     }
 
+    if ($oldversion < 2022063000) {
+
+        // Define field newcommentteachernotification to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('notifycommententryteacher', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'notifycommententry');
+
+        // Conditionally launch add field newcommentteachernotification.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2022063000, 'giportfolio');
+    }
+
+   
     return true;
 }

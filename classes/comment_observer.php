@@ -45,9 +45,7 @@ class comment_observer {
      * @return void
      */
     public static function send_notification($event) {
-
         $gcid = ($event->other)['itemid']; // Contribution id.
-
         giportfolio_send_comment_notification($event->userid, $gcid);
     }
 }

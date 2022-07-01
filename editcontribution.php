@@ -287,8 +287,8 @@ if ($mform->is_cancelled()) {
     giportfolio_automatic_grading($giportfolio, $userid);
 
     if ($sendnotification) {
-        
-        $graders =  giportfolio_filter_graders();
+        // Send the userid to filter by the students id. (In case the mentor is contributing USER wont filter properly.)
+        $graders =  giportfolio_filter_graders($userid, $cm);
            
         if ($graders) {
             $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(

@@ -967,8 +967,10 @@ function mod_giportfolio_comment_permissions($opts) {
     // Already checked that the user has access to the comments (mod_giportfolio_comment_validate).
     // Now just need to check if has capability to add comments.
     if (!has_capability('mod/giportfolio:viewgiportfolios', $opts->context)) {
-        $contribution = $DB->get_record('giportfolio_contributions', array('id' => $opts->itemid), 'id, userid', MUST_EXIST);
-        if ($contribution->userid != $USER->id) {
+        $contribution = $DB->get_record('giportfolio_contributions', array('id' => $opts->itemid), 'id, userid, giportfolioid', MUST_EXIST);
+        $portfolio = $DB->get_record('giportfolio', ['id' => $contribution->giportfolioid], 'allowmentorcontrib');
+        $ismentor = giportfolio_user_is_mentor($opts->context, $USER);
+        if ($contribution->userid != $USER->id && (!$ismentor || $portfolio->allowmentorcontrib == 0)) {
             $postcap = false;
         }
     }

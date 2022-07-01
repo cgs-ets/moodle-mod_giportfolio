@@ -71,7 +71,11 @@ $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Al
 
 $userid =  $ismentor ? $mentee : $USER->id; // To allow teachers/parents to print students portfolio
 
-if ((!is_enrolled($context, $USER->id, '') && $mentee == 0) && !is_siteadmin()) { // 
+if (!is_enrolled($context, $userid, '') && !is_siteadmin()) {
+    print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
+}
+
+if ((!is_enrolled($context, $USER->id, '') && $mentee == 0 && !$ismentor) && !is_siteadmin()) { // 
     print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
@@ -151,7 +155,7 @@ if ($mentee != 0) {
 
 if (!$chapterid) {
     // Check if all the chapters are hidden. If they are then a more explanatory message has to be display.
-    if (giportfolio_all_chapters_hidden($giportfolio)) { 
+    if (giportfolio_all_chapters_hidden($giportfolio)) {
 
         if ($cangrade) {
             throw new moodle_exception('teacherchaptershiddenexception', 'mod_giportfolio');
@@ -450,10 +454,7 @@ if ($contriblist) {
 
             $baseurl = new moodle_url(
                 '/mod/giportfolio/editcontribution.php',
-                array(
-                    'id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid /*,
-                    'mentee' => $userid, 'mentor' => $contrib->mentorid, 'teacher' => $contrib->teacherid*/
-                )
+                array('id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid)
             );
 
             $editurl = new moodle_url($baseurl);
@@ -559,6 +560,7 @@ if ($contriblist) {
             $cout .= '<br>';
         }
 
+
         if ($ismine) {
             $commentopts->itemid = $contrib->id;
             $commentbox = new comment($commentopts);
@@ -602,7 +604,7 @@ if ($contriblist) {
         echo $contribution_outline . '</table><br><hr class ="outline-separator"><br>';
     }
 
-    $PAGE->requires->js_call_amd('mod_giportfolio/import_chapter_control', 'init',['']); // Drag and Drop.
+    $PAGE->requires->js_call_amd('mod_giportfolio/import_chapter_control', 'init', ['']); // Drag and Drop.
 
     echo '<p class="giportfolio_outline" >Contributions</p>';
     echo $contribution_buffer;
