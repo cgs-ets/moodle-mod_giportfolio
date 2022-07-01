@@ -1488,12 +1488,8 @@ function giportfolio_users_with_access($users, $course, $cmid) {
 function giportfolio_filter_graders($userid, $cm) {
     global $COURSE;
   
-    $cminfo = new info_module(cm_info::create($cm));
-  
     $ctxt = \context_course::instance($COURSE->id); // get the users in the course context to avoid getting users at module level.
-   
     $graders =  get_role_users(3, $ctxt, false, 'ra.id, u.id, u.lastname, u.firstname', null, false); // Get editing teachers enrolled in this course.
-    $graders = $cminfo->filter_user_list($graders); // Filter in case the restric access is set
     $data = new \stdClass();
     $data->userid = $userid;
     $data->cm = $cm;
