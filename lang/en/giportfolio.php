@@ -123,9 +123,8 @@ $string['navprev'] = 'Previous';
 $string['nocomments'] = 'Without teacher comments';
 $string['nosubmisson'] = 'No Submisson';
 $string['notifyaddentry'] = 'Notify teachers of new entries';
+$string['notifyaddentry_help'] = 'Teachers belonging to the student\'s same group(s) will receive a notification';
 $string['notifications'] = 'Notifications';
-$string['teacherfilter'] = 'Filter teachers';
-$string['teacherfilter_help'] = 'Notify teachers that are part of the same group or grouping as the student. <br> If <strong>grouping</strong> is selected teachers assigned to groups within the grouping will be notified. <br> If <strong>group</strong> is selected teachers assigned to the group will be notified. <br> Be aware that a student can belong to more than one group. To make the targeting more specific, make sure the activity is targeting a grouping.';
 $string['notifyaddentry_subject'] = 'New portfolio contribution from {$a}';
 $string['notifyaddentry_body'] = 'Hi,
 
@@ -134,6 +133,7 @@ $string['notifyaddentry_body'] = 'Hi,
 You can view this contribution at: {$a->link}';
 $string['notifycommententry'] = 'Notify students of new comment';
 $string['notifycommententryteacher'] = 'Notify teacher of new comment';
+$string['notifycommententryteacher_help'] = 'Teachers belonging to the student\'s same group(s) will receive a notification';
 $string['commentnotification_subject'] = 'New contribution comment from {$a}';
 $string['commentnotification_body'] = 'Hi,
 

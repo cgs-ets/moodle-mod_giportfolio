@@ -149,14 +149,17 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         // Notifications header.
         $mform->addElement('header', 'notifications', get_string('notifications', 'giportfolio'));
         $mform->setExpanded('notifications', true);
+       
         // Notify comment
         $mform->addElement('selectyesno', 'notifycommententry', get_string('notifycommententry', 'giportfolio'));
         $mform->setDefault('notifycommententry', 0);
 
         $mform->addElement('selectyesno', 'notifycommententryteacher', get_string('notifycommententryteacher', 'giportfolio'));
+        $mform->addHelpButton('notifycommententryteacher', 'notifycommententryteacher', 'mod_giportfolio');
         $mform->setDefault('notifycommententryteacher', 0);
 
         $mform->addElement('selectyesno', 'notifyaddentry', get_string('notifyaddentry', 'giportfolio'));
+        $mform->addHelpButton('notifyaddentry', 'notifyaddentry', 'mod_giportfolio');
         $mform->setDefault('notifyaddentry', 0);
        
         $this->standard_grading_coursemodule_elements();

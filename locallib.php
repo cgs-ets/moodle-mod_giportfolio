@@ -1500,7 +1500,7 @@ function giportfolio_filter_graders($userid, $cm) {
     if (count(groups_get_course_data($COURSE->id)->groups) > 0) { //  Are there groups in the course?, check the teachers that are  part of this group.
         $graders = giportfolio_filter_graders_by_grouping($data);
     }
-   
+
     return $graders;
 }
 
@@ -1519,28 +1519,28 @@ function giportfolio_filter_graders_by_grouping($data) {
         $groups = isset($groups[($data->cm)->groupingid]) ? $groups[($data->cm)->groupingid] :  []; // Get the group from the grouping collection.
     } else {
         $groups = $groups[0]; // The activity doesnt have a grouping selected but the course has groups. 
-                             //  Only send notification to teachers in the groups this user belongs to.
+        //  Only send notification to teachers in the groups this user belongs to.
     }
 
     $teachersaux = [];
-    
-        if (count($groups) > 0) {
 
-            foreach ($data->teachers as $teacher) {
-                foreach ($groups as $group) {
-                    if (groups_is_member($group, $teacher->id)) {
-                        $teachersaux[] = $teacher;
-                    }
-                }
-            }
-        } else { // User not in group, try to find graders without group.
-            foreach ($data->teachers as $teacher) {
-                
-                if (!groups_has_membership($data->cm, $teacher->id)) {
-                    $teachersaux[] = $teacher;
+    if (count($groups) > 0) {
+
+        foreach ($data->teachers as $teacher) {
+            foreach ($groups as $group) {
+                if (groups_is_member($group, $teacher->id)) {
+                    $teachersaux[$teacher->id] = $teacher; // index the teacher id to avoid duplicates in case the teacher belongs to more than one group as the student
                 }
             }
         }
+    } else { // User not in group, try to find graders without group.
+        foreach ($data->teachers as $teacher) {
+
+            if (!groups_has_membership($data->cm, $teacher->id)) {
+                $teachersaux[$teacher->id] = $teacher;
+            }
+        }
+    }
 
     return $teachersaux;
 }
