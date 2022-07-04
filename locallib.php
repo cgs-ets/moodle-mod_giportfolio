@@ -1483,52 +1483,68 @@ function giportfolio_users_with_access($users, $course, $cmid) {
     return $info->filter_user_list($users);
 }
 
+
 // Filter graders.
-// To avoid sending notifications to users that have approved archetype at category level
 function giportfolio_filter_graders($userid, $cm) {
     global $COURSE;
-  
+
     $ctxt = \context_course::instance($COURSE->id); // get the users in the course context to avoid getting users at module level.
     $graders =  get_role_users(3, $ctxt, false, 'ra.id, u.id, u.lastname, u.firstname', null, false); // Get editing teachers enrolled in this course.
     $data = new \stdClass();
     $data->userid = $userid;
     $data->cm = $cm;
+    $data->context = $ctxt;
+
     $data->teachers = $graders;
+
     if (count(groups_get_course_data($COURSE->id)->groups) > 0) { //  Are there groups in the course?, check the teachers that are  part of this group.
         $graders = giportfolio_filter_graders_by_grouping($data);
     }
-    
+   
     return $graders;
 }
 
-// Filter graders
+/**
+ * If the activity has its common module settings  with a grouping set. 
+ * Filter the graders by the group both the student and grader belongs to in this grouping.
+ * Otherwise, send to the teachers in every group in this course.
+ */
 function giportfolio_filter_graders_by_grouping($data) {
     global $COURSE;
-   
+
     $groups = groups_get_user_groups($COURSE->id, $data->userid);
-    $teachersaux = $data->teachers;
-    
-    if (($data->cm)->groupingid != 0 ) { // The activity has a grouping set in the common settings.
+    //$teachersaux = $data->teachers;
+
+    if (($data->cm)->groupingid != 0) { // The activity has a grouping set in the common settings.
         $groups = isset($groups[($data->cm)->groupingid]) ? $groups[($data->cm)->groupingid] :  []; // Get the group from the grouping collection.
-    }  else {
-        $groups = $groups[0]; // The activity doesnt have a grouping selected but the course has groups. Only send notification to teachers in the groups this user belongs to.
+    } else {
+        $groups = $groups[0]; // The activity doesnt have a grouping selected but the course has groups. 
+                             //  Only send notification to teachers in the groups this user belongs to.
     }
-  
+
     $teachersaux = [];
+    
+        if (count($groups) > 0) {
 
-    if (count($groups) > 0) {  
-
-        foreach ($data->teachers as $teacher) {
-            foreach ($groups as $group) {
-                if (groups_is_member($group, $teacher->id)) {
+            foreach ($data->teachers as $teacher) {
+                foreach ($groups as $group) {
+                    if (groups_is_member($group, $teacher->id)) {
+                        $teachersaux[] = $teacher;
+                    }
+                }
+            }
+        } else { // User not in group, try to find graders without group.
+            foreach ($data->teachers as $teacher) {
+                
+                if (!groups_has_membership($data->cm, $teacher->id)) {
                     $teachersaux[] = $teacher;
                 }
             }
         }
-    } 
-    
+
     return $teachersaux;
 }
+
 
 /**
  * Render graph of contributors table. CGS customisation.
@@ -2749,10 +2765,10 @@ function giportfolio_send_comment_notification($userid, $contributionid) {
     $studentid = ($contribution[$contributionid])->userid;
     $notifycomment = ($contribution[$contributionid])->notifycommententry;
     $notifycommentteacher = ($contribution[$contributionid])->notifycommententryteacher;
-   
+
     $recipient = giportfolio_set_comment_notification_recipients($studentid);
- 
-    
+
+
     if (has_capability('mod/giportfolio:gradegiportfolios', $context) && $notifycomment) {
         giportfolio_send_comment_notification_to_students($contribution, $cm, $contributionid, $recipient);
     } else if ($notifycommentteacher) {
@@ -2778,11 +2794,11 @@ function giportfolio_send_comment_notification_to_students($contribution,  $cm, 
 function giportfolio_send_comment_notification_to_teachers($contribution, $cm, $contributionid,  $recipient) {
     global $USER;
     // Get the teachers that are part of the course and group.
-    $recipients = giportfolio_filter_graders(($contribution[$contributionid])->userid, $cm) ;
+    $recipients = giportfolio_filter_graders(($contribution[$contributionid])->userid, $cm);
     $studentmentor = false;
     // Check if the user making the comment is the parent.
     $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'userid' => ($contribution[$contributionid])->userid));
-    
+
     if (($contribution[$contributionid])->allowmentorcontrib && ($contribution[$contributionid])->userid != $USER->id) {
         $mentorsid = explode(',',  giportfolio_get_mentees_mentor(($contribution[$contributionid])->userid));
         $studentmentor = in_array($USER->id, $mentorsid);
@@ -2804,7 +2820,7 @@ function giportfolio_set_comment_notification_recipients($id) {
 function giportfolio_send_comment_notification_helper($userid, $contributionid, $contribution, $recipient, $url, $ismentor = false) {
 
     global $COURSE, $USER, $DB;
- 
+
     $student = $DB->get_record('user', ['id' => $userid], 'firstname, lastname');
     $info = (object)array(
         'course' => format_string($COURSE->fullname),
@@ -2816,7 +2832,7 @@ function giportfolio_send_comment_notification_helper($userid, $contributionid, 
         'student' => $student->firstname . ' ' . $student->lastname
     );
 
-    
+
 
     $commenter = \core_user::get_user($userid);
     $subj = get_string('commentnotification_subject', 'mod_giportfolio',  fullname($USER));
