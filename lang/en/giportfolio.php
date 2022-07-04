@@ -123,7 +123,7 @@ $string['navprev'] = 'Previous';
 $string['nocomments'] = 'Without teacher comments';
 $string['nosubmisson'] = 'No Submisson';
 $string['notifyaddentry'] = 'Notify teachers of new entries';
-$string['notifyaddentry_help'] = 'Teachers belonging to the student\'s same group(s) will receive a notification';
+$string['notifyaddentry_help'] = 'Teachers belonging to the student\'s same group(s) will receive a notification. <br> If a grouping in selected in the <strong>Common module settings</strong> section, only the groups in the grouping will be considered.';
 $string['notifications'] = 'Notifications';
 $string['notifyaddentry_subject'] = 'New portfolio contribution from {$a}';
 $string['notifyaddentry_body'] = 'Hi,
@@ -133,7 +133,7 @@ $string['notifyaddentry_body'] = 'Hi,
 You can view this contribution at: {$a->link}';
 $string['notifycommententry'] = 'Notify students of new comment';
 $string['notifycommententryteacher'] = 'Notify teacher of new comment';
-$string['notifycommententryteacher_help'] = 'Teachers belonging to the student\'s same group(s) will receive a notification';
+$string['notifycommententryteacher_help'] =  'Teachers belonging to the student\'s same group(s) will receive a notification. <br> If a grouping in selected in the <strong>Common module settings</strong> section, only the groups in the grouping will be considered.';;
 $string['commentnotification_subject'] = 'New contribution comment from {$a}';
 $string['commentnotification_body'] = 'Hi,
 
