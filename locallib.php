@@ -2744,7 +2744,7 @@ function giportfolio_get_giportfolio_chaptertitle($giportfolioid) {
     return  $DB->get_records_sql($sql);
 }
 
-// Send notifications when a teacher makes a comment. CGS custom.
+// Send notifications when a teacher/student makes a comment. CGS custom.
 function giportfolio_send_comment_notification($userid, $contributionid) {
 
     global $DB, $COURSE;
