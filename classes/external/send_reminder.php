@@ -87,7 +87,6 @@ trait send_reminder {
         $data->textmsg = $textmsg;
 
         giportfolio_send_reminder($data);
-      
 
         return array(
             'status' => '<h1>' . get_string('msg_sent', 'giportfolio') . '</h1>',

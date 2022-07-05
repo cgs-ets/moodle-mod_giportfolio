@@ -716,6 +716,22 @@ function xmldb_giportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022063000, 'giportfolio');
     }
 
+    if ($oldversion < 2022070501) {
+
+        // Define field notifyaddentryteacher to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('notifyaddentryteacher', XMLDB_TYPE_INTEGER, '4', null, null, null, '0', 'notifyaddentry');
+
+        // Conditionally launch add field notifyaddentryteacher.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2022070501, 'giportfolio');
+    }
+
+
    
     return true;
 }

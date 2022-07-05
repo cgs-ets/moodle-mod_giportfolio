@@ -34,8 +34,10 @@ class restore_giportfolio_activity_structure_step extends restore_activity_struc
         $paths[] = new restore_path_element('giportfolio', '/activity/giportfolio');
         $paths[] = new restore_path_element('giportfolio_chapter', '/activity/giportfolio/chapters/chapter');
 
-        $paths[] = new restore_path_element('giportfolio_contribution',
-                                            '/activity/giportfolio/chapters/chapter/contributions/contribution');
+        $paths[] = new restore_path_element(
+            'giportfolio_contribution',
+            '/activity/giportfolio/chapters/chapter/contributions/contribution'
+        );
 
         // Return the paths wrapped into standard activity structure.
         return $this->prepare_activity_structure($paths);

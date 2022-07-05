@@ -149,19 +149,29 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         // Notifications header.
         $mform->addElement('header', 'notifications', get_string('notifications', 'giportfolio'));
         $mform->setExpanded('notifications', true);
-       
-        // Notify comment
+
+        // Notify comment student.
         $mform->addElement('selectyesno', 'notifycommententry', get_string('notifycommententry', 'giportfolio'));
         $mform->setDefault('notifycommententry', 0);
 
+        // Notify new entry teacher
+        $mform->addElement('selectyesno', 'notifyaddentryteacher', get_string('notifyaddentryteacher', 'giportfolio'));
+        $mform->setDefault('notifyaddentryteacher', 0);
+
+        // Notify comment teacher
         $mform->addElement('selectyesno', 'notifycommententryteacher', get_string('notifycommententryteacher', 'giportfolio'));
         $mform->addHelpButton('notifycommententryteacher', 'notifycommententryteacher', 'mod_giportfolio');
         $mform->setDefault('notifycommententryteacher', 0);
 
+        // Notify new entry student
         $mform->addElement('selectyesno', 'notifyaddentry', get_string('notifyaddentry', 'giportfolio'));
         $mform->addHelpButton('notifyaddentry', 'notifyaddentry', 'mod_giportfolio');
         $mform->setDefault('notifyaddentry', 0);
-       
+
+
+
+
+
         $this->standard_grading_coursemodule_elements();
 
         $this->standard_coursemodule_elements();
@@ -177,6 +187,5 @@ class mod_giportfolio_mod_form extends moodleform_mod {
             // Do not allow the 'klassenbuchtrainer' field to change after the portfolio has been created.
             $mform->hardFreeze('klassenbuchtrainer');
         }
-    
     }
 }

@@ -34,25 +34,18 @@ $action = optional_param('action', null, PARAM_ALPHA);
 $mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID
 $mentee = optional_param('mentee', 0, PARAM_INT); // Mentee ID
 $tid = optional_param('teacherid', 0, PARAM_INT); // Teacher ID
-// Contribution  means the teacher is contributing on behalf of a student. Help on navigation
-// when teacher can add chapters on behalf of the student.
-//$contribute = optional_param('cont', 'no', PARAM_RAW);
 
 $cm = get_coursemodule_from_id('giportfolio', $cmid, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
 
-
-$url = new moodle_url('/mod/giportfolio/editcontribution.php', array(
-    'id' => $cm->id, 'chapterid' => $chapterid /*, 'mentor' => $mentor, 'mentee' => $mentee,
-    'teacherid' => $tid, 'cont' => $contribute*/
-));
+$url = new moodle_url('/mod/giportfolio/editcontribution.php', array('id' => $cm->id, 'chapterid' => $chapterid ));
 
 if ($action) {
     $url->param('action', $action);
 }
 
-if ($contributionid) { 
+if ($contributionid) {
     $url->param('contributionid', $contributionid);
 }
 
@@ -102,18 +95,19 @@ $attachmentoptions = array('subdirs' => false, 'maxfiles' => $maxfiles, 'maxbyte
 
 if ($contributionid) {
 
-    $contribution = $DB->get_record('giportfolio_contributions', array('id' => $contributionid, 'chapterid' => $chapterid,
+    $contribution = $DB->get_record('giportfolio_contributions', array(
+        'id' => $contributionid, 'chapterid' => $chapterid,
     ), '*', MUST_EXIST);
     $contribution = $DB->get_record('giportfolio_contributions', array('id' => $contributionid), '*', MUST_EXIST);
     $mentee = $contribution->userid;
-    
+
     if (in_array($USER->id, giportfolio_user_mentor_of_student($mentee))) {
         $mentor = $USER->id;
     } else if ($USER->id == $mentee) {
         $mentee = 0; // Its either the student or the teacher
     }
 
-    if  (!isset($formdata)) {
+    if (!isset($formdata)) {
         $formdata = new stdClass();
     }
     $formdata->mentor = $contribution->mentorid;
@@ -140,16 +134,13 @@ if ($contributionid) {
     );
     $formdata->contributionid = $formdata->id;
     $formdata->teacherid = $contribution->teacherid;
-}
- else {
+} else {
     $formdata = new stdClass();
     $formdata->teacherid = ($mentor == 0 && $mentee != 0 && $USER->id != $mentee) ? $USER->id : 0; // Teacher on behalf of the student
 }
 
 $formdata->mentor = $mentor;
 $formdata->mentee = $mentee;
-//$formdata->cont = $contribute;
-
 $formdata->id = $cm->id;
 $formdata->chapterid = $chapter->id;
 
@@ -158,8 +149,8 @@ $PAGE->set_title(format_string($giportfolio->name));
 $PAGE->add_body_class('mod_giportfolio');
 $PAGE->set_heading(format_string($course->fullname));
 
-$params = array('id' => $cm->id, 'chapterid' => $chapter->id, /*'mentor' => $mentor,*/'mentee' => $mentee /*, 'cont' => $contribute*/);
-$redir = new moodle_url('/mod/giportfolio/viewgiportfolio.php' , $params);
+$params = array('id' => $cm->id, 'chapterid' => $chapter->id, /*'mentor' => $mentor,*/ 'mentee' => $mentee /*, 'cont' => $contribute*/);
+$redir = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $params);
 
 // Handle delete / show / hide actions.
 if ($action) {
@@ -234,7 +225,6 @@ if ($mform->is_cancelled()) {
     redirect($redir);
 } else if ($data = $mform->get_data()) {
 
-    $sendnotification = false;
     if (!$contributionid) {
         // Create new contribution.
         $ins = (object)array(
@@ -254,10 +244,15 @@ if ($mform->is_cancelled()) {
         );
 
         $contributionid = $DB->insert_record('giportfolio_contributions', $ins);
+        $contribution = $DB->get_record('giportfolio_contributions', array('id' => $contributionid), '*', MUST_EXIST);
+        error_log(print_r($contribution, true));
+        $sendnotification = $giportfolio->notifyaddentry && $contribution->teacherid == 0;
+        $sendnotificationtostudent = $giportfolio->notifyaddentryteacher && $contribution->teacherid != 0; // The teacher is contributing on behalf of the student
+        error_log("sendnotification");
+        error_log($sendnotification);
 
-        if ($giportfolio->notifyaddentry) {
-            $sendnotification = true;
-        }
+        error_log("sendnotificationtostudent");
+        error_log($sendnotificationtostudent);
     }
 
     $data->id = $contributionid;
@@ -287,40 +282,12 @@ if ($mform->is_cancelled()) {
     giportfolio_automatic_grading($giportfolio, $userid);
 
     if ($sendnotification) {
-        // Send the userid to filter by the students id. (In case the mentor is contributing USER wont filter properly.)
-        $graders =  giportfolio_filter_graders($userid, $cm);
-           
-        if ($graders) {
-            $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
-                'id' => $cm->id, 'chapterid' => $chapter->id,
-                'userid' => $userid
-            ));
-            $subj = get_string('notifyaddentry_subject', 'mod_giportfolio', fullname($USER));
-            $info = (object)array(
-                'course' => format_string($course->fullname),
-                'portfolio' => format_string($giportfolio->name),
-                'username' => fullname($USER),
-                'chapter' => format_string($chapter->title),
-                'link' => $url->out(false),
-            );
-            $messagetext = get_string('notifyaddentry_body', 'mod_giportfolio', $info);
-            $info->link = html_writer::link($url, $url->out(false));
-            $messagehtml = nl2br(get_string('notifyaddentry_body', 'mod_giportfolio', $info));
+        
+        giportfolio_add_entry_send_notification($userid, $cm, $giportfolio, $chapter);
+    }
 
-            $eventdata = new \core\message\message();
-            $eventdata->component = 'mod_giportfolio';
-            $eventdata->name = 'addentry';
-            $eventdata->userfrom = get_admin();            
-            $eventdata->subject = $subj;
-            $eventdata->fullmessage = $messagetext;
-            $eventdata->fullmessageformat = FORMAT_PLAIN;
-            $eventdata->fullmessagehtml = $messagehtml;
-            $eventdata->smallmessage = $messagetext;
-            foreach ($graders as $grader) {
-                $eventdata->userto = $grader;
-                message_send($eventdata);
-            }
-        }
+    if ($sendnotificationtostudent) {
+        giportfolio_add_entry_from_teacher_send_notification($userid, $cm, $giportfolio, $chapter);
     }
 
     redirect($redir);

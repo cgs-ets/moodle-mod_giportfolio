@@ -58,7 +58,7 @@ class restore_giportfolio_activity_task extends restore_activity_task {
      *
      * @return array
      */
-    static public function define_decode_contents() {
+    public static function define_decode_contents() {
         $contents = array();
 
         $contents[] = new restore_decode_content('giportfolio', array('intro'), 'giportfolio');
@@ -75,7 +75,7 @@ class restore_giportfolio_activity_task extends restore_activity_task {
      *
      * @return array
      */
-    static public function define_decode_rules() {
+    public static function define_decode_rules() {
         $rules = array();
 
         // List of giportfolios in course.

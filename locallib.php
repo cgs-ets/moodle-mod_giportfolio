@@ -917,9 +917,9 @@ function giportfolio_set_mentor_info($contributions, $menteeid) {
 // Part of Allow a teacher to make a contribution on behalf of a student.
 function giportfolio_get_user_default_chapter($giportfolioid) {
     global $DB;
-    $sql = "SELECT  TOP(1) chapterid  FROM mdl_giportfolio_contributions  
+    $sql = "SELECT  chapterid  FROM mdl_giportfolio_contributions  
             WHERE  giportfolioid = {$giportfolioid}
-           -- LIMIT 1;
+            LIMIT 1;
            ";
 
     return  $DB->get_record_sql($sql);
@@ -1546,6 +1546,83 @@ function giportfolio_filter_graders_by_grouping($data) {
 }
 
 
+// Add entry notification for teachers
+function giportfolio_add_entry_send_notification($userid, $cm, $giportfolio, $chapter) {
+    global $COURSE, $USER;
+    // Send the userid to filter by the students id. (In case the mentor is contributing USER wont filter properly.)
+    $graders =  giportfolio_filter_graders($userid, $cm);
+    //print_object($graders)  ; exit;
+    if ($graders) {
+        $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
+            'id' => $cm->id, 'chapterid' => $chapter->id,
+            'userid' => $userid
+        ));
+        $subj = get_string('notifyaddentry_subject', 'mod_giportfolio', fullname($USER));
+        $info = (object)array(
+            'course' => format_string($COURSE->fullname),
+            'portfolio' => format_string($giportfolio->name),
+            'username' => fullname($USER),
+            'chapter' => format_string($chapter->title),
+            'link' => $url->out(false),
+        );
+        $messagetext = get_string('notifyaddentry_body', 'mod_giportfolio', $info);
+        $info->link = html_writer::link($url, $url->out(false));
+        $messagehtml = nl2br(get_string('notifyaddentry_body', 'mod_giportfolio', $info));
+
+        $eventdata = new \core\message\message();
+        $eventdata->component = 'mod_giportfolio';
+        $eventdata->name = 'addentry';
+        $eventdata->userfrom = get_admin();            
+        $eventdata->subject = $subj;
+        $eventdata->fullmessage = $messagetext;
+        $eventdata->fullmessageformat = FORMAT_PLAIN;
+        $eventdata->fullmessagehtml = $messagehtml;
+        $eventdata->smallmessage = $messagetext;
+        foreach ($graders as $grader) {
+            $eventdata->userto = $grader;
+            message_send($eventdata);
+        }
+    }
+}
+
+// A teacher made a contribution on behalf of the student. Notify the student about it.
+function giportfolio_add_entry_from_teacher_send_notification($userid, $cm, $giportfolio, $chapter){
+    global $USER, $DB, $COURSE;
+
+    $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'chapterid' => $chapter->id));
+  
+    $d = new stdClass();
+    $d->teacher = fullname($USER);
+  
+    $sql = "SELECT *  FROM mdl_user WHERE id = $userid";
+    $std = $DB->get_records_sql($sql);
+    $d->student =  ($std[$userid])->firstname . ' ' . ($std[$userid])->lastname;
+
+    $subj = get_string('notifyaddentryteacher_subject', 'mod_giportfolio', $d);
+        $info = (object)array(
+            'course' => format_string($COURSE->fullname),
+            'portfolio' => format_string($giportfolio->name),
+            'username' => fullname($USER),
+            'chapter' => format_string($chapter->title),
+            'link' => $url->out(false),
+        );
+        $messagetext = get_string('notifyaddentry_body', 'mod_giportfolio', $info);
+        $info->link = html_writer::link($url, $url->out(false));
+        $messagehtml = nl2br(get_string('notifyaddentry_body', 'mod_giportfolio', $info));
+
+        $eventdata = new \core\message\message();
+        $eventdata->component = 'mod_giportfolio';
+        $eventdata->name = 'addentryteacher';
+        $eventdata->userfrom = get_admin();            
+        $eventdata->subject = $subj;
+        $eventdata->fullmessage = $messagetext;
+        $eventdata->fullmessageformat = FORMAT_PLAIN;
+        $eventdata->fullmessagehtml = $messagehtml;
+        $eventdata->smallmessage = $messagetext;
+        $eventdata->userto = $std[$userid];
+        message_send($eventdata);
+        
+}
 /**
  * Render graph of contributors table. CGS customisation.
  */
@@ -2772,7 +2849,7 @@ function giportfolio_send_comment_notification($contributionid) {
     if (has_capability('mod/giportfolio:gradegiportfolios', $context) && $notifycomment) {
         giportfolio_send_comment_notification_to_students($contribution, $cm, $contributionid, $recipient);
     } else if ($notifycommentteacher) {
-        giportfolio_send_comment_notification_to_teachers($contribution, $cm, $contributionid, /*$userid, */ $recipient);
+        giportfolio_send_comment_notification_to_teachers($contribution, $cm, $contributionid, $recipient);
     }
 }
 
@@ -2795,6 +2872,7 @@ function giportfolio_send_comment_notification_to_teachers($contribution, $cm, $
     global $USER;
     // Get the teachers that are part of the course and group.
     $recipients = giportfolio_filter_graders(($contribution[$contributionid])->userid, $cm);
+   
     $studentmentor = false;
     // Check if the user making the comment is the parent.
     $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'userid' => ($contribution[$contributionid])->userid));

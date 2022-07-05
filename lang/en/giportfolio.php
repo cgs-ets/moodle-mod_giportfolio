@@ -107,6 +107,7 @@ $string['lastgrade'] = 'Graded ';
 $string['lastmodified'] = 'Last Modified:  ';
 $string['lastupdated'] = 'Last Updated:  ';
 $string['messageprovider:addentry'] = 'Notification of new Portfolio entries';
+$string['messageprovider:addentryteacher'] = 'Notification student of new Portfolio entries made by teachers';
 $string['messageprovider:commentnotification'] = 'Notification of new comment entries';
 $string['messageprovider:contributionreminder'] = 'Contribution reminder';
 $string['modulename'] = 'Portfolio';
@@ -124,8 +125,10 @@ $string['nocomments'] = 'Without teacher comments';
 $string['nosubmisson'] = 'No Submisson';
 $string['notifyaddentry'] = 'Notify teachers of new entries';
 $string['notifyaddentry_help'] = 'Teachers belonging to the student\'s same group(s) will receive a notification. <br> If a grouping in selected in the <strong>Common module settings</strong> section, only the groups in the grouping will be considered.';
+$string['notifyaddentryteacher'] = 'Notify students of new entries made by teacher';
 $string['notifications'] = 'Notifications';
 $string['notifyaddentry_subject'] = 'New portfolio contribution from {$a}';
+$string['notifyaddentryteacher_subject'] = 'New portfolio contribution from {$a->teacher} on behalf of {$a->student}';
 $string['notifyaddentry_body'] = 'Hi,
 
 {$a->username} has added a new contribution to \'{$a->chapter}\' in portfolio \'{$a->portfolio}\' in course \'{$a->course}\'.

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/giportfolio/db" VERSION="20220630" COMMENT="XMLDB file for Moodle mod_giportfolio"
+<XMLDB PATH="mod/giportfolio/db" VERSION="20220705" COMMENT="XMLDB file for Moodle mod_giportfolio"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -26,6 +26,7 @@
         <FIELD NAME="chapternumber" TYPE="int" LENGTH="3" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="stores the number of chapters for each giportfolio activity"/>
         <FIELD NAME="publishnotification" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="send notification on publish"/>
         <FIELD NAME="notifyaddentry" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Notify teachers when a new entry is created by a student"/>
+        <FIELD NAME="notifyaddentryteacher" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="notifycommententry" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Notify students when a new comment is created by a teacher"/>
         <FIELD NAME="notifycommententryteacher" TYPE="int" LENGTH="4" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="teacherfilter" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
