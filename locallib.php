@@ -2745,12 +2745,13 @@ function giportfolio_get_giportfolio_chaptertitle($giportfolioid) {
 }
 
 // Send notifications when a teacher/student makes a comment. CGS custom.
-function giportfolio_send_comment_notification($userid, $contributionid) {
+function giportfolio_send_comment_notification($contributionid) {
 
     global $DB, $COURSE;
 
     $sql = "SELECT cont.id, gp.id AS 'giportfolioid', gp.name, gc.id AS 'chapterid', 
-            gc.title,  cont.title AS 'contributiontitle', cont.userid, gp.allowmentorcontrib, gp.notifycommententry, gp.notifycommententryteacher
+            gc.title,  cont.title AS 'contributiontitle', cont.userid, gp.allowmentorcontrib, 
+            gp.notifycommententry, gp.notifycommententryteacher
             FROM mdl_giportfolio AS gp 
             JOIN mdl_giportfolio_chapters AS gc ON gp.id = gc.giportfolioid 
             JOIN mdl_giportfolio_contributions AS cont ON cont.chapterid = gc.id
@@ -2768,11 +2769,10 @@ function giportfolio_send_comment_notification($userid, $contributionid) {
 
     $recipient = giportfolio_set_comment_notification_recipients($studentid);
 
-
     if (has_capability('mod/giportfolio:gradegiportfolios', $context) && $notifycomment) {
         giportfolio_send_comment_notification_to_students($contribution, $cm, $contributionid, $recipient);
     } else if ($notifycommentteacher) {
-        giportfolio_send_comment_notification_to_teachers($contribution, $cm, $contributionid, $userid, $recipient);
+        giportfolio_send_comment_notification_to_teachers($contribution, $cm, $contributionid, /*$userid, */ $recipient);
     }
 }
 
@@ -2805,7 +2805,6 @@ function giportfolio_send_comment_notification_to_teachers($contribution, $cm, $
     }
 
     foreach ($recipients as $recipient) {
-        error_log(print_r($recipient, true));
         giportfolio_send_comment_notification_helper(($contribution[$contributionid])->userid, $contributionid, $contribution, $recipient, $url, $studentmentor);
     }
 }
@@ -2822,6 +2821,7 @@ function giportfolio_send_comment_notification_helper($userid, $contributionid, 
     global $COURSE, $USER, $DB;
 
     $student = $DB->get_record('user', ['id' => $userid], 'firstname, lastname');
+
     $info = (object)array(
         'course' => format_string($COURSE->fullname),
         'portfolio' => format_string(($contribution[$contributionid])->name),
@@ -2834,7 +2834,7 @@ function giportfolio_send_comment_notification_helper($userid, $contributionid, 
 
 
 
-    $commenter = \core_user::get_user($userid);
+    $commenter = \core_user::get_user($USER->id);
     $subj = get_string('commentnotification_subject', 'mod_giportfolio',  fullname($USER));
 
     $messagetext = get_string('commentnotification_body', 'mod_giportfolio', $info);
@@ -2851,6 +2851,7 @@ function giportfolio_send_comment_notification_helper($userid, $contributionid, 
     $eventdata->fullmessageformat = FORMAT_PLAIN;
     $eventdata->fullmessagehtml = $messagehtml;
     $eventdata->smallmessage = $messagetext;
+    $eventdata->notification = 1;
 
     message_send($eventdata);
 }
