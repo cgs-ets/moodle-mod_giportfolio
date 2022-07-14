@@ -61,6 +61,7 @@ if (!$context->is_locked() ) {  // To be able to display submission page when co
 require_capability('mod/giportfolio:viewgiportfolios', $context);
 
 $PAGE->set_title(format_string($giportfolio->name));
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($giportfolio->name));
 

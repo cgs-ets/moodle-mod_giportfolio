@@ -213,6 +213,15 @@ body#page-mod-giportfolio-editcontribution.mod_giportfolio .generalbox {
     list-style: disc;
 }
 
+/* Hide intro from the top of the chapter. */
+.path-mod-giportfolio .activity-header {
+    display: none; 
+}
+/* Moodle 4 */
+.path-mod-giportfolio #region-main {
+    overflow-y: hidden;
+}
+
 .path-mod-giportfolio #region-main .contribwarning {
     border: 2px #d08080 solid;
     padding: 5px;
@@ -396,7 +405,7 @@ a[aria-expanded=false] .fa-caret-up {
     border-radius: 50%;
     border: none;
     color: white;
-    padding: 20px;
+    /* padding: 20px; */
     text-align: center;
     text-decoration: none;
     display: inline-block;
@@ -506,9 +515,10 @@ div#giportfolio-import-chapter-overlay {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(128,125,125,.5);
+    background-color: rgba(128, 125, 125, .5);
     z-index: 20;
 }
+
 div#droptarget {
     background-color: rgb(190, 218, 243);
     min-height: 250px;

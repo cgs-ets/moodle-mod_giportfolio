@@ -183,7 +183,7 @@ if ($chapter->hidden and !$viewhidden) {
 $params = array('id' => $id, 'chapterid' => $chapterid, 'mentee' => $mentee); // We need the mentee param for the settings navigation.
 
 $PAGE->set_url('/mod/giportfolio/viewgiportfolio.php', $params);
-
+$PAGE->add_body_class('limitedwidth'); 
 
 // Unset all page parameters.
 unset($id);
@@ -331,7 +331,7 @@ if (!$giportfolio->customtitles) {
 
 // SYNERGY.
 global $USER;
-$pixpath = "$CFG->wwwroot/pix";
+
 $templatecontext = new \stdClass();
 $templatecontext->menteementor = ($mentor != 0 || $mentee == 0) && !$cangrade; // Show Content by default for the Student role and Parent role.
 // Parent view of own child's activity functionality. CGS.
@@ -367,7 +367,6 @@ if ((!$allowedit || $cangrade && $mentee != 0) && !$context->is_locked() || is_s
     $ctx->chapterid = $params['chapterid'];
     $ctx->mentor = $mentor;
     $ctx->mentee = $mentee;
-
 
     echo $OUTPUT->render_from_template('mod_giportfolio/add_contribution_button', $ctx);
     echo '<br><br>';

@@ -32,7 +32,6 @@ $userid = required_param('userid', PARAM_INT); // student
 $id = optional_param('id', 0, PARAM_INT); // Course Module ID.
 $bid = optional_param('b', 0, PARAM_INT); // Giportfolio id.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
-//$mentor = optional_param('mentor', 0, PARAM_INT);
 $contribute = optional_param('cont', 'no', PARAM_RAW);
 
 // Security checks START - teachers edit; students view.
@@ -52,7 +51,6 @@ require_course_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
 require_capability('mod/giportfolio:view', $context);
-
 
 $cansee = in_array($USER->id, giportfolio_user_mentor_of_student($userid));
 $mentor = 0;
@@ -129,7 +127,7 @@ $strtoc = get_string('toc', 'mod_giportfolio');
 // Prepare header.
 $PAGE->requires->jquery();
 $PAGE->set_title(format_string($giportfolio->name));
-$PAGE->add_body_class('mod_giportfolio');
+$PAGE->add_body_classes(['mod_giportfolio', 'limitedwidth']); // Moodle 4 width
 $PAGE->set_heading(format_string($course->fullname));
 
 giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $course->id, $mentor);
@@ -243,8 +241,6 @@ if (!$giportfolio->customtitles) {
         echo '<p class="giportfolio_chapter_title '.$hidden.'">'.$currtitle.'<br />'.$currsubtitle. $showhide.'</p>';
     }
 }
-
-$pixpath = "$CFG->wwwroot/pix";
 
 $contriblist = giportfolio_get_user_contributions($chapter->id, $chapter->giportfolioid, $userid);
 $chaptertext = file_rewrite_pluginfile_urls(

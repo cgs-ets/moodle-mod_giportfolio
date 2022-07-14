@@ -97,7 +97,7 @@ if ($giportfolio->skipintro) {
 // Read chapters.
 
 $PAGE->set_url('/mod/giportfolio/view.php', array('id' => $id));
-
+$PAGE->add_body_class('limitedwidth '); // Moodle 4 width
 // Unset all page parameters.
 unset($id);
 unset($bid);
