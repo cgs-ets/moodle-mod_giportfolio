@@ -479,7 +479,6 @@ if ($contriblist) {
                 }
             }
 
-
             $showicon = html_writer::link($showurl, $showicon);
             $shareicon = '';
             $actionsharing = array();
@@ -528,7 +527,6 @@ if ($contriblist) {
         if ($context->is_locked() && !is_siteadmin($USER->id)) {
             $actions = [];
         }
-
 
         $hidementortag = ($contrib->mentorid == 0) ? 'hidden' : '';
         $hideteachertag = ($contrib->teacherid == 0) ? 'hidden' : '';
