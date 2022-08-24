@@ -506,12 +506,24 @@ function giportfolio_supports($feature) {
  */
 function giportfolio_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $giportfolionode) {
     global $USER, $PAGE, $DB, $COURSE;
+
     if ($PAGE->cm->modname !== 'giportfolio') {
         return;
     }
 
     $context = context_module::instance($PAGE->cm->id);
     $plugins = core_component::get_plugin_list('giportfoliotool');
+
+    $params = $PAGE->url->params();
+
+    $alias = get_student_alias($COURSE);
+    $userid = isset($params['mentee']) &&  ($params['mentee'] != 0) ? $params['mentee'] : $USER->id;
+    // var_dump($userid); exit;
+    $mentor = 0;
+
+    if (in_array($USER->id, giportfolio_user_mentor_of_student($userid))) {
+        $mentor = $USER->id;
+    }
 
     foreach ($plugins as $plugin => $dir) {
         if (file_exists("$dir/lib.php")) {
@@ -521,17 +533,6 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
         if (function_exists($function)) {
             $function($settingsnav, $giportfolionode);
         }
-    }
-
-    $params = $PAGE->url->params();
-
-    $alias = get_student_alias($COURSE);
-    $userid = isset($params['mentee']) &&  ($params['mentee'] != 0) ? $params['mentee'] : $USER->id;
-
-    $mentor = 0;
-
-    if (in_array($USER->id, giportfolio_user_mentor_of_student($userid))) {
-        $mentor = $USER->id;
     }
 
     // SYNERGY - add grade console link.
@@ -560,19 +561,6 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     ) { //$USER->id
 
         if (!$giportfolio->klassenbuchtrainer) {
-            // Add pdf export link.
-            $url = new moodle_url('/mod/giportfolio/tool/print/pdfgiportfolio.php', array('id' => $params['id'], 'sesskey' => sesskey(), 'userid' => $userid));
-            // Open as new window.
-            $action = new action_link($url, get_string('exportpdf', 'mod_giportfolio'), new popup_action('click', $url));
-            $giportfolionode->add(
-                get_string('exportpdf', 'mod_giportfolio'),
-                $action,
-                navigation_node::TYPE_SETTING,
-                null,
-                null,
-                new pix_icon('pdf', '', 'giportfoliotool_print', array('class' => 'icon'))
-            );
-
             // SYNERGY LEARNING - Export as zip option.
             $url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array('id' => $params['id'], 'userid' => $userid)); // Add zip export link.
             $giportfolionode->add(get_string('exportzip', 'mod_giportfolio'), $url, navigation_node::TYPE_SETTING, null, null, new pix_icon('zip', '', 'giportfoliotool_export', array('class' => 'icon')));
@@ -591,7 +579,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     }
 
 
-    // Turn student editing on. has_capability('mod/giportfolio:gradegiportfolios', $context)
+    // Turn student editing on.
     if ((!empty($params['id']) && !empty($params['chapterid']) && (giportfolio_get_collaborative_status($giportfolio)))
         && (has_capability('mod/giportfolio:submitportfolio', $context) || $mentor != 0 || (!empty($params['mentee']) && $params['mentee'] != 0))
     ) {
@@ -734,6 +722,18 @@ function giportfolio_print_attachments($contribution, $cm, $type = null, $align 
     }
 
     return $output;
+}
+
+function giportfolio_print_comments($contribution) {
+    global $DB;
+
+    $sql = "SELECT content FROM mdl_comments WHERE commentarea = ? AND component = ?  AND itemid = ?";
+    $params = ['commentarea' => 'giportfolio_contribution', 'component' => 'mod_giportfolio', 'itemid'=> $contribution->id];
+
+    $comments = $DB->get_records_sql($sql, $params);
+
+    return $comments;
+    
 }
 
 /**

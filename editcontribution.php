@@ -245,14 +245,9 @@ if ($mform->is_cancelled()) {
 
         $contributionid = $DB->insert_record('giportfolio_contributions', $ins);
         $contribution = $DB->get_record('giportfolio_contributions', array('id' => $contributionid), '*', MUST_EXIST);
-        error_log(print_r($contribution, true));
         $sendnotification = $giportfolio->notifyaddentry && $contribution->teacherid == 0;
         $sendnotificationtostudent = $giportfolio->notifyaddentryteacher && $contribution->teacherid != 0; // The teacher is contributing on behalf of the student
-        error_log("sendnotification");
-        error_log($sendnotification);
-
-        error_log("sendnotificationtostudent");
-        error_log($sendnotificationtostudent);
+      
     }
 
     $data->id = $contributionid;
@@ -281,12 +276,12 @@ if ($mform->is_cancelled()) {
 
     giportfolio_automatic_grading($giportfolio, $userid);
 
-    if ($sendnotification) {
+    if (isset($sendnotification)) {
         
         giportfolio_add_entry_send_notification($userid, $cm, $giportfolio, $chapter);
     }
 
-    if ($sendnotificationtostudent) {
+    if (isset($sendnotificationtostudent)) {
         giportfolio_add_entry_from_teacher_send_notification($userid, $cm, $giportfolio, $chapter);
     }
 
