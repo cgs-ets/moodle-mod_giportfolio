@@ -36,4 +36,4 @@ $string['print:print']                  = 'Print portfolio';
 $string['attachment']                   = 'Attachment(s)';
 $string['mentorcontribution']           = '{$a->firstname} {$a->lastname} (Parent) contribution';
 $string['teachercontribution']          = '{$a->firstname} {$a->lastname} (Teacher) contribution';
-$string['studentcontribution']          = '{$a->firstname} {$a->lastname} (Student) contribution';
+$string['studentcontribution']          = '{$a->firstname} {$a->lastname} (Portfolio owner) contribution';
