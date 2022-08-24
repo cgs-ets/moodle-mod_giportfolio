@@ -29,62 +29,11 @@ require_once(dirname(__FILE__) . '/lib.php');
 global $CFG;
 require_once($CFG->dirroot . '/mod/giportfolio/locallib.php');
 
-/**
- * Generate toc structure and titles
- *
- * @param array $chapters
- * @param stdClass $giportfolio
- * @param stdClass $cm
- * @return array
- */
-// function giportfoliotool_print_get_toc($chapters, $giportfolio, $cm) {
-//     $first = true;
-//     $titles = array();
 
-//     $context = context_module::instance($cm->id);
 
-//     $toc = ''; // Representation of toc (HTML).
-
-//     switch ($giportfolio->numbering) {
-//         case PORTFOLIO_NUM_NONE:
-//             $toc .= '<div class="giportfolio_toc_none">';
-//             break;
-//         case PORTFOLIO_NUM_NUMBERS:
-//             $toc .= '<div class="giportfolio_toc_numbered">';
-//             break;
-//         case PORTFOLIO_NUM_BULLETS:
-//             $toc .= '<div class="giportfolio_toc_bullets">';
-//             break;
-//         case PORTFOLIO_NUM_INDENTED:
-//             $toc .= '<div class="giportfolio_toc_indented">';
-//             break;
-//     }
-
-//     $toc .= '<a name="toc"></a>'; // Representation of toc (HTML).
-
-//     if ($giportfolio->customtitles) {
-//         $toc .= '<h1>' . get_string('toc', 'mod_giportfolio') . '</h1>';
-//     } else {
-//         $toc .= '<p class="giportfolio_chapter_title">' . get_string('toc', 'mod_giportfolio') . '</p>';
-//     }
-//     $toc .= '<ul>';
-//     foreach ($chapters as $ch) {
-//         if (!$ch->hidden) {
-//             $title = giportfolio_get_chapter_title($ch->id, $chapters, $giportfolio, $context);
-//             if (!$ch->subchapter) {
-//                 $toc .= $first ? '<li>' : '</ul></li><li>';
-//             } else {
-//                 $toc .= $first ? '<li><ul><li>' : '<li>';
-//             }
-//             $titles[$ch->id] = $title;
-//             $toc .= '<a title="' . s($title) . '" href="#ch' . $ch->id . '">' . $title . '</a>';
-//             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
-//             $first = false;
-//         }
-//     }
-//     $toc .= '</ul></li></ul>';
-//     $toc .= '</div>';
-//     $toc = str_replace('<ul></ul>', '', $toc); // Cleanup of invalid structures.
-
-//     return array($toc, $titles);
-// }
+function get_contribution_author($id) {
+    global $DB;
+    
+    $author = $DB->get_record('user', ['id' => $id], 'firstname, lastname');
+    return $author;
+}

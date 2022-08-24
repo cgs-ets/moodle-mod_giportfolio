@@ -25,12 +25,15 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$string['eventchapterprinted'] = 'Portfolio chapter printed';
-$string['eventgiportfolioprinted'] = 'Portfolio printed';
-$string['pluginname'] = 'Portfolio printing';
-$string['printgiportfolio'] = 'Print portfolio';
-$string['printchapter'] = 'Print this chapter';
-$string['printdate'] = 'Date';
-$string['printedby'] = 'Printed by';
-$string['print:print'] = 'Print portfolio';
-$string['attachment'] = 'Attachment(s)';
+$string['eventchapterprinted']          = 'Portfolio chapter printed';
+$string['eventgiportfolioprinted']      = 'Portfolio printed';
+$string['pluginname']                   = 'Portfolio printing';
+$string['printgiportfolio']             = 'Print portfolio';
+$string['printchapter']                 = 'Print this chapter';
+$string['printdate']                    = 'Date';
+$string['printedby']                    = 'Printed by';
+$string['print:print']                  = 'Print portfolio';
+$string['attachment']                   = 'Attachment(s)';
+$string['mentorcontribution']           = '{$a->firstname} {$a->lastname} (Parent) contribution';
+$string['teachercontribution']          = '{$a->firstname} {$a->lastname} (Teacher) contribution';
+$string['studentcontribution']          = '{$a->firstname} {$a->lastname} (Student) contribution';
