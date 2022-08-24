@@ -198,7 +198,7 @@ class renderer extends plugin_renderer_base {
      * @return array The array containing the content of the giportfolio chapter and visibility information
      */
     public function render_print_giportfolio_chapter($chapter, $chapters, $giportfolio, $cm, $userid) {
-        global $COURSE;
+        global $COURSE, $DB;
 
         $context = context_module::instance($cm->id);
         $title = giportfolio_get_chapter_title($chapter->id, $chapters, $giportfolio, $context);
@@ -223,19 +223,43 @@ class renderer extends plugin_renderer_base {
             'chapter',
             $chapter->id
         );
+
         $giportfoliochapter .= format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
         // Add the contributions.
         $giportfoliochaptercontributions = '';
         $giportfoliochaptercontributions .= html_writer::start_div('giportfolio_chapter_contribution p-t-1', ['id' => 'ch' . $chapter->id]);
-
-        if (count($contributions) > 0) {
-            $giportfoliochaptercontributions .= $this->output->heading('Contributions', 2, 'text-center p-b-2');
-        }
-
+        
         if ($contributions) {
+           
+            $giportfoliochaptercontributions .= $this->output->heading('Contributions', 2, 'text-center p-b-2');
 
             foreach ($contributions as $contribution) {
-                $giportfoliochaptercontributions .= $this->output->heading($contribution->title, 3, 'text-left p-b-2');
+
+                // Get author of the contribution
+                if ($contribution->mentorid != 0) {
+                    $uid = $contribution->mentorid;
+                    $author = get_contribution_author($uid);
+                    $contheading = '<span class="badge badge-info contributor-tag" >' . format_string(get_string('mentorcontribution', 'giportfoliotool_print', $author)) . '</span><br>';
+                } else if ($contribution->teacherid != 0) {
+                    $uid = $contribution->teacherid;
+                    $author = get_contribution_author($uid);
+                    $contheading =  '<span class="badge badge-success contributor-tag" >' . format_string(get_string('teachercontribution', 'giportfoliotool_print', $author)) . '</span><br>';
+                } else {
+                    $uid = $contribution->userid;
+                    $author = get_contribution_author($uid);
+                    $contheading = '<span class="badge badge-primary contributor-tag" >' . format_string(get_string('studentcontribution', 'giportfoliotool_print', $author)) . '</span><br>';
+                }
+               
+                $giportfoliochaptercontributions .=  "<strong> $contribution->title </strong> $contheading";
+
+                if ($contribution->timecreated !== $contribution->timemodified) {
+                    $giportfoliochaptercontributions .= '<i> ' . get_string('lastmodified', 'mod_giportfolio') . date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contribution->timemodified) . '</i>';
+                } else {
+                    $giportfoliochaptercontributions .= '<i> ' . get_string('lastupdated', 'mod_giportfolio') . date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contribution->timecreated) . '</i>';
+                }
+
+                $giportfoliochaptercontributions .= "<br><br>";
+
                 $contributiontext = file_rewrite_pluginfile_urls(
                     $contribution->content,
                     'pluginfile.php',
@@ -244,15 +268,16 @@ class renderer extends plugin_renderer_base {
                     'contribution',
                     $contribution->id
                 );
+
                 $giportfoliochaptercontributions .= format_text($contributiontext, $contribution->contentformat, array('noclean' => true, 'context' => $context));
                 $files = giportfolio_print_attachments($contribution, $cm, 'html', $align = "right");
+
                 if ($files) {
                     $table = "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\">\n $files </td></tr></table>\n";
                     $giportfoliochaptercontributions .=  $table;
                 }
 
                 // Get comments.
-
                 
                 $comments = giportfolio_print_comments($contribution);
 
