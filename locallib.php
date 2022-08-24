@@ -51,7 +51,7 @@ function giportfolio_preload_chapters($giportfolio) {
         'giportfolio_chapters',
         array('giportfolioid' => $giportfolio->id, 'userid' => 0),
         'pagenum',
-        'id, pagenum, subchapter, title, hidden, userid, importsrc'
+        'id, pagenum, subchapter, title, hidden, userid, importsrc, content, contentformat'
     );
 
     if (!$chapters) {
@@ -1909,8 +1909,6 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
                     'visibletoscreenreaders' => false,
                     'includefullname' => false,          // New in Moodle 3.4. Setting to true will render the user's full name beside it. Defaults to false.
                 );
-
-
 
                 $picture = $OUTPUT->user_picture($puser, $options);
                 $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $puser->id . '&amp;course=' . $course->id . '">' .

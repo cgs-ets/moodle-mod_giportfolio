@@ -281,25 +281,29 @@ if ($nextid) {
 // Add extra links.
 $extralinks = '';
 
+$uid = $data['mentee'] != 0 ? $uid = $data['mentee'] : $userid;
+
 if (has_capability('giportfoliotool/print:print', $context)) {
     // Print links.
-    $printallurl = new moodle_url('/mod/giportfolio/tool/print/index.php', array('id' => $cm->id, 'userid' => $userid));
+    $printallurl = new moodle_url('/mod/giportfolio/tool/print/index.php', array('id' => $cm->id, 'userid' => $uid));
     $extralinks .= html_writer::link($printallurl, get_string('printgiportfolio', 'giportfoliotool_print'));
     $extralinks .= html_writer::empty_tag('br');
-    $printchapterurl = new moodle_url('/mod/giportfolio/tool/print/index.php', array('id' => $cm->id, 'chapterid' => $chapter->id, 'userid' => $userid));
+    $printchapterurl = new moodle_url('/mod/giportfolio/tool/print/index.php', array('id' => $cm->id, 'chapterid' => $chapter->id, 'userid' => $uid));
     $extralinks .= html_writer::link($printchapterurl, get_string('printchapter', 'giportfoliotool_print'));
     $extralinks .= html_writer::empty_tag('br');
 }
+
 if (has_capability('mod/giportfolio:viewgiportfolios', $context)) {
     // Grading link.
     $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id));
     $extralinks .= html_writer::link($url, get_string('studentgiportfolio', 'mod_giportfolio', $alias));
     $extralinks .= html_writer::empty_tag('br');
 }
-$url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array('id' => $cm->id, 'userid' => $userid));
+
+$url = new moodle_url('/mod/giportfolio/tool/export/zipgiportfolio.php', array('id' => $cm->id, 'userid' => $uid));
 $extralinks .= html_writer::link($url, get_string('exportzip', 'mod_giportfolio'));
 $extralinks = html_writer::div($extralinks, 'mod_giportfolio-extralinks');
-
+$extralinks .= html_writer::empty_tag('br');
 
 // Giportfolio display HTML code.
 
