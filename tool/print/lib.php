@@ -65,7 +65,7 @@ function giportfoliotool_print_extend_settings_navigation(settings_navigation $s
             navigation_node::TYPE_SETTING,
             null,
             null,
-            new pix_icon('giportfolio', '', 'giportfoliotool_print', array('class' => 'icon'))
+            new pix_icon('print', '', 'giportfoliotool_print', array('class' => 'icon'))
         );
     }
 }
