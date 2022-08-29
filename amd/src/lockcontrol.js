@@ -34,8 +34,10 @@ export const init = (hideall) => {
                     iEl.addEventListener('click', unlockEventHandler);
 
                 });
+
                 // Hide add contribution button
                 toggleAddContribution();
+                toggleContributionActions();
             },
             fail: function (reason) {
                 console.error(reason);
@@ -61,8 +63,10 @@ export const init = (hideall) => {
                     iEl.addEventListener("click", lockEventHandler);
                     iEl.removeEventListener('click', unlockEventHandler);
                 });
-                /// Show add contribution button
+
+                // Show add contribution button
                 toggleAddContribution();
+                toggleContributionActions();
             },
             fail: function (reason) {
                 console.error(reason);
@@ -81,6 +85,12 @@ export const init = (hideall) => {
             fEl.classList.add('add-contrib-lock');
         }
         console.log(fEl);
+
+
+
+    }
+
+    const toggleContributionActions = function () {
         // Hide contribution actions
         const actions = document.querySelectorAll('article.giportfolio-contribution > contribheader > a');
         actions.forEach(aEl => {
@@ -102,12 +112,10 @@ export const init = (hideall) => {
             }
 
         })
-
-
     }
 
     if (hideall) {
-        toggleAddContribution();
+        toggleContributionActions();
     }
 
     registerEventListeners();
