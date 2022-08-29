@@ -51,7 +51,7 @@ function giportfolio_preload_chapters($giportfolio) {
         'giportfolio_chapters',
         array('giportfolioid' => $giportfolio->id, 'userid' => 0),
         'pagenum',
-        'id, pagenum, subchapter, title, hidden, userid, importsrc, content, contentformat'
+        'id, pagenum, subchapter, title, hidden, userid, importsrc, content, contentformat, locked'
     );
 
     if (!$chapters) {
@@ -331,7 +331,9 @@ function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edi
         $PAGE->requires->js_init_call('M.mod_giportfolio_collapse.init', array(), true, $jsmodule);
     } else {
 
-        $PAGE->requires->js_call_amd('mod_giportfolio/drag', 'init', ['']);
+        $PAGE->requires->js_call_amd('mod_giportfolio/drag', 'init', ['']); // Export chapters functionality. CGS.
+        $PAGE->requires->js_call_amd('mod_giportfolio/lockcontrol', 'init', ['']); // Lock chapter. CGS.
+
     }
     // SYNERGY - add javascript to control subchapter collapsing.
 }
@@ -449,25 +451,30 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
             if ($ch->id == $chapter->id) {
                 $toc .= '<strong>' . $title . '</strong>';
             } else {
-                $toc .= '<a title="' . s($title) . '" href="viewgiportfolio.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id . '">' .
-                    $title . '</a>';
+                $toc .= '<a title="' . s($title) . '" href="viewgiportfolio.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id . '">' . $title . '</a>';
             }
+
             $toc .= '&nbsp;&nbsp;';
+
             if ($i != 1) {
                 $toc .= ' <a title="' . get_string('up') . '" href="move.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id .
                     '&amp;up=1&amp;sesskey=' . $USER->sesskey . '">
                     <img src="' . $OUTPUT->image_url('t/up') . '" class="iconsmall" alt="' . get_string('up') . '" /></a>';
             }
+
             if ($i != count($chapters)) {
                 $toc .= ' <a title="' . get_string('down') . '" href="move.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id .
                     '&amp;up=0&amp;sesskey=' . $USER->sesskey . '">
                     <img src="' . $OUTPUT->image_url('t/down') . '" class="iconsmall" alt="' . get_string('down') . '" /></a>';
             }
+
             $toc .= ' <a title="' . get_string('edit') . '" href="edit.php?cmid=' . $cm->id . '&amp;id=' . $ch->id . '">
             <img src="' . $OUTPUT->image_url('t/edit') . '" class="iconsmall" alt="' . get_string('edit') . '" /></a>';
+
             $toc .= ' <a title="' . get_string('delete') . '" href="delete.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id .
                 '&amp;sesskey=' . $USER->sesskey . '">
                 <img src="' . $OUTPUT->image_url('t/delete') . '" class="iconsmall" alt="' . get_string('delete') . '" /></a>';
+
             if ($ch->hidden) {
                 $toc .= ' <a title="' . get_string('show') . '" href="show.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id .
                     '&amp;sesskey=' . $USER->sesskey . '">
@@ -479,6 +486,10 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
             }
 
 
+            $data = new stdClass(); // Collects data for lock function.
+            $data->ischapter = false;
+            $data->subchapters = [];
+
             if (isset($ch->subchapters) && count($ch->subchapters) > 0 || !$ch->subchapter) { // Add drag icon only to chapters. CGS
                 $chaux = [];
                 if (isset($ch->subchapters)) {
@@ -488,16 +499,40 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
                         $schdet->id = $sc;
                         $schdet->title = $chapters[$sc]->title;
                         $chaux[] = $schdet;
+
+                        $schdet2 = new stdClass();
+                        $schdet2->id = $sc;
+
+                        $data->subchapters[] = $schdet2;
                     }
+
                     $ch->subchapteraux = $chaux;
                 }
+
                 $ch->coursemodule = $cm->id;
                 $ch->giportfolio = $giportfolio->id;
-                $json = (json_encode($ch)); //TODO 
+                $json = (json_encode($ch));
 
                 $drag = html_writer::tag('img', '', ['src' => $OUTPUT->image_url('i/move_2d'), 'class' => 'icon drag-action', 'draggable' => true, 'data-chapter' => $json]);
                 $toc .= html_writer::tag('a', $drag, ['class' => 'drag-chapter-action', 'title' => get_string('drag', 'giportfolio'),  'draggable' => true,]);
+
+                $data->ischapter = true;
             }
+
+            $data->chapterid = $ch->id;
+            $data = json_encode($data);
+            $class = 'icon fa lock-chapter';
+            // Lock chapter. CGS.
+            if (!$ch->locked) {
+                $class .= ' fa-unlock';
+                $t = get_string('lock', 'giportfolio');
+            } else {
+                $class .= ' fa-lock';
+                $t = get_string('unlock', 'giportfolio');
+            }
+
+            $lock = html_writer::span('<i></i>',  $class, ['data-chapter' => $data, 'title' => $t, 'id' => "ch-lo-$ch->id"]);
+            $toc .= html_writer::tag('a', $lock, ['class' => 'lock-chapter-action', 'title' => $t]);
 
             // Synergy  only if the giportfolio activity has not yet contributions.
             $toc .= ' <a title="' . get_string('addafter', 'mod_giportfolio') . '" href="edit.php?cmid=' . $cm->id .
@@ -917,9 +952,9 @@ function giportfolio_set_mentor_info($contributions, $menteeid) {
 // Part of Allow a teacher to make a contribution on behalf of a student.
 function giportfolio_get_user_default_chapter($giportfolioid) {
     global $DB;
-    $sql = "SELECT  chapterid  FROM mdl_giportfolio_contributions  
+    $sql = "SELECT TOP(1)  chapterid  FROM mdl_giportfolio_contributions  
             WHERE  giportfolioid = {$giportfolioid}
-            LIMIT 1;
+          --  LIMIT 1;
            ";
 
     return  $DB->get_record_sql($sql);
@@ -1551,7 +1586,7 @@ function giportfolio_add_entry_send_notification($userid, $cm, $giportfolio, $ch
     global $COURSE, $USER;
     // Send the userid to filter by the students id. (In case the mentor is contributing USER wont filter properly.)
     $graders =  giportfolio_filter_graders($userid, $cm);
-    //print_object($graders)  ; exit;
+  
     if ($graders) {
         $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
             'id' => $cm->id, 'chapterid' => $chapter->id,
@@ -1572,7 +1607,7 @@ function giportfolio_add_entry_send_notification($userid, $cm, $giportfolio, $ch
         $eventdata = new \core\message\message();
         $eventdata->component = 'mod_giportfolio';
         $eventdata->name = 'addentry';
-        $eventdata->userfrom = get_admin();            
+        $eventdata->userfrom = get_admin();
         $eventdata->subject = $subj;
         $eventdata->fullmessage = $messagetext;
         $eventdata->fullmessageformat = FORMAT_PLAIN;
@@ -1586,42 +1621,41 @@ function giportfolio_add_entry_send_notification($userid, $cm, $giportfolio, $ch
 }
 
 // A teacher made a contribution on behalf of the student. Notify the student about it.
-function giportfolio_add_entry_from_teacher_send_notification($userid, $cm, $giportfolio, $chapter){
+function giportfolio_add_entry_from_teacher_send_notification($userid, $cm, $giportfolio, $chapter) {
     global $USER, $DB, $COURSE;
 
     $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'chapterid' => $chapter->id));
-  
+
     $d = new stdClass();
     $d->teacher = fullname($USER);
-  
+
     $sql = "SELECT *  FROM mdl_user WHERE id = $userid";
     $std = $DB->get_records_sql($sql);
     $d->student =  ($std[$userid])->firstname . ' ' . ($std[$userid])->lastname;
 
     $subj = get_string('notifyaddentryteacher_subject', 'mod_giportfolio', $d);
-        $info = (object)array(
-            'course' => format_string($COURSE->fullname),
-            'portfolio' => format_string($giportfolio->name),
-            'username' => fullname($USER),
-            'chapter' => format_string($chapter->title),
-            'link' => $url->out(false),
-        );
-        $messagetext = get_string('notifyaddentry_body', 'mod_giportfolio', $info);
-        $info->link = html_writer::link($url, $url->out(false));
-        $messagehtml = nl2br(get_string('notifyaddentry_body', 'mod_giportfolio', $info));
+    $info = (object)array(
+        'course' => format_string($COURSE->fullname),
+        'portfolio' => format_string($giportfolio->name),
+        'username' => fullname($USER),
+        'chapter' => format_string($chapter->title),
+        'link' => $url->out(false),
+    );
+    $messagetext = get_string('notifyaddentry_body', 'mod_giportfolio', $info);
+    $info->link = html_writer::link($url, $url->out(false));
+    $messagehtml = nl2br(get_string('notifyaddentry_body', 'mod_giportfolio', $info));
 
-        $eventdata = new \core\message\message();
-        $eventdata->component = 'mod_giportfolio';
-        $eventdata->name = 'addentryteacher';
-        $eventdata->userfrom = get_admin();            
-        $eventdata->subject = $subj;
-        $eventdata->fullmessage = $messagetext;
-        $eventdata->fullmessageformat = FORMAT_PLAIN;
-        $eventdata->fullmessagehtml = $messagehtml;
-        $eventdata->smallmessage = $messagetext;
-        $eventdata->userto = $std[$userid];
-        message_send($eventdata);
-        
+    $eventdata = new \core\message\message();
+    $eventdata->component = 'mod_giportfolio';
+    $eventdata->name = 'addentryteacher';
+    $eventdata->userfrom = get_admin();
+    $eventdata->subject = $subj;
+    $eventdata->fullmessage = $messagetext;
+    $eventdata->fullmessageformat = FORMAT_PLAIN;
+    $eventdata->fullmessagehtml = $messagehtml;
+    $eventdata->smallmessage = $messagetext;
+    $eventdata->userto = $std[$userid];
+    message_send($eventdata);
 }
 /**
  * Render graph of contributors table. CGS customisation.
@@ -2870,7 +2904,7 @@ function giportfolio_send_comment_notification_to_teachers($contribution, $cm, $
     global $USER;
     // Get the teachers that are part of the course and group.
     $recipients = giportfolio_filter_graders(($contribution[$contributionid])->userid, $cm);
-   
+
     $studentmentor = false;
     // Check if the user making the comment is the parent.
     $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'userid' => ($contribution[$contributionid])->userid));
@@ -2931,6 +2965,7 @@ function giportfolio_send_comment_notification_helper($userid, $contributionid, 
 
     message_send($eventdata);
 }
+
 
 function giportfolio_send_reminder($data) {
     global $DB;
@@ -3026,4 +3061,59 @@ function giportfolio_get_students_with_no_contributions($chapterid, $giportfolio
     $userids = array_keys($r);
 
     return $userids;
+}
+
+// Lock chapter
+function giportfolio_lock_chapter($chapter) {
+    global $DB;
+    
+    $dataobject = new \stdClass();
+    $dataobject->id = $chapter->chapterid;
+    $dataobject->locked = 1;
+
+    $chapteraux = new stdClass();
+    $chapteraux->id = $chapter->chapterid;
+    $updatedids[] = $chapteraux;
+
+    foreach ($chapter->subchapters as $subchapter) {
+        $subchapter->locked = 1;
+        $DB->update_record('giportfolio_chapters', $subchapter);
+        $chapteraux = new stdClass();
+        $chapteraux->id = $subchapter->id;
+        $updatedids[] = $chapteraux;
+    }
+
+    $DB->update_record('giportfolio_chapters', $dataobject);
+
+
+
+    return json_encode($updatedids);
+}
+
+// unock chapter
+function giportfolio_unlock_chapter($chapter) {
+    global $DB;
+    error_log(print_r($chapter, true)); 
+    
+    $dataobject = new \stdClass();
+    $dataobject->id = $chapter->chapterid;
+    $dataobject->locked = 0;
+
+    $chapteraux = new stdClass();
+    $chapteraux->id = $chapter->chapterid;
+    $updatedids[] = $chapteraux;
+
+    foreach ($chapter->subchapters as $subchapter) {
+        $subchapter->locked = 0;
+        $DB->update_record('giportfolio_chapters', $subchapter);
+        $chapteraux = new stdClass();
+        $chapteraux->id = $subchapter->id;
+        $updatedids[] = $chapteraux;
+    }
+
+    $DB->update_record('giportfolio_chapters', $dataobject);
+
+
+
+    return json_encode($updatedids);
 }

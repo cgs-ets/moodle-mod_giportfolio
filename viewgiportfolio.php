@@ -371,9 +371,12 @@ if ((!$allowedit || $cangrade && $mentee != 0) && !$context->is_locked() || is_s
     $ctx->chapterid = $params['chapterid'];
     $ctx->mentor = $mentor;
     $ctx->mentee = $mentee;
+    $ctx->locked = $chapter->locked;
 
+    //if (!$chapter->locked) {
+        echo $OUTPUT->render_from_template('mod_giportfolio/add_contribution_button', $ctx);
+   // }
 
-    echo $OUTPUT->render_from_template('mod_giportfolio/add_contribution_button', $ctx);
     echo '<br><br>';
 }
 
@@ -606,7 +609,6 @@ if ($contriblist) {
         echo $contribution_outline . '</table><br><hr class ="outline-separator"><br>';
     }
 
-    $PAGE->requires->js_call_amd('mod_giportfolio/import_chapter_control', 'init', ['']); // Drag and Drop.
 
     echo '<p class="giportfolio_outline" >Contributions</p>';
     echo $contribution_buffer;

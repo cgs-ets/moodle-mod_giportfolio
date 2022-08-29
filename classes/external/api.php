@@ -30,5 +30,7 @@ use external_api;
 
 class api extends external_api {
     use send_reminder;
+    use lock_chapter;
+    use unlock_chapter;
    
 }

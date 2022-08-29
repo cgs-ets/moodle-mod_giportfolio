@@ -34,5 +34,21 @@ $functions = [
         'loginrequired' => true,
         'ajax' => true    // Is this service available to 'internal' ajax calls.
     ],
+    'mod_giportfolio_lock_chapter' => [
+        'classname' => 'mod_giportfolio\external\api', // Class containing a reference to the external function.
+        'methodname' => 'lock_chapter', // External function name.
+        'description' => 'Locks a chapter', // Human readable description of the WS function.
+        'type' => 'write', // DB rights of the WS function.
+        'loginrequired' => true,
+        'ajax' => true    // Is this service available to 'internal' ajax calls.
+    ],
+    'mod_giportfolio_unlock_chapter' => [
+        'classname' => 'mod_giportfolio\external\api', // Class containing a reference to the external function.
+        'methodname' => 'unlock_chapter', // External function name.
+        'description' => 'Unocks a chapter', // Human readable description of the WS function.
+        'type' => 'write', // DB rights of the WS function.
+        'loginrequired' => true,
+        'ajax' => true    // Is this service available to 'internal' ajax calls.
+    ]
 
 ];

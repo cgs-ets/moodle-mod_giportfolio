@@ -407,6 +407,10 @@ a[aria-expanded=false] .fa-caret-up {
     outline: none;
 }
 
+.add-contrib-lock {
+    visibility:hidden
+}
+
 i.fa.fa-plus-circle.add-contribution {
     font-size: 4rem;
     color: #66A8D8;
@@ -499,8 +503,15 @@ table#mod-giportfolio-reminder-table {
     display: flex;
 }
 
-/* Drag and drop */
+/* Lock */
+.path-mod-giportfolio .lock-chapter,
+.path-mod-giportfolio .unlock-chapter {
+    margin: 0 2px 0 5px;
+    color: #999999;
+    cursor: pointer;
+}
 
+/* Drag and drop */
 div#giportfolio-import-chapter-overlay {
     top: 0;
     left: 0;
@@ -509,6 +520,7 @@ div#giportfolio-import-chapter-overlay {
     background-color: rgba(128,125,125,.5);
     z-index: 20;
 }
+
 div#droptarget {
     background-color: rgb(190, 218, 243);
     min-height: 250px;
