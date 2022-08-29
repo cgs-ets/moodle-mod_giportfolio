@@ -1,19 +1,15 @@
 import Ajax from "core/ajax";
 
-export const init = ({
-
-}) => {
+export const init = (hideall) => {
 
     const registerEventListeners = () => {
         // Lock the chapters
         document.querySelectorAll('#giportfolio-toc .fa-unlock').forEach(function (el) {
-            console.log(el);
             el.addEventListener('click', lockEventHandler);
         });
 
         // Unlock the chapters
         document.querySelectorAll('#giportfolio-toc .fa-lock').forEach(function (el) {
-            console.log(el);
             el.addEventListener('click', unlockEventHandler);
         });
     };
@@ -28,7 +24,7 @@ export const init = ({
             },
             done: function (response) {
                 const chapterids = JSON.parse(response.chapterid);
-                console.log(chapterids);
+
                 chapterids.forEach(chid => {
                     const iEl = document.getElementById(`ch-lo-${chid.id}`);
                     iEl.classList.remove('fa-unlock');
@@ -36,7 +32,7 @@ export const init = ({
                     // remove the listener 
                     iEl.removeEventListener("click", lockEventHandler);
                     iEl.addEventListener('click', unlockEventHandler);
-                    
+
                 });
                 // Hide add contribution button
                 toggleAddContribution();
@@ -57,7 +53,7 @@ export const init = ({
             },
             done: function (response) {
                 const chapterids = JSON.parse(response.chapterid);
-                console.log(chapterids);
+
                 chapterids.forEach(chid => {
                     const iEl = document.getElementById(`ch-lo-${chid.id}`);
                     iEl.classList.remove('fa-lock');
@@ -74,18 +70,45 @@ export const init = ({
         }, ]);
     };
 
+    // Show or hide contribution buttons, actions (edit, delete, hide, contribution) and add comment area
     const toggleAddContribution = function () {
         // Hide add contribution button
         const fEl = document.querySelector('form.add-contrib');
-        console.log(fEl.classList);
+
         if (fEl.classList.contains('add-contrib-lock')) {
             fEl.classList.remove('add-contrib-lock');
         } else {
             fEl.classList.add('add-contrib-lock');
-        }     
-        console.log(fEl.classList);
+        }
+        console.log(fEl);
+        // Hide contribution actions
+        const actions = document.querySelectorAll('article.giportfolio-contribution > contribheader > a');
+        actions.forEach(aEl => {
+            if (aEl.classList.contains('add-contrib-lock')) {
+                aEl.classList.remove('add-contrib-lock')
+            } else {
+                aEl.classList.add('add-contrib-lock')
+            }
+
+        });
+
+        const commentarea = document.querySelectorAll('article.giportfolio-contribution > contribcomment');
+        commentarea.forEach(area => {
+
+            if (area.classList.contains('add-contrib-lock')) {
+                area.classList.remove('add-contrib-lock');
+            } else {
+                area.classList.add('add-contrib-lock');
+            }
+
+        })
+
+
     }
 
+    if (hideall) {
+        toggleAddContribution();
+    }
 
     registerEventListeners();
 };
