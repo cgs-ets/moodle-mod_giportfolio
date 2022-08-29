@@ -408,7 +408,7 @@ a[aria-expanded=false] .fa-caret-up {
 }
 
 .add-contrib-lock {
-    visibility:hidden
+    display: none;
 }
 
 i.fa.fa-plus-circle.add-contribution {
