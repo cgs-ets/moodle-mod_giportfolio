@@ -275,13 +275,13 @@ if ($mform->is_cancelled()) {
     $DB->update_record('giportfolio_contributions', $data);
 
     giportfolio_automatic_grading($giportfolio, $userid);
-
-    if (isset($sendnotification)) {
-        
+   
+    if (isset($sendnotification) && $sendnotification) {
+      
         giportfolio_add_entry_send_notification($userid, $cm, $giportfolio, $chapter);
     }
 
-    if (isset($sendnotificationtostudent)) {
+    if (isset($sendnotificationtostudent) && $sendnotificationtostudent) {
         giportfolio_add_entry_from_teacher_send_notification($userid, $cm, $giportfolio, $chapter);
     }
 
