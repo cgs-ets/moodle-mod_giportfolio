@@ -3145,16 +3145,8 @@ function filter_student_with_contribution($data) {
     $params = ['chapterid' => $data->chapterid, 'giportfolioid' => $data->giportfolioid];
 
     $result = $DB->get_records_sql($sql, $params);
-   // return array_keys($result);
+  
     $result = array_keys($result);
-    
-    // Get the contributions made by parent 
-    $sql = "SELECT userid FROM mdl_giportfolio_contributions WHERE chapterid = ? AND giportfolioid = ? AND  teacherid <> 0 || mentorid <> 0";
-    $params = ['chapterid' => $data->chapterid, 'giportfolioid' => $data->giportfolioid];
-    $result1 = $DB->get_records_sql($sql, $params);
-    $result1 = array_keys($result1);
-    
-    // Return only the ids
-   // $result = array_merge($result, $result1);
+
     return $result;
 }

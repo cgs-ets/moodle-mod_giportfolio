@@ -93,16 +93,6 @@ export const init = (chaptersubchapmap) => {
                         },
                         done: function (response) {
                             const studentids = JSON.parse(response.studentswithcontributions);
-                            // const graphTableRows = document.querySelectorAll('#graphcontributors tbody > tr'); // Get the row of students
-                            // graphTableRows.forEach(row => {
-                            //     if (!row.classList.contains('emptyrow')) {
-                            //         let studentid = (row.classList[0]).split('-');
-                            //         studentid = parseInt(studentid[studentid.length - 1]);
-                            //         if (!studentids.includes(studentid)) {
-                            //             row.classList.add('filtered');
-                            //         }
-                            //     }
-                            // });
                             filterTable(studentids);
 
                         },
