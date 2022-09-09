@@ -1586,7 +1586,7 @@ function giportfolio_add_entry_send_notification($userid, $cm, $giportfolio, $ch
     global $COURSE, $USER;
     // Send the userid to filter by the students id. (In case the mentor is contributing USER wont filter properly.)
     $graders =  giportfolio_filter_graders($userid, $cm);
-  
+
     if ($graders) {
         $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
             'id' => $cm->id, 'chapterid' => $chapter->id,
@@ -1684,6 +1684,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
         $titlectx->chapterid = $chapter->id;
 
         $titlectx->importedch = ($chapter->importsrc != '') ? $OUTPUT->image_url('import_icon', 'mod_giportfolio') : false;
+
         if (!$chapter->subchapter) {
             $titlectx->icon = $OUTPUT->image_url('chapter', 'mod_giportfolio');
             $titles[] = $OUTPUT->render_from_template('mod_giportfolio/graph_title_header', $titlectx);
@@ -1728,6 +1729,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
     $table->set_attribute('cellspacing', '0');
     $table->set_attribute('id', 'graphcontributors');
+    $table->set_attribute('data-giportfolio', $giportfolio->id);
     $table->set_attribute('class', 'graphofcontributors generaltable flexible boxaligncenter');
     $table->set_attribute('width', '100%');
 
@@ -1775,12 +1777,10 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
                 $picture = $OUTPUT->user_picture($puser);
                 $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $puser->id . '&amp;course=' . $course->id . '">' .
                     fullname($puser, has_capability('moodle/site:viewfullnames', $context)) . '</a>';
-
                 $offset++;
-
                 list($legends, $additions) = giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $puser, $cm);
-
                 $row = array_merge(array($picture, $userlink), $legends, $additions);
+                $rowclass = "user-id-$puser->id";
                 $table->add_data($row, $rowclass);
             }
 
@@ -1799,11 +1799,12 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $iconimported =  html_writer::img($OUTPUT->image_url('import_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
 
     $data = [
-        'iconchapter' => $iconchapter,
-        'iconsubchapter' => $iconsubchapter,
-        'iconaddition' => $iconaddition,
-        'iconimported' => $iconimported
+        'iconchapter'       => $iconchapter,
+        'iconsubchapter'    => $iconsubchapter,
+        'iconaddition'      => $iconaddition,
+        'iconimported'      => $iconimported,
     ];
+
 
     echo $OUTPUT->render_from_template('mod_giportfolio/graph_legends_table', $data);
     $chaptersubchap = json_encode($chaptersubchap);
@@ -2067,6 +2068,18 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
     }, $teachercontributions), $teachercontributions);
     $teachercontributions = array_keys($teachercontributions);
 
+    // Get parents contributions in this chapter
+    $sql = "SELECT id AS 'contribid', chapterid, userid, teacherid 
+            FROM {giportfolio_contributions} 
+            WHERE chapterid $insql AND userid = $user->id AND mentorid <> 0";
+
+    $parentcontributions = $DB->get_records_sql($sql, $inparams);
+    $parentcontributions = array_combine(array_map(function ($o) {
+        return $o->chapterid;
+    }, $parentcontributions), $parentcontributions);
+    $parentcontributions = array_keys($parentcontributions);
+
+
     $reminder = html_writer::span('<i class = "fa">&#xf2b7</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindersent', 'mod_giportfolio', ['name' => $user->firstname])]);
     $nocontribution = html_writer::span('<i class = "fa">&#xf056;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('nocontrib', 'mod_giportfolio', ['name' => $user->firstname])]);
     $unseencontribution = html_writer::span('<i class = "fa">&#xf096;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('unseencontrib', 'mod_giportfolio')]);
@@ -2075,8 +2088,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
     $iconnocomment = html_writer::span('<i class = "fa">&#xf0e5;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrnocomment', 'mod_giportfolio')]);
     $iconcomments = html_writer::span('<i class = "fa">&#xf086</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('contrcomments', 'mod_giportfolio')]);
     $iconteacher = html_writer::span('<i class = "fa fa-user-circle"></i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('teachercontrib', 'mod_giportfolio')]);
-
-
+    $iconparent = html_writer::span('<i class = "fa fa-user-o"></i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('parentcontrib', 'mod_giportfolio')]);
 
     // Filter the chapter ids.
     foreach ($contributions as $contribution) {
@@ -2123,8 +2135,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
 
         $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array(
             'id' => $cm->id, 'chapterid' => $chapterid,
-            'mentee' =>  $user->id,
-            /*'cont' => 'yes'*/
+            'mentee' =>  $user->id
         ));
 
         if ($usercontrib == '') {
@@ -2132,12 +2143,15 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             if ($DB->get_record_sql($sql)) {
                 $links[] =  html_writer::tag('a', "$reminder", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
             } else {
-                $links[] =  html_writer::tag('a', "$nocontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
+                if (count ($teachercontributions) > 0 && in_array($chapterid, $teachercontributions)) {
+                    $links[] =  html_writer::tag('a', "$iconteacher", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
+                } else{
+                    $links[] =  html_writer::tag('a', "$nocontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
+                }
+             
             }
             continue;
         }
-
-
 
         if (giportfolio_in_array($chapterid, $contributionsseen)) {
 
@@ -2148,7 +2162,6 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             } else {
                 $links[] = html_writer::tag('a', " $seencontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
             }
-
 
             // The chapter has been seen before and there are new contributions. 
             if (giportfolio_in_array($chapterid, $cnotseen)) {
@@ -2202,6 +2215,11 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
         if (in_array($chapterid, $teachercontributions)) {
             $link = array_pop($links);
             array_push($links, $link . html_writer::tag('a', "$iconteacher", ['href' => $url, 'target' => '_blank']));
+        }
+
+        if (in_array($chapterid, $parentcontributions)) {
+            $link = array_pop($links);
+            array_push($links, $link . html_writer::tag('a', "$iconparent", ['href' => $url, 'target' => '_blank']));
         }
     }
 
@@ -3063,10 +3081,10 @@ function giportfolio_get_students_with_no_contributions($chapterid, $giportfolio
     return $userids;
 }
 
-// Lock chapter
+// Lock chapter.
 function giportfolio_lock_chapter($chapter) {
     global $DB;
-    
+
     $dataobject = new \stdClass();
     $dataobject->id = $chapter->chapterid;
     $dataobject->locked = 1;
@@ -3090,11 +3108,11 @@ function giportfolio_lock_chapter($chapter) {
     return json_encode($updatedids);
 }
 
-// unock chapter
+// Unock chapter.
 function giportfolio_unlock_chapter($chapter) {
     global $DB;
-    error_log(print_r($chapter, true)); 
-    
+    error_log(print_r($chapter, true));
+
     $dataobject = new \stdClass();
     $dataobject->id = $chapter->chapterid;
     $dataobject->locked = 0;
@@ -3116,4 +3134,27 @@ function giportfolio_unlock_chapter($chapter) {
 
 
     return json_encode($updatedids);
+}
+
+// Get the students in the chapter that made contributions.
+function filter_student_with_contribution($data) {
+    global $DB;
+
+    // Get the contributions made by the student
+    $sql = "SELECT userid FROM mdl_giportfolio_contributions WHERE chapterid = ? AND giportfolioid = ?";
+    $params = ['chapterid' => $data->chapterid, 'giportfolioid' => $data->giportfolioid];
+
+    $result = $DB->get_records_sql($sql, $params);
+   // return array_keys($result);
+    $result = array_keys($result);
+    
+    // Get the contributions made by parent 
+    $sql = "SELECT userid FROM mdl_giportfolio_contributions WHERE chapterid = ? AND giportfolioid = ? AND  teacherid <> 0 || mentorid <> 0";
+    $params = ['chapterid' => $data->chapterid, 'giportfolioid' => $data->giportfolioid];
+    $result1 = $DB->get_records_sql($sql, $params);
+    $result1 = array_keys($result1);
+    
+    // Return only the ids
+   // $result = array_merge($result, $result1);
+    return $result;
 }

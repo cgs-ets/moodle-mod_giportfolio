@@ -247,6 +247,7 @@ $string['multipleunseen'] = 'Multiple unseen';
 $string['seencontrib'] = 'Seen contribution';
 $string['multipleseen'] = 'Multiple seen';
 $string['teachercontrib'] = 'Teacher\'s contribution';
+$string['parentcontrib'] = 'Parent\'s contribution';
 $string['contrcomment'] = 'Commented';
 $string['contrnocomment'] = ' Not commented ';
 $string['contrcomments'] = 'Multiple comments';

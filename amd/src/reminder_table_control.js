@@ -23,7 +23,6 @@
  */
 
 import CustomEvents from 'core/custom_interaction_events';
-import Notification from 'core/notification';
 import jQuery from 'jquery';
 import Ajax from 'core/ajax';
 import * as Str from 'core/str';
@@ -192,7 +191,7 @@ export const init = ({
         const reminder = document.querySelector('div.reminder');
         reminder.removeAttribute('hidden');
 
-        //display animation
+        // Display animation
         const chapterd = {
             chapterid,
             chapter,
@@ -200,7 +199,7 @@ export const init = ({
             portfolioid,
             course,
             cm: cm
-        }
+        };
 
         Ajax.call([{
 
@@ -212,11 +211,11 @@ export const init = ({
                 textmsg: text
             },
 
-            done: function (response) {
+            done: function(response) {
 
-                //Replace the closed envelopes to open ones. 
+                // Replace the closed envelopes to open ones.
                 updateStatusColumn(users, response.date);
-                //Remove animation
+                // Remove animation
 
                 const reminderImg = document.querySelector('img.reminder-image');
                 jQuery(reminderImg).replaceWith(response.status);

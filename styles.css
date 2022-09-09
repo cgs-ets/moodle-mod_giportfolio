@@ -302,6 +302,7 @@ p.alert.alert-info.giportfolio-restricted-access {
     padding: 0.2rem;
 }
 
+
 #graphcontributors th,
 #graphcontributors td {
     padding: 2px 2px;
@@ -332,6 +333,16 @@ p.alert.alert-info.giportfolio-restricted-access {
 
 #page-mod-giportfolio-submissions .subchapter-icon {
     padding-top: 5px;
+}
+
+/* FIlter rows */
+
+tr.filtered {
+    display: none;
+}
+
+.giportfolio-legend-table td{
+    padding: 0.5rem;
 }
 
 /* Remove the border around the start button when clicked */

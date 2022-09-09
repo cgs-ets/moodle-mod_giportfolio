@@ -49,6 +49,14 @@ $functions = [
         'type' => 'write', // DB rights of the WS function.
         'loginrequired' => true,
         'ajax' => true    // Is this service available to 'internal' ajax calls.
+    ],
+    'mod_giportfolio_filter_student_with_contribution' => [
+        'classname' => 'mod_giportfolio\external\api', // Class containing a reference to the external function.
+        'methodname' => 'filter_student_with_contribution', // External function name.
+        'description' => 'Filter students with contributions in the chapter clicked', // Human readable description of the WS function.
+        'type' => 'read', // DB rights of the WS function.
+        'loginrequired' => true,
+        'ajax' => true    // Is this service available to 'internal' ajax calls.
     ]
 
 ];
