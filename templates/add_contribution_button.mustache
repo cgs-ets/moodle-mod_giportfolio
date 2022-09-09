@@ -20,13 +20,16 @@
   }}
 
 
-<form class="add-contrib" action= "{{url}}" method = "post" class='chapter-navigation'>
-   <input type="hidden" name="id" value ="{{id}}">
-   <input type="hidden" name="chapterid" value ="{{chapterid}}">
-   <input type="hidden" name="mentor" value ="{{mentor}}">
-   <input type="hidden" name="mentee" value ="{{mentee}}">
-   <input type="hidden" name="contribute" value ="{{contribute}}">
+
+<form class="add-contrib {{#locked}}add-contrib-lock{{/locked}}" action= "{{url}}" method = "post" class='chapter-navigation'>
+    <input type="hidden" name="id" value ="{{id}}">
+    <input type="hidden" name="chapterid" value ="{{chapterid}}">
+    <input type="hidden" name="mentor" value ="{{mentor}}">
+    <input type="hidden" name="mentee" value ="{{mentee}}">
+    <input type="hidden" name="contribute" value ="{{contribute}}">
+
     <button type="submit" class="bigicon">
-    <i class="fa fa-plus-circle add-contribution"></i>
+        <i class="fa fa-plus-circle add-contribution"></i>
     </button>
+
 </form>

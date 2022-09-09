@@ -82,6 +82,8 @@ Intentionally omitted features:
 * Comments notification.
 * Import chapters from different portfolios
 * Send custumised contributions reminder message to participants.
+* Send notifications to teachers based on groups and groupings.
+* Print style to match Book activity.
 
 > Settings
 >>

@@ -75,7 +75,7 @@ class renderer extends plugin_renderer_base {
     public function render_print_giportfolio_chapter_dialog_link() {
         $printtext = get_string('printchapter', 'giportfoliotool_print');
         $printicon = $this->output->pix_icon(
-            'chapter',
+            'print',
             $printtext,
             'giportfoliotool_print',
             array('class' => 'icon')
@@ -92,7 +92,7 @@ class renderer extends plugin_renderer_base {
     public function render_print_giportfolio_dialog_link() {
         $printtext = get_string('printgiportfolio', 'giportfoliotool_print');
         $printicon = $this->output->pix_icon(
-            'giportfolio',
+            'print',
             $printtext,
             'giportfoliotool_print',
             array('class' => 'icon')

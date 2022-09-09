@@ -371,8 +371,10 @@ if ((!$allowedit || $cangrade && $mentee != 0) && !$context->is_locked() || is_s
     $ctx->chapterid = $params['chapterid'];
     $ctx->mentor = $mentor;
     $ctx->mentee = $mentee;
+    $ctx->locked = $chapter->locked;
 
     echo $OUTPUT->render_from_template('mod_giportfolio/add_contribution_button', $ctx);
+
     echo '<br><br>';
 }
 
@@ -451,10 +453,11 @@ if ($contriblist) {
     $showurl = '';
 
     foreach ($contriblist as $contrib) {
+        // var_dump($chapter->locked);
         $ismine = ($contrib->userid == $userid);
 
         if ($ismine) {
-
+            
             $baseurl = new moodle_url(
                 '/mod/giportfolio/editcontribution.php',
                 array('id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid)
@@ -495,8 +498,7 @@ if ($contriblist) {
                 $actionsharing = array($shareicon);
             }
 
-            $actions = array($editicon); // Always allow to edit.
-
+            $actions = array($editicon); // Always allow to edit.    
 
             if (!$giportfolio->disabledeletebtn) {
                 // Only allow to edit contributions done by the user.
@@ -524,7 +526,7 @@ if ($contriblist) {
 
         // if the context is frozen, no actions allowed
 
-        if ($context->is_locked() && !is_siteadmin($USER->id)) {
+        if ($context->is_locked() && !is_siteadmin($USER->id) ) {
             $actions = [];
         }
 
@@ -598,6 +600,8 @@ if ($contriblist) {
         if ($contrib->teacherid == 0 && empty(giportfolio_has_seen_contribution($contrib->id))) { // First time the user sees the contrib.
             giportfolio_follow_updates_entry($contrib);
         }
+
+       
     }
 
     if ($giportfolio->displayoutline) {
@@ -605,11 +609,16 @@ if ($contriblist) {
         echo $contribution_outline . '</table><br><hr class ="outline-separator"><br>';
     }
 
-    $PAGE->requires->js_call_amd('mod_giportfolio/import_chapter_control', 'init', ['']); // Drag and Drop.
 
     echo '<p class="giportfolio_outline" >Contributions</p>';
     echo $contribution_buffer;
     echo $OUTPUT->box_end();
+
+     // Hide comment area and actions
+     if ($chapter->locked) { 
+        $hideall = 1;
+        $PAGE->requires->js_call_amd('mod_giportfolio/lockcontrol','init',[$hideall]);
+    }
 }
 
 // SYNERGY.

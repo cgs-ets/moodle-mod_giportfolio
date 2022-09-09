@@ -731,6 +731,22 @@ function xmldb_giportfolio_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2022070501, 'giportfolio');
     }
 
+    if ($oldversion < 2022082501) {
+
+        // Define field locked to be added to giportfolio_chapters.
+        $table = new xmldb_table('giportfolio_chapters');
+        $field = new xmldb_field('locked', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'userid');
+
+        // Conditionally launch add field locked.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2022082500, 'giportfolio');
+    }
+
+
 
    
     return true;

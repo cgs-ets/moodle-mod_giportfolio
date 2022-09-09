@@ -311,6 +311,7 @@ p.alert.alert-info.giportfolio-restricted-access {
     padding: 0.2rem;
 }
 
+
 #graphcontributors th,
 #graphcontributors td {
     padding: 2px 2px;
@@ -341,6 +342,16 @@ p.alert.alert-info.giportfolio-restricted-access {
 
 #page-mod-giportfolio-submissions .subchapter-icon {
     padding-top: 5px;
+}
+
+/* FIlter rows */
+
+tr.filtered {
+    display: none;
+}
+
+.giportfolio-legend-table td{
+    padding: 0.5rem;
 }
 
 /* Remove the border around the start button when clicked */
@@ -414,6 +425,10 @@ a[aria-expanded=false] .fa-caret-up {
 
 .add-contrib a:focus {
     outline: none;
+}
+
+.add-contrib-lock {
+    display: none;
 }
 
 i.fa.fa-plus-circle.add-contribution {
@@ -508,8 +523,15 @@ table#mod-giportfolio-reminder-table {
     display: flex;
 }
 
-/* Drag and drop */
+/* Lock */
+.path-mod-giportfolio .lock-chapter,
+.path-mod-giportfolio .unlock-chapter {
+    margin: 0 2px 0 5px;
+    color: #999999;
+    cursor: pointer;
+}
 
+/* Drag and drop */
 div#giportfolio-import-chapter-overlay {
     top: 0;
     left: 0;

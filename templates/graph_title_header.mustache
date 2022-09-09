@@ -1,6 +1,6 @@
 {{#ischapter}}
-    <div id ="{{chapterid}}" class="rotated-text-container">
-        <span class="rotated-text" title = "{{title}}">{{title}}</span>
+    <div data-chapterid ="{{chapterid}}" class="rotated-text-container">
+        <span data-chapterid = "{{chapterid}}" class="rotated-text" title = "{{title}}">{{title}}</span>
     </div>
     <div class = "subchapter-icon">
         <img class ="icon" alt ="Chapter" title = "Chapter" src="{{icon}}"/>
@@ -22,8 +22,8 @@
 {{! Render subchapter }}
 
 {{^ischapter}}
-    <div id ="{{chapterid}}"class="rotated-text-container">
-         <span class="rotated-text" title = "{{title}}">{{title}}</span>
+    <div data-chapterid ="{{chapterid}}" class="rotated-text-container">
+         <span data-chapterid ="{{chapterid}}" class="rotated-text" title = "{{title}}">{{title}}</span>
     </div>
     <div class = "subchapter-icon">
         <img class ="icon" alt ="Subchapter" title = "Subchapter" src="{{icon}}"/>
