@@ -952,12 +952,12 @@ function giportfolio_set_mentor_info($contributions, $menteeid) {
 // Part of Allow a teacher to make a contribution on behalf of a student.
 function giportfolio_get_user_default_chapter($giportfolioid) {
     global $DB;
-    $sql = "SELECT TOP(1)  chapterid  FROM mdl_giportfolio_contributions  
-            WHERE  giportfolioid = {$giportfolioid}
-          --  LIMIT 1;
-           ";
+    $table = 'giportfolio_contributions';
+    $conditions = ['giportfolioid' => $giportfolioid];
 
-    return  $DB->get_record_sql($sql);
+    $r = array_values($DB->get_records($table,  $conditions, '', 'chapterid', 1, 1));
+    return($r[0]);
+
 }
 
 
@@ -1540,7 +1540,7 @@ function giportfolio_filter_graders($userid, $cm) {
 }
 
 /**
- * If the activity has its common module settings  with a grouping set. 
+ * If the activity has its common module settings  with a grouping set.
  * Filter the graders by the group both the student and grader belongs to in this grouping.
  * Otherwise, send to the teachers in every group in this course.
  */
@@ -1553,7 +1553,7 @@ function giportfolio_filter_graders_by_grouping($data) {
     if (($data->cm)->groupingid != 0) { // The activity has a grouping set in the common settings.
         $groups = isset($groups[($data->cm)->groupingid]) ? $groups[($data->cm)->groupingid] :  []; // Get the group from the grouping collection.
     } else {
-        $groups = $groups[0]; // The activity doesnt have a grouping selected but the course has groups. 
+        $groups = $groups[0]; // The activity doesnt have a grouping selected but the course has groups.
         //  Only send notification to teachers in the groups this user belongs to.
     }
 
@@ -1711,7 +1711,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     require_once($CFG->libdir . '/tablelib.php');
     $table = new flexible_table('mod-giportfolio-graph-contribution');
 
-    $table->initialbars(true); // Display the alphabet 
+    $table->initialbars(true); // Display the alphabet
     $table->define_columns($tablecolumns);
     $table->define_headers($tableheaders);
     $table->define_baseurl($PAGE->url);
@@ -1722,7 +1722,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $table->column_class('fullname', 'fullname');
 
     foreach ($table->column_class as $name => $column) {
-        if (!in_array($name, ['picture', 'fullname', get_string('additionstitle', 'giportfolio')])) {  // These are the columns for the chapter titles          
+        if (!in_array($name, ['picture', 'fullname', get_string('additionstitle', 'giportfolio')])) {  // These are the columns for the chapter titles
             $table->column_class($name, 'ch-title');
         }
     }
@@ -1881,7 +1881,7 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
 
     $table = new flexible_table('mod-giportfolio-reminder-table');
 
-    $table->initialbars(true); // Display the alphabet 
+    $table->initialbars(true); // Display the alphabet
     $table->define_columns($tablecolumns); //$tablecolumns
     $table->define_headers($tableheaders);
     $table->define_baseurl($PAGE->url);
@@ -2051,15 +2051,15 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
     list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
 
     // Get all the contributions done by this user.
-    $sql = "SELECT id AS 'contribid', chapterid, teacherid 
-            FROM {giportfolio_contributions} 
+    $sql = "SELECT id AS 'contribid', chapterid, teacherid
+            FROM {giportfolio_contributions}
             WHERE chapterid $insql AND userid = $user->id AND teacherid = 0";
 
     $contributions = $DB->get_records_sql($sql, $inparams);
 
     // Get teachers contributions in this chapter
-    $sql = "SELECT id AS 'contribid', chapterid, userid, teacherid 
-            FROM {giportfolio_contributions} 
+    $sql = "SELECT id AS 'contribid', chapterid, userid, teacherid
+            FROM {giportfolio_contributions}
             WHERE chapterid $insql AND userid = $user->id AND teacherid <> 0";
 
     $teachercontributions = $DB->get_records_sql($sql, $inparams);
@@ -2069,8 +2069,8 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
     $teachercontributions = array_keys($teachercontributions);
 
     // Get parents contributions in this chapter
-    $sql = "SELECT id AS 'contribid', chapterid, userid, teacherid 
-            FROM {giportfolio_contributions} 
+    $sql = "SELECT id AS 'contribid', chapterid, userid, teacherid
+            FROM {giportfolio_contributions}
             WHERE chapterid $insql AND userid = $user->id AND mentorid <> 0";
 
     $parentcontributions = $DB->get_records_sql($sql, $inparams);
@@ -2148,7 +2148,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
                 } else{
                     $links[] =  html_writer::tag('a', "$nocontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
                 }
-             
+
             }
             continue;
         }
@@ -2163,7 +2163,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
                 $links[] = html_writer::tag('a', " $seencontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
             }
 
-            // The chapter has been seen before and there are new contributions. 
+            // The chapter has been seen before and there are new contributions.
             if (giportfolio_in_array($chapterid, $cnotseen)) {
                 $link = array_pop($links);
                 if ($countnocomments == 0) {
@@ -2229,7 +2229,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
     return [$links, $additions];
 }
 
-// Helper functions for giportfolio_get_contributions_to_display. 
+// Helper functions for giportfolio_get_contributions_to_display.
 function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $userid, $cm) {
     global $DB, $PAGE, $USER;
 
@@ -2249,7 +2249,7 @@ function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $useri
 
         if ($cids) {
             $cids = implode(',', array_keys($DB->get_records_sql($sql)));
-            $sql = "SELECT contributionid FROM mdl_giportfolio_follow_updates 
+            $sql = "SELECT contributionid FROM mdl_giportfolio_follow_updates
                     WHERE userid = $USER->id AND contributionid  IN ($cids) AND giportfolioid = $giportfolioid";
             $contributionsseen = array_keys($DB->get_records_sql($sql));
         }
@@ -2425,7 +2425,7 @@ function giportfolio_set_last_chapter_seen($giportfolioid, $chapterid = null) {
     $table = 'giportfolio_last_seen';
     $conditions = ['userid' => $USER->id, 'giportfolioid' => $giportfolioid];
 
-    if ($r = $DB->get_record($table, $conditions)) {  // update 
+    if ($r = $DB->get_record($table, $conditions)) {  // update
         $r->chapterid = $chapterid;
         $r->timemodified = time();
         $DB->update_record($table, $r);
@@ -2608,6 +2608,7 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                 if ($usercontribution) {
                     $params = array('id' => $cm->id, 'userid' => $puser->id);
                     $cid = giportfolio_get_user_default_chapter($giportfolio->id);
+                    var_dump($cid);
                     $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id, 'chapterid' => $cid->chapterid /*, 'cont' => 'yes'*/);
 
                     $viewurl = new moodle_url('/mod/giportfolio/viewcontribute.php', $params);
@@ -2791,7 +2792,7 @@ class giportfolio_file_info extends file_info {
 function get_student_alias($course) {
     global $DB;
     $coursecontext = context_course::instance($course->id);
-    $alias = 'Student'; // default;    
+    $alias = 'Student'; // default;
     $name = $DB->get_field('role_names', 'name', array('contextid' => $coursecontext->id, 'roleid' => 5));
 
     $alias = !$name ? $alias : $name;
@@ -2865,7 +2866,7 @@ function giportfolio_table_columns($giportfolioid, $context) {
 function giportfolio_get_giportfolio_chaptertitle($giportfolioid) {
     global $DB;
 
-    $sql = "SELECT   id  as  chapterid, title  FROM mdl_giportfolio_chapters 
+    $sql = "SELECT   id  as  chapterid, title  FROM mdl_giportfolio_chapters
     WHERE  giportfolioid = {$giportfolioid}  AND userid = 0";   // Just bring the chapters created by the teacher
 
     return  $DB->get_records_sql($sql);
@@ -2876,11 +2877,11 @@ function giportfolio_send_comment_notification($contributionid) {
 
     global $DB, $COURSE;
 
-    $sql = "SELECT cont.id, gp.id AS 'giportfolioid', gp.name, gc.id AS 'chapterid', 
-            gc.title,  cont.title AS 'contributiontitle', cont.userid, gp.allowmentorcontrib, 
+    $sql = "SELECT cont.id, gp.id AS 'giportfolioid', gp.name, gc.id AS 'chapterid',
+            gc.title,  cont.title AS 'contributiontitle', cont.userid, gp.allowmentorcontrib,
             gp.notifycommententry, gp.notifycommententryteacher
-            FROM mdl_giportfolio AS gp 
-            JOIN mdl_giportfolio_chapters AS gc ON gp.id = gc.giportfolioid 
+            FROM mdl_giportfolio AS gp
+            JOIN mdl_giportfolio_chapters AS gc ON gp.id = gc.giportfolioid
             JOIN mdl_giportfolio_contributions AS cont ON cont.chapterid = gc.id
             WHERE cont.id =  $contributionid;";
 
@@ -3066,11 +3067,11 @@ function giportfolio_minimise_recipient_record($recipient) {
     return $recipient;
 }
 
-// Get the students that did contribute 
+// Get the students that did contribute
 function giportfolio_get_students_with_no_contributions($chapterid, $giportfolioid) {
     global $DB;
 
-    $sql = "SELECT distinct userid 
+    $sql = "SELECT distinct userid
             FROM mdl_giportfolio_contributions
             WHERE  giportfolioid = $giportfolioid AND chapterid = $chapterid;";
 
@@ -3145,7 +3146,7 @@ function filter_student_with_contribution($data) {
     $params = ['chapterid' => $data->chapterid, 'giportfolioid' => $data->giportfolioid];
 
     $result = $DB->get_records_sql($sql, $params);
-  
+
     $result = array_keys($result);
 
     return $result;
