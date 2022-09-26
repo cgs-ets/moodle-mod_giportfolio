@@ -2608,7 +2608,6 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                 if ($usercontribution) {
                     $params = array('id' => $cm->id, 'userid' => $puser->id);
                     $cid = giportfolio_get_user_default_chapter($giportfolio->id);
-                    var_dump($cid);
                     $paramscontrib = array('id' => $cm->id, 'mentee' => $puser->id, 'chapterid' => $cid->chapterid /*, 'cont' => 'yes'*/);
 
                     $viewurl = new moodle_url('/mod/giportfolio/viewcontribute.php', $params);
