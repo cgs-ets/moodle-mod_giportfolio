@@ -215,7 +215,7 @@ body#page-mod-giportfolio-editcontribution.mod_giportfolio .generalbox {
 
 /* Hide intro from the top of the chapter. */
 .path-mod-giportfolio .activity-header {
-    display: none; 
+    display: none;
 }
 /* Moodle 4 */
 .path-mod-giportfolio #region-main {
@@ -626,3 +626,155 @@ span.merging-message {
 }
 
 /* https://www.flaticon.com/free-icons/import Import icons created by Freepik - Flaticon</a> */
+
+
+@media screen and (min-width: 300px) and (max-width: 800px) {
+
+    .mod_giportfolio button.bigicon {
+       color: white;
+       height: fit-content;
+       width: min-content;
+   }
+
+   .mod_giportfolio button.bigicon.inactive {
+       color: white;
+       height: fit-content;
+       width: min-content;
+   }
+
+   .mod_giportfolio .navtop [method="GET"] > button.bigicon,
+   .mod_giportfolio .navtop [method="post"] > button.bigicon,
+   .mod_giportfolio .navbottom [method="GET"] > button.bigicon,
+   .mod_giportfolio .navbottom [method="post"] > button.bigicon {
+       background-color: #66A8D8;
+       width: min-content;
+       color: white;
+       border-radius: 0.5rem
+   }
+
+   .mod_giportfolio .navtop [method="GET"] > button.bigicon,
+   .mod_giportfolio .navbottom [method="GET"] > button.bigicon {
+        margin-left: 0px;
+   }
+
+   .mod_giportfolio .navtop [method="post"] > button.bigicon.inactive,
+   .mod_giportfolio .navbottom [method="post"] > button.bigicon.inactive {
+         background-color: #E2E6EA;
+         color: white;
+   }
+
+}
+
+/* https://www.flaticon.com/free-icons/import Import icons created by Freepik - Flaticon</a> */
+/*Ipads*/
+@media only screen and (device-width: 768px) {
+ /* For general iPad layouts */
+   .mod_giportfolio button.bigicon {
+       color: white;
+       height: fit-content;
+       width: min-content;
+   }
+
+   .mod_giportfolio button.bigicon.inactive {
+       color: white;
+       height: fit-content;
+       width: min-content;
+   }
+
+   .mod_giportfolio .navtop [method="GET"] > button.bigicon,
+   .mod_giportfolio .navtop [method="post"] > button.bigicon,
+   .mod_giportfolio .navbottom [method="GET"] > button.bigicon,
+   .mod_giportfolio .navbottom [method="post"] > button.bigicon {
+       background-color: #66A8D8;
+       width: min-content;
+       color: white;
+       border-radius: 0.5rem
+   }
+
+   .mod_giportfolio .navtop [method="GET"] > button.bigicon,
+   .mod_giportfolio .navbottom [method="GET"] > button.bigicon {
+        margin-left: 0px;
+   }
+
+   .mod_giportfolio .navtop [method="post"] > button.bigicon.inactive,
+   .mod_giportfolio .navbottom [method="post"] > button.bigicon.inactive {
+         background-color: #E2E6EA;
+         color: white;
+   }
+
+}
+
+
+
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
+ /* For portrait layouts only */
+    .mod_giportfolio button.bigicon {
+       color: white;
+       height: fit-content;
+       width: min-content;
+   }
+
+   .mod_giportfolio button.bigicon.inactive {
+       color: white;
+       height: fit-content;
+       width: min-content;
+   }
+
+   .mod_giportfolio .navtop [method="GET"] > button.bigicon,
+   .mod_giportfolio .navtop [method="post"] > button.bigicon,
+   .mod_giportfolio .navbottom [method="GET"] > button.bigicon,
+   .mod_giportfolio .navbottom [method="post"] > button.bigicon {
+       background-color: #66A8D8;
+       width: min-content;
+       color: white;
+       border-radius: 0.5rem
+   }
+
+   .mod_giportfolio .navtop [method="GET"] > button.bigicon,
+   .mod_giportfolio .navbottom [method="GET"] > button.bigicon {
+        margin-left: 0px;
+   }
+
+   .mod_giportfolio .navtop [method="post"] > button.bigicon.inactive,
+   .mod_giportfolio .navbottom [method="post"] > button.bigicon.inactive {
+         background-color: #E2E6EA;
+         color: white;
+   }
+
+}
+
+@media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
+ /* For landscape layouts only */
+  .mod_giportfolio button.bigicon {
+       color: white;
+       height: fit-content;
+       width: min-content;
+   }
+
+   .mod_giportfolio button.bigicon.inactive {
+       color: white;
+       height: fit-content;
+       width: min-content;
+   }
+
+   .mod_giportfolio .navtop [method="GET"] > button.bigicon,
+   .mod_giportfolio .navtop [method="post"] > button.bigicon,
+   .mod_giportfolio .navbottom [method="GET"] > button.bigicon,
+   .mod_giportfolio .navbottom [method="post"] > button.bigicon {
+       background-color: #66A8D8;
+       width: min-content;
+       color: white;
+       border-radius: 0.5rem
+   }
+
+   .mod_giportfolio .navtop [method="GET"] > button.bigicon,
+   .mod_giportfolio .navbottom [method="GET"] > button.bigicon {
+        margin-left: 0px;
+   }
+
+   .mod_giportfolio .navtop [method="post"] > button.bigicon.inactive,
+   .mod_giportfolio .navbottom [method="post"] > button.bigicon.inactive {
+         background-color: #E2E6EA;
+         color: white;
+   }
+}
