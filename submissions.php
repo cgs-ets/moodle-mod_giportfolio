@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of giportfolio module for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -51,9 +50,8 @@ if ($currenttab !== 'all') {
 
 $PAGE->set_url($url);
 require_login($course->id, false, $cm);
+$context = context_module::instance($cm->id);
 
-
-$context = context_module::instance($cm->id); 
 if (!$context->is_locked() ) {  // To be able to display submission page when context is frozen.
     require_capability('mod/giportfolio:gradegiportfolios', $context);
 }
@@ -65,7 +63,7 @@ $PAGE->set_title(format_string($giportfolio->name));
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($giportfolio->name));
 
-$alias = get_student_alias($COURSE); // Pick the alias given to the students
+$alias = get_student_alias($COURSE); // Pick the alias given to the students.
 
 // Set up the list of tabs.
 $allurl = new moodle_url($PAGE->url);
@@ -89,12 +87,12 @@ echo $OUTPUT->tabtree($tabs, $currenttab);
 
 // Check to see if groups are being used in this assignment.
 // Find out current groups mode.
-$groupmode = groups_get_activity_groupmode($cm); //Separate groups: 1 No groups: 0 // visible groups: 2
+$groupmode = groups_get_activity_groupmode($cm); // Separate groups: 1 No groups: 0 // visible groups: 2.
 $currentgroup = groups_get_activity_group($cm, true);
 
 
 
-// Change capability check to be able to display  users when context is frozen. CGS
+// Change capability check to be able to display  users when context is frozen. CGS.
 $allusers = get_users_by_capability($context, 'mod/giportfolio:printclassplan', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
     'u.firstname ASC', '', '', $currentgroup, '', false, true);
 
@@ -125,7 +123,7 @@ $strsaveallfeedback = get_string('saveallfeedback', 'mod_giportfolio');
 $fastg = optional_param('fastg', 0, PARAM_BOOL);
 
 if ($fastg) { // Update the grade and the feedback.
-   
+
     if (isset($_POST["menu"])) {
         $menu = $_POST["menu"];
         giportfolio_quick_update_grades($cm->id, $menu, $currentgroup, $giportfolio->id);
@@ -139,7 +137,7 @@ if ($fastg) { // Update the grade and the feedback.
     echo html_writer::end_tag('div');
 }
 
-/// create the user filter form
+// create the user filter form.
 
 $mform = new giportfolio_search_form(null, array('id' => $id, 'tab' => $currenttab));
 $mform->display();
@@ -182,7 +180,7 @@ switch ($currenttab) {
         break;
 
     default:
-    
+
         giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers,
         $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter);
         break;
@@ -243,7 +241,6 @@ function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
             $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id in ($chids)";
         }
 
-        
         return $DB->get_records_sql($sql);
     }
 
@@ -253,15 +250,14 @@ function display_chapters_not_seen( $giportfolio, $contributorid, $cm) {
     global $DB, $PAGE;
 
     $chapters =  get_updated_chapters_not_seen($giportfolio, $contributorid, $cm);
-   
     $morethanthree = count($chapters) > 3;
     $links = '';
     $index = 0;
 
-    // In case the chapter has no content, by pass it
+    // In case the chapter has no content, by pass it.
     $conditions = array ('giportfolioid' => $giportfolio->id, 'userid' => $contributorid);
     $countcontributions = $DB->count_records('giportfolio_contributions', $conditions);
- 
+
     if ($countcontributions > 0 ) {
         foreach ($chapters as $chapter) {
 
@@ -284,7 +280,7 @@ function display_chapters_not_seen( $giportfolio, $contributorid, $cm) {
 
         if ($morethanthree) {
             $params = ["class" => "giportfolio-more", "id" => $contributorid, 'title' => 'Show More'];
-            $icon = '<i class = "fa">&#xf067;</i>'; 
+            $icon = '<i class = "fa">&#xf067;</i>';
             $links .= html_writer::span($icon, '', $params);
             $jsmodule = array(
                 'name' => 'mod_giportfolio_morechapters',

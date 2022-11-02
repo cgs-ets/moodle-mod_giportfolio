@@ -1,3 +1,6 @@
+.mod_giportfolio .giportfolio_actions .singlebutton {
+    margin-top: 1rem;
+}
 .mod_giportfolio .giportfolio_chapter_title {
     font-family: Tahoma, Verdana, Arial, Helvetica, sans-serif;
     text-align: left;
@@ -630,6 +633,9 @@ span.merging-message {
 
 @media screen and (min-width: 300px) and (max-width: 800px) {
 
+    .mod_giportfolio .giportfolio_actions .singlebutton {
+        margin-top: 0;
+    }
     .mod_giportfolio button.bigicon {
        color: white;
        height: fit-content;

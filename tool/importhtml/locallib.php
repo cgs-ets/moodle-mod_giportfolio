@@ -65,8 +65,8 @@ function toolgiportfolio_importhtml_add_chapters_to_portfolio(stdClass $data) {
         $mapchapterids[$chid] = $DB->insert_record('giportfolio_chapters', $record, true, true);
     }
 
-    if(!$hasitems) { // In this case, the dragged chapter was from a portfolio that is not in this DB.
-        throw new Exception ("Fail"); 
+    if (!$hasitems) { // In this case, the dragged chapter was from a portfolio that is not in this DB.
+        throw new Exception ("Fail");
     }
 
     // Copy the files that are in the chapter intro (if they are).
@@ -90,12 +90,12 @@ function toolgiportfolio_importhtml_add_chapters_to_portfolio(stdClass $data) {
     }
 
     $contributions = toolgiportfolio_importhtml_copy_contributions($data->chapterids, $mapchapterids, $data->giportfolioid, $data->chapterandcoursemodule);
+
     if (!empty($contributions)) {
         toolgiportfolio_importhtml_copy_files($data->cm, $contributions);
         toolgiportfolio_importhtml_copy_comments($data->cm, $contributions);
         toolgiportfolio_importhtml_copy_graph_contributors($contributions);
     }
-
 
     $rs->close();
 
@@ -157,6 +157,7 @@ function toolgiportfolio_importhtml_copy_contributions($chapterids, $newchapteri
             $contributions[$originalcid] = $data;
         }
     } catch (Exception $e) {
+        // TODO.
     }
 
     $rs->close();
@@ -212,7 +213,7 @@ function toolgiportfolio_importhtml_copy_files($cm, $contributions) {
 function toolgiportfolio_importhtml_copy_comments($cm, $contributions) {
 
     global $DB;
-   
+
     if (count($contributions) == 0) {
         return;
     }
