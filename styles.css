@@ -10,6 +10,10 @@
     margin-left: 0;
     margin-bottom: 20px;
 }
+.path-mod-giportfolio .header-maxwidth,
+.path-mod-giportfolio ul.nav.more-nav.nav-tabs {
+    max-width: 100% !important;
+}
 
 /* New style for the navigation buttons*/
 .chapter-navigation {

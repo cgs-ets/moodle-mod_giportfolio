@@ -39,7 +39,7 @@ $context = \context_module::instance($cm->id);
 require_capability('giportfoliotool/importhtml:import', $context);
 
 $PAGE->set_url('/mod/giportfolio/tool/importhtml/index.php', array('id' => $id));
-$PAGE->add_body_class('limitedwidth');
+// $PAGE->add_body_class('limitedwidth');
 $PAGE->set_title($giportfolio->name);
 $PAGE->set_heading($course->fullname);
 
