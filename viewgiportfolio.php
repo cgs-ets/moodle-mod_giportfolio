@@ -182,7 +182,7 @@ if ($chapter->hidden and !$viewhidden) {
 $params = array('id' => $id, 'chapterid' => $chapterid, 'mentee' => $mentee); // We need the mentee param for the settings navigation.
 
 $PAGE->set_url('/mod/giportfolio/viewgiportfolio.php', $params);
-$PAGE->add_body_class('limitedwidth');
+//$PAGE->add_body_class('limitedwidth');
 
 // Unset all page parameters.
 unset($id);

@@ -96,7 +96,7 @@ if ($giportfolio->skipintro) {
 // Read chapters.
 
 $PAGE->set_url('/mod/giportfolio/view.php', array('id' => $id));
-$PAGE->add_body_class('limitedwidth '); // Moodle 4 width
+// $PAGE->add_body_class('limitedwidth '); // Moodle 4 width
 // Unset all page parameters.
 unset($id);
 unset($bid);
@@ -135,7 +135,7 @@ $viewdata->noneditingteacher = is_non_editing_teacher();
 $viewdata->noneditingteachercancontribute = $noneditingteachercancontribute == 1;
 
 $usersgiportfolios = giportfolio_get_giportfolios_number($giportfolio->id, $cm->id);
-$viewdata->submittedportfolios = html_writer::link(new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id)), get_string('submitedporto', 'mod_giportfolio') . ' ' . $usersgiportfolios);
+$viewdata->submittedportfolios = html_writer::link(new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id, 'tab' => 'graphcontributors')), get_string('submitedporto', 'mod_giportfolio') . ' ' . $usersgiportfolios);
 
 $menteebuttons = [];
 
