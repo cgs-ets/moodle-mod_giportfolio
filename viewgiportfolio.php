@@ -294,7 +294,7 @@ if (has_capability('giportfoliotool/print:print', $context)) {
 
 if (has_capability('mod/giportfolio:viewgiportfolios', $context)) {
     // Grading link.
-    $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id));
+    $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id, 'tab' =>'graphcontributors'));
     $extralinks .= html_writer::link($url, get_string('studentgiportfolio', 'mod_giportfolio', $alias));
     $extralinks .= html_writer::empty_tag('br');
 }
