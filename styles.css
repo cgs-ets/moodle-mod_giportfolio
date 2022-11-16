@@ -11,7 +11,7 @@
     margin-bottom: 20px;
 }
 .path-mod-giportfolio .header-maxwidth,
-.path-mod-giportfolio ul.nav.more-nav.nav-tabs {
+.path-mod-giportfolio .secondary-navigation {
     max-width: 100% !important;
 }
 
