@@ -2204,7 +2204,7 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
              <input type="hidden" name="sesskey" value="' . $USER->sesskey . '" />';
 
         echo '</form>';
-        $PAGE->requires->js_call_amd('mod_giportfolio/reminder_parents_table_control', 'init', [$bulkoptions]);
+        $PAGE->requires->js_call_amd('mod_giportfolio/reminder_table_control', 'init', [$bulkoptions]);
     }
 }
 
