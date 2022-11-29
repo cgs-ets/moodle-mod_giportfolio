@@ -238,7 +238,7 @@ $string['navigatebychapter'] = 'Navigate by chapter';
 $string['additionstitle'] = 'Additions';
 
 $string['userwithnocontrib'] = '{$a} contribution reminder';
-$string['parentuserwithnocontrib'] = '{$a} contribution reminder (for parents)';
+$string['parentuserwithnocontrib'] = '{$a} contribution reminder (to parents)';
 
 $string['legends'] = 'Legend';
 $string['nocontrib'] = 'No contribution made by {$a->name}';
