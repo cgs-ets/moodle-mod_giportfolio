@@ -139,11 +139,11 @@ if ($fastg) { // Update the grade and the feedback.
     echo html_writer::end_tag('div');
 }
 
-// create the user filter form.
+// Create the user filter form.
 
 $mform = new giportfolio_search_form(null, array('id' => $id, 'tab' => $currenttab));
 $mform->display();
-$customtabs = ['graphcontributors', 'contributionreminder'];
+$customtabs = ['graphcontributors', 'contributionreminder', 'contributionreminderparents'];
 
 // Print quickgrade form around the table.
 if ($quickgrade && !in_array($currenttab, $customtabs)) {
@@ -171,7 +171,6 @@ $listusersids = "'" . implode("', '", $alluserids) . "'";
 
 switch ($currenttab) {
     case 'graphcontributors':
-
         giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm);
         break;
 
@@ -180,9 +179,16 @@ switch ($currenttab) {
         giportfolio_reminder_chapter_selector($cm, $urlroot, false, $giportfolio, $chapterid);
         giportfolio_reminder_table($PAGE, $allusers, $context, $username, $listusersids, $page, $giportfolio, $course, $chapterid, $cm->id);
         break;
+
     case 'contributionreminderparents':
         $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab . '&chapterid' . $chapterid;
-        giportfolio_reminder_chapter_selector($cm, $urlroot, false, $giportfolio, $chapterid); //giportfolio_reminder_parents_table
+        $forstudents = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=contributionreminder'. '&chapterid' . $chapterid;
+        giportfolio_reminder_chapter_selector($cm, $urlroot, false, $giportfolio, $chapterid);
+        $output .= html_writer::start_div('parent-warning', ['class' => 'alert alert-warning']);
+        $output .= html_writer::tag('span', get_string('parentuserwithnocontribwarning', 'mod_giportfolio', $forstudents) );
+        $output .= html_writer::end_tag('span');
+        $output .= html_writer::end_div('parent-warning');
+        echo $output;
         giportfolio_reminder_parents_table($PAGE, $allusers, $context, $username, $listusersids, $page, $giportfolio, $course, $chapterid, $cm->id);
         break;
 

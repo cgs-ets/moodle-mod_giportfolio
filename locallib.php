@@ -1832,7 +1832,7 @@ function giportfolio_reminder_chapter_selector($cm, $urlroot, $return = false, $
 
     $chapters = giportfolio_preload_chapters($giportfolio);
 
-    $displaylist = ['Choose...'];
+    $displaylist = [];
 
     foreach ($chapters as $chapter) {
         $displaylist[$chapter->id] = $chapter->title;
@@ -1840,7 +1840,7 @@ function giportfolio_reminder_chapter_selector($cm, $urlroot, $return = false, $
 
     $output = '';
 
-    $select = new single_select($urlroot, 'chapterid', $displaylist, $chapterid, null, 'selectchapter');
+    $select = new single_select($urlroot, 'chapterid', $displaylist, $chapterid, array('' => 'choosedots'), 'selectchapter');
     $select->label = get_string("visiblechapter", 'mod_giportfolio');
     $output = $OUTPUT->render($select);
 
@@ -2036,7 +2036,7 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
     echo html_writer::end_div();
 
     $tableheaders = array_merge([$OUTPUT->render($mastercheckbox),  'Student', 'Status', 'Date Sent']);
-    $tablecolumns = array_merge([ '', 'student', 'Status', 'Date Sent']);
+    $tablecolumns = array_merge([ '', 'Student', 'Status', 'Date Sent']);
     $extrafields = get_extra_user_fields($context);
 
     require_once($CFG->libdir . '/tablelib.php');
@@ -2132,7 +2132,9 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
 
                 }
 
-                $sql = "SELECT *  FROM mdl_giportfolio_reminder_sent WHERE userid IN ($puser->parentsid) AND chapterid = $chapterid;";
+                $sql = "SELECT *
+                        FROM mdl_giportfolio_reminder_sent
+                        WHERE userid IN ($puser->parentsid) AND chapterid = $chapterid;";
 
                 if ($chapters = $DB->get_record_sql($sql)) {
                     $datemod = userdate($chapters->timemodified, get_string('strftimedaydate', 'core_langconfig'));
