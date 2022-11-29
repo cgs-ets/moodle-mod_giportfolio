@@ -72,6 +72,7 @@ $sincelastloginurl = new moodle_url($PAGE->url, array('tab' => 'sincelastlogin')
 $nocommentsurl = new moodle_url($PAGE->url, array('tab' => 'nocomments'));
 $graphcontributorsurl = new moodle_url($PAGE->url, array('tab' => 'graphcontributors'));
 $userwithnocontributionurl = new moodle_url($PAGE->url, array('tab' => 'contributionreminder'));
+$userwithnocontributionurlparents = new moodle_url($PAGE->url, array('tab' => 'contributionreminderparents'));
 
 $tabs = array(
     new tabobject('all', $allurl, get_string('allusers', 'mod_giportfolio', $alias)),
@@ -79,6 +80,7 @@ $tabs = array(
     new tabobject('nocomments', $nocommentsurl, get_string('nocomments', 'mod_giportfolio')),
     new tabobject('graphcontributors', $graphcontributorsurl, get_string('graphofcontributors', 'mod_giportfolio')),
     new tabobject('contributionreminder', $userwithnocontributionurl, get_string('userwithnocontrib', 'mod_giportfolio', $alias)),
+    new tabobject('contributionreminderparents', $userwithnocontributionurlparents, get_string('parentuserwithnocontrib', 'mod_giportfolio', $alias)),
 );
 
 echo get_string('studentgiportfolios', 'mod_giportfolio', $alias);
@@ -177,6 +179,11 @@ switch ($currenttab) {
         $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab . '&chapterid' . $chapterid;
         giportfolio_reminder_chapter_selector($cm, $urlroot, false, $giportfolio, $chapterid);
         giportfolio_reminder_table($PAGE, $allusers, $context, $username, $listusersids, $page, $giportfolio, $course, $chapterid, $cm->id);
+        break;
+    case 'contributionreminderparents':
+        $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab . '&chapterid' . $chapterid;
+        giportfolio_reminder_chapter_selector($cm, $urlroot, false, $giportfolio, $chapterid); //giportfolio_reminder_parents_table
+        giportfolio_reminder_parents_table($PAGE, $allusers, $context, $username, $listusersids, $page, $giportfolio, $course, $chapterid, $cm->id);
         break;
 
     default:

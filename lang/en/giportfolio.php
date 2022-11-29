@@ -227,7 +227,7 @@ $string['visibilityexplain_help'] = '
 $string['allowmentorcontrib'] = 'Allow Mentor contribution';
 $string['allownetcontribute'] = 'Allow Non-editing teachers contribution';
 $string['disabledeletebtn'] = 'Disable delete button from contributions and comments';
-$string['onbehalf'] = 'Contribute on behalf 
+$string['onbehalf'] = 'Contribute on behalf
 of {$a->name}';
 $string['contribute'] = 'Contribute';
 $string['chaptersupdated'] = 'Updated Chapters';
@@ -238,6 +238,7 @@ $string['navigatebychapter'] = 'Navigate by chapter';
 $string['additionstitle'] = 'Additions';
 
 $string['userwithnocontrib'] = '{$a} contribution reminder';
+$string['parentuserwithnocontrib'] = '{$a} contribution reminder (for parents)';
 
 $string['legends'] = 'Legend';
 $string['nocontrib'] = 'No contribution made by {$a->name}';
@@ -262,7 +263,7 @@ $string['filter'] = 'Filter';
 $string['nofilters'] = 'No filters';
 $string['messageselectadd'] = 'Send E-mail';
 $string['remindernotification_subject'] = 'Portfolio contribution reminder';
-$string['remindernotificationmodal_body'] = '<p>Hi, <br> 
+$string['remindernotificationmodal_body'] = '<p>Hi, <br>
 It is time to add your contribution to \'{$a->chapter}\' in  \'{$a->portfolio}\' in course \'{$a->course}\'. <br><br>
 You can view this chapter and make your contribution at: <a href="{$a->link}" target = "_blank">{$a->chapter}</a></p>' ;
 $string['teacherchaptershiddenexception'] = 'All chapters are hidden. Please return to the course page and turn editing on.';
@@ -278,4 +279,4 @@ $string['linktochapter_desc'] = 'A link to this chapter will automatically be in
 
 
 
-         
+

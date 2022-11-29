@@ -911,11 +911,13 @@ function giportfolio_get_userviewtoc($chapters, $chapter, $giportfolio, $cm, $ed
     return $toc;
 }
 
-function giportfolio_get_collaborative_status($giportfolio) { // Check if the activity is allowing users to add chapters.
+function giportfolio_get_collaborative_status($giportfolio) {
+    // Check if the activity is allowing users to add chapters.
     return $giportfolio->participantadd;
 }
 
-function giportfolio_get_user_contributions($chapterid, $giportfolioid, $ids, $showshared = false) { // Return user contributions for a chapter-page.
+function giportfolio_get_user_contributions($chapterid, $giportfolioid, $ids, $showshared = false) {
+    // Return user contributions for a chapter-page.
     global $DB;
 
     $sharedsql = '';
@@ -956,7 +958,8 @@ function giportfolio_get_user_default_chapter($giportfolioid) {
 }
 
 
-function giportfolio_get_user_chapters($giportfolioid, $userid) {  //user added chapters for a giportfolio.
+function giportfolio_get_user_chapters($giportfolioid, $userid) {
+    // user added chapters for a giportfolio.
     global $DB;
 
     $sql = "SELECT * FROM {giportfolio_chapters}
@@ -974,7 +977,8 @@ function giportfolio_get_user_chapters($giportfolioid, $userid) {  //user added 
     }
 }
 
-function giportfolio_get_user_contribution_status($giportfolioid, $userid) { // Return (if exists) the last contribution date to a giportfolio for a user.
+function giportfolio_get_user_contribution_status($giportfolioid, $userid) {
+    // Return (if exists) the last contribution date to a giportfolio for a user.
 
     global $DB;
 
@@ -1194,7 +1198,8 @@ function giportfolio_quick_update_grades($id, $menu, $currentgroup, $giportfolio
     }
 }
 
-function giportfolio_quick_update_feedback($id, $menu, $currentgroup, $giportfolioid) { // Update feedback from quick gradelib form.
+function giportfolio_quick_update_feedback($id, $menu, $currentgroup, $giportfolioid) {
+    // Update feedback from quick gradelib form.
     global $USER, $DB;
     $context = context_module::instance($id);
     $allportousers = get_users_by_capability(
@@ -1299,7 +1304,8 @@ function giportfolio_get_first_userchapter($giportfolioid, $chapterid, $userid) 
     return $DB->get_record_sql($sql, $params);
 }
 
-function giportfolio_check_user_chapter($chapter, $userid) { // Check if chapter is user defined one.
+function giportfolio_check_user_chapter($chapter, $userid) {
+    // Check if chapter is user defined one.
     if (!is_object($chapter)) {
         throw new coding_exception('Must pass full chapter object to giportfolio_check_user_chapter');
     }
@@ -1399,7 +1405,7 @@ function giportfolio_user_mentor_of_student($userid) {
                         WHERE c.contextlevel = ?
                         AND c.instanceid = ?)";
     $params = array(
-        $USER->id, //Where current user
+        $USER->id, // Where current user
         $mentorrole->id, // is a mentor
         CONTEXT_USER,
         $userid
@@ -1458,7 +1464,7 @@ function giportfolio_get_mentees_mentor($menteeid) {
 function giportfolio_who_can_contribute_details($menteeid) {
     global $DB, $OUTPUT, $CFG, $COURSE;
 
-    $mentorsid =  giportfolio_get_mentees_mentor($menteeid);
+    $mentorsid = giportfolio_get_mentees_mentor($menteeid);
     if (!empty($mentorsid)) {
 
         $ufields = user_picture::fields('u');
@@ -1518,7 +1524,7 @@ function giportfolio_filter_graders($userid, $cm) {
     global $COURSE;
 
     $ctxt = \context_course::instance($COURSE->id); // get the users in the course context to avoid getting users at module level.
-    $graders =  get_role_users(3, $ctxt, false, 'ra.id, u.id, u.lastname, u.firstname', null, false); // Get editing teachers enrolled in this course.
+    $graders = get_role_users(3, $ctxt, false, 'ra.id, u.id, u.lastname, u.firstname', null, false); // Get editing teachers enrolled in this course.
     $data = new \stdClass();
     $data->userid = $userid;
     $data->cm = $cm;
@@ -1526,7 +1532,7 @@ function giportfolio_filter_graders($userid, $cm) {
 
     $data->teachers = $graders;
 
-    if (count(groups_get_course_data($COURSE->id)->groups) > 0) { //  Are there groups in the course?, check the teachers that are  part of this group.
+    if (count(groups_get_course_data($COURSE->id)->groups) > 0) { // Are there groups in the course?, check the teachers that are  part of this group.
         $graders = giportfolio_filter_graders_by_grouping($data);
     }
 
@@ -1542,10 +1548,10 @@ function giportfolio_filter_graders_by_grouping($data) {
     global $COURSE;
 
     $groups = groups_get_user_groups($COURSE->id, $data->userid);
-    //$teachersaux = $data->teachers;
+    // $teachersaux = $data->teachers;
 
     if (($data->cm)->groupingid != 0) { // The activity has a grouping set in the common settings.
-        $groups = isset($groups[($data->cm)->groupingid]) ? $groups[($data->cm)->groupingid] :  []; // Get the group from the grouping collection.
+        $groups = isset($groups[($data->cm)->groupingid]) ? $groups[($data->cm)->groupingid] : []; // Get the group from the grouping collection.
     } else {
         $groups = $groups[0]; // The activity doesnt have a grouping selected but the course has groups.
         // Only send notification to teachers in the groups this user belongs to.
@@ -1575,7 +1581,7 @@ function giportfolio_filter_graders_by_grouping($data) {
 }
 
 
-// Add entry notification for teachers
+// Add entry notification for teachers.
 function giportfolio_add_entry_send_notification($userid, $cm, $giportfolio, $chapter) {
     global $COURSE, $USER;
     // Send the userid to filter by the students id. (In case the mentor is contributing USER wont filter properly).
@@ -1862,7 +1868,7 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
     echo html_writer::start_tag('img', ['src' => $OUTPUT->image_url('mail', 'mod_giportfolio'), 'class' => 'reminder-image']);
     echo html_writer::end_div();
 
-    $tableheaders = array_merge([$OUTPUT->render($mastercheckbox), '', 'fullname', 'Status', 'Date Sent']);
+    $tableheaders = array_merge([$OUTPUT->render($mastercheckbox), '', 'Fullname', 'Status', 'Date Sent']);
     $tablecolumns = array_merge(['', 'picture', 'fullname', 'Status', 'Date Sent']);
     $extrafields = get_extra_user_fields($context);
 
@@ -1871,10 +1877,10 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
     $table = new flexible_table('mod-giportfolio-reminder-table');
 
     $table->initialbars(true); // Display the alphabet
-    $table->define_columns($tablecolumns); //$tablecolumns
+    $table->define_columns($tablecolumns); // $tablecolumns
     $table->define_headers($tableheaders);
     $table->define_baseurl($PAGE->url);
-    //  $table->sortable(true, 'lastname'); // Sorted by lastname by default.
+    // $table->sortable(true, 'lastname'); // Sorted by lastname by default.
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
     $table->set_attribute('cellspacing', '0');
@@ -1922,7 +1928,8 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
 
         foreach ($pusers as $puser) {
 
-            if (in_array($puser->id, $dontremind)) continue;  // This students did contribute
+            if (in_array($puser->id, $dontremind)) { continue;  // This students did contribute
+            }
 
             if ($currentposition == $offset && $offset < $endposition) {
                 $options = array(
@@ -2005,6 +2012,199 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
 
         echo '</form>';
         $PAGE->requires->js_call_amd('mod_giportfolio/reminder_table_control', 'init', [$bulkoptions]);
+    }
+}
+function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $username, $listusersids, $page, $giportfolio, $course, $chapterid, $cm) {
+    global $OUTPUT, $CFG, $DB, $USER, $COURSE;
+
+    $dontremind = giportfolio_get_students_with_no_contributions($chapterid, $giportfolio->id);
+
+    define('DEFAULT_PAGE_SIZE', count($allusers)); // Show all the users at once.
+    $perpage = count($allusers) > 100 ? count($allusers) / 2 : count($allusers);
+
+    $mastercheckbox = new \core\output\checkbox_toggleall('participants-table', true, [
+        'id' => 'select-all-participants',
+        'name' => 'select-all-participants',
+        'label' => get_string('selectall'),
+        'labelclasses' => 'sr-only',
+        'classes' => 'm-1',
+        'checked' => false,
+    ]);
+
+    echo html_writer::start_div('reminder', ['hidden' => true]);
+    echo html_writer::start_tag('img', ['src' => $OUTPUT->image_url('mail', 'mod_giportfolio'), 'class' => 'reminder-image']);
+    echo html_writer::end_div();
+
+    $tableheaders = array_merge([$OUTPUT->render($mastercheckbox),  'Student', 'Status', 'Date Sent']);
+    $tablecolumns = array_merge([ '', 'student', 'Status', 'Date Sent']);
+    $extrafields = get_extra_user_fields($context);
+
+    require_once($CFG->libdir . '/tablelib.php');
+
+    $table = new flexible_table('mod-giportfolio-reminder-parent-table');
+
+    $table->initialbars(true); // Display the alphabet.
+    $table->define_columns($tablecolumns);
+    $table->define_headers($tableheaders);
+    $table->define_baseurl($PAGE->url);
+    $table->column_class('picture', 'picture');
+    $table->column_class('fullname', 'fullname');
+    $table->set_attribute('cellspacing', '0');
+    $table->set_attribute('id', $table->uniqueid);
+    $table->set_attribute('class', 'generaltable flexible boxaligncenter');
+    $table->set_attribute('width', '100%');
+
+    // Start working -- this is necessary as soon as the niceties are over.
+    $table->setup();
+
+    $extratables = '';
+    list($where, $params) = $table->get_sql_where();
+
+    if ($where) {
+        $where .= ' AND ';
+    }
+
+    if ($username) {
+        $where .= ' (u.lastname like \'%' . $username . '%\' OR u.firstname like \'%' . $username . '%\' ) AND ';
+    }
+
+    $extratables = 'JOIN {giportfolio_chapters} ch ON ch.giportfolioid = :portfolioid';
+    $params['portfolioid'] = $giportfolio->id;
+
+    if ($sort = $table->get_sql_sort()) {
+        $sort = ' ORDER BY ' . $sort;
+    }
+
+    $ufields = user_picture::fields('u', $extrafields);
+    $reminder = html_writer::span('<i class = "fa">&#xf2b7</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindersent', 'mod_giportfolio')]);
+    $remindernotsent = html_writer::span('<i class = "fa">&#xf003;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindernotsent', 'mod_giportfolio'), 'hidden' => true]);
+
+    if (!empty($allusers) && $chapterid != 0) {
+        $select = "SELECT DISTINCT $ufields";
+
+        $sql = ' FROM {user} u ' . $extratables .
+            ' WHERE ' . $where . 'u.id IN (' . $listusersids . ') ';
+
+        $pusers = $DB->get_records_sql($select . $sql . $sort, $params, $table->get_page_start(), $table->get_page_size());
+        $table->pagesize($perpage, count($pusers));
+        $offset = $page * $perpage;
+        $rowclass = null;
+        $endposition = $offset + $perpage;
+        $currentposition = 0;
+
+        foreach ($pusers as $puser) {
+            // Look for the parents of the student.
+            $parents = giportfolio_get_mentees_mentor($puser->id);
+            $puser->parentsid = $parents;
+            if (in_array($puser->id, $dontremind) || !$parents) {
+                continue;  // This students did contribute or it doenst have parents assigned.
+            }
+
+            if ($currentposition == $offset && $offset < $endposition) {
+                $options = array(
+                    'visibletoscreenreaders' => false,
+                    'includefullname' => true,
+                );
+
+                $picture = $OUTPUT->user_picture($puser, $options);
+                $offset++;
+
+                if ($parents) {
+                    $sql = "SELECT * FROM mdl_user WHERE id in ($parents)";
+                    $parents = $DB->get_records_sql($sql);
+                    $pouts = [];
+                    $pout = '';
+                    foreach ($parents as $parent) {
+                        $checkboxattr = ['type' => 'checkbox',
+                        'id' => "user_$parent->id",
+                        "name" => "user$parent->id",
+                        "data-action" => "toggle",
+                        "data-togglegroup" => "participants-table",
+                        "data-toggle" => "slave",
+                        "class" => 'parent-reminder-checkbox'];
+                        $pout .= html_writer::tag('input', '', $checkboxattr);
+                        $pout .= html_writer::end_tag('input');
+                        $pout .= html_writer::tag('label',  $OUTPUT->user_picture($parent, $options));
+                        $pout .= html_writer::end_tag('label');
+                        $pout .= html_writer::empty_tag('br');
+                    }
+                    $pouts [] = $pout;
+
+                }
+
+                $sql = "SELECT *  FROM mdl_giportfolio_reminder_sent WHERE userid IN ($puser->parentsid) AND chapterid = $chapterid;";
+
+                if ($chapters = $DB->get_record_sql($sql)) {
+                    $datemod = userdate($chapters->timemodified, get_string('strftimedaydate', 'core_langconfig'));
+                    if (count(explode(',', $puser->parentsid)) > 1) {
+                        $reminder = $reminder . '<br>' . $reminder;
+                    }
+                    $row = array_merge($pouts, array($picture, $reminder, $datemod));
+                } else {
+                    $s = html_writer::span('', '', ['class' => 'giportfolio-legend', 'hidden' => true]);
+                    $row = array_merge($pouts, array($picture, $userlink, $remindernotsent, $s));
+                }
+                $rowclass = "user-row-$puser->id";
+                $table->add_data($row, $rowclass);
+            }
+
+            $currentposition++;
+        }
+    }
+
+    $table->print_html();
+
+    echo '<br>';
+    echo html_writer::start_tag('form', [
+        'action' => 'action_redir.php',
+        'method' => 'post',
+        'id' => 'participantsform',
+        'data-course-id' => $course->id,
+        'data-table-unique-id' => $table->uniqueid,
+        'data-table-default-per-page' => ($perpage < DEFAULT_PAGE_SIZE) ? $perpage : DEFAULT_PAGE_SIZE,
+    ]);
+
+    if ($chapterid) {
+
+        $bulkoptions = (object) [
+            'uniqueid' => $table->uniqueid,
+            'chapterid' => $chapterid,
+            'chapter' => giportfolio_get_giportfolio_chaptertitle($giportfolio->id)[$chapterid]->title,
+            'portfolio' => $giportfolio->name,
+            'portfolioid' => $giportfolio->id,
+            'course' => $COURSE->fullname,
+            'cm' => $cm
+        ];
+
+        $displaylist = array();
+
+        if (has_all_capabilities(['mod/giportfolio:gradegiportfolios'], $context)) {
+            $displaylist['#messageselect'] = get_string('messageselectadd');
+        }
+
+        $selectactionparams = array(
+            'id' => 'formactionid',
+            'class' => 'ml-2',
+            'data-action' => 'toggle',
+            'data-togglegroup' => 'participants-table',
+            'data-toggle' => 'action',
+            'disabled' => 'disabled'
+        );
+
+        $label = html_writer::tag(
+            'label',
+            get_string("withselectedusers"),
+            ['for' => 'formactionid', 'class' => 'col-form-label d-inline']
+        );
+
+        $select = html_writer::select($displaylist, 'formaction', '', ['' => 'choosedots'], $selectactionparams);
+        echo html_writer::tag('div', $label . $select);
+
+        echo '<input type="hidden" name="id" value="' . $course->id . '" />
+             <input type="hidden" name="sesskey" value="' . $USER->sesskey . '" />';
+
+        echo '</form>';
+        $PAGE->requires->js_call_amd('mod_giportfolio/reminder_parents_table_control', 'init', [$bulkoptions]);
     }
 }
 
@@ -2112,7 +2312,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
 
         $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array(
             'id' => $cm->id, 'chapterid' => $chapterid,
-            'mentee' =>  $user->id
+            'mentee' => $user->id
         ));
 
         if ($usercontrib == '') {
@@ -2939,7 +3139,7 @@ function giportfolio_send_comment_notification_helper($userid, $contributionid, 
 
     $messagetext = get_string('commentnotification_body', 'mod_giportfolio', $info);
     $info->link = \html_writer::link($url, $url->out(false));
-    $messagehtml = !$ismentor ? nl2br(get_string('commentnotification_body', 'mod_giportfolio', $info)) :  nl2br(get_string('commentnotification_body_mentor', 'mod_giportfolio', $info));
+    $messagehtml = !$ismentor ? nl2br(get_string('commentnotification_body', 'mod_giportfolio', $info)) : nl2br(get_string('commentnotification_body_mentor', 'mod_giportfolio', $info));
 
     $eventdata = new \core\message\message();
     $eventdata->component = 'mod_giportfolio';
