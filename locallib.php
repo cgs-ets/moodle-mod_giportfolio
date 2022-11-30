@@ -1772,6 +1772,10 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
         foreach ($pusers as $puser) {
 
+            // Look for the parents of the student.
+            $parents = giportfolio_get_mentees_mentor($puser->id);
+            $puser->parentsid = $parents;
+
             if ($currentposition == $offset && $offset < $endposition) {
                 $picture = $OUTPUT->user_picture($puser);
                 $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $puser->id . '&amp;course=' . $course->id . '">' .
@@ -2138,9 +2142,6 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
 
                 if ($chapters = $DB->get_record_sql($sql)) {
                     $datemod = userdate($chapters->timemodified, get_string('strftimedaydate', 'core_langconfig'));
-                    if (count(explode(',', $puser->parentsid)) > 1) {
-                        $reminder = $reminder . '<br>' . $reminder;
-                    }
                     $row = array_merge($pouts, array($picture, $reminder, $datemod));
                 } else {
                     $s = html_writer::span('', '', ['class' => 'giportfolio-legend', 'hidden' => true]);
@@ -2250,7 +2251,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
     }, $teachercontributions), $teachercontributions);
     $teachercontributions = array_keys($teachercontributions);
 
-    // Get parents contributions in this chapter
+    // Get parents contributions in this chapter.
     $sql = "SELECT id AS 'contribid', chapterid, userid, teacherid
             FROM {giportfolio_contributions}
             WHERE chapterid $insql AND userid = $user->id AND mentorid <> 0";
@@ -2318,13 +2319,14 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
         ));
 
         if ($usercontrib == '') {
-            $sql = "SELECT id FROM mdl_giportfolio_reminder_sent WHERE userid = $user->id AND chapterid = $chapterid;";
-            if ($DB->get_record_sql($sql)) {
+            $parentandstudent = $user->parentsid .','.$user->id;
+            $sql = "SELECT id FROM mdl_giportfolio_reminder_sent WHERE userid IN ($parentandstudent) AND chapterid = $chapterid;";
+            if ($DB->get_records_sql($sql)) {
                 $links[] = html_writer::tag('a', "$reminder", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
             } else {
                 if (count ($teachercontributions) > 0 && in_array($chapterid, $teachercontributions)) {
                     $links[] = html_writer::tag('a', "$iconteacher", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
-                } else{
+                } else {
                     $links[] = html_writer::tag('a', "$nocontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
                 }
 
@@ -2381,8 +2383,9 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
                 array_push($links, $link . html_writer::tag('a', "$iconcomments", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]));
             }
         } else {
+            $parentandstudent = $user->parentsid .','.$user->id;
 
-            $sql = "SELECT id FROM mdl_giportfolio_reminder_sent WHERE userid = $user->id AND chapterid = $chapterid;";
+            $sql = "SELECT id FROM mdl_giportfolio_reminder_sent WHERE userid IN ($parentandstudent) AND chapterid = $chapterid;";
 
             if ($DB->get_record_sql($sql)) {
                 $links[] = html_writer::tag('a', "$reminder", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);

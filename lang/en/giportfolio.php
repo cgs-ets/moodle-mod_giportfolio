@@ -235,12 +235,12 @@ $string['contribute'] = 'Contribute';
 $string['chaptersupdated'] = 'Updated Chapters';
 $string['mentorcontribution'] = 'Mentor\'s contribution';
 $string['teachercontribution'] = 'Teacher\'s contribution';
-$string['graphofcontributors'] = 'Graph of contributors';
+$string['graphofcontributors'] = 'Graph';
 $string['navigatebychapter'] = 'Navigate by chapter';
 $string['additionstitle'] = 'Additions';
 
-$string['userwithnocontrib'] = '{$a} contribution reminder';
-$string['parentuserwithnocontrib'] = '{$a} contribution reminder (to parents)';
+$string['userwithnocontrib'] = 'Reminder';
+$string['parentuserwithnocontrib'] = 'Parent reminder';
 $string['parentuserwithnocontribwarning'] = 'This section sends emails to the student\'s parent(s). To send reminders to students go to <a href="{$a}">Student contribution reminder</a>';
 $string['legends'] = 'Legend';
 $string['nocontrib'] = 'No contribution made by {$a->name}';
