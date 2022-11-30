@@ -518,7 +518,6 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
 
     $alias = get_student_alias($COURSE);
     $userid = isset($params['mentee']) &&  ($params['mentee'] != 0) ? $params['mentee'] : $USER->id;
-    // var_dump($userid); exit;
     $mentor = 0;
 
     if (in_array($USER->id, giportfolio_user_mentor_of_student($userid))) {
@@ -536,10 +535,10 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     }
 
     // SYNERGY - add grade console link.
-    if (!empty($params['id']) and !empty($params['chapterid']) and has_capability('mod/giportfolio:viewgiportfolios', $context)) {
+    if (!empty($params['id']) && !empty($params['chapterid']) && has_capability('mod/giportfolio:viewgiportfolios', $context)) {
 
         $gradeconsole = get_string('studentgiportfolio', 'mod_giportfolio', $alias);
-        $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $params['id']));
+        $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $params['id'], 'tab' =>'graphcontributors'));
         $giportfolionode->add(
             $gradeconsole,
             $url,
@@ -733,7 +732,7 @@ function giportfolio_print_comments($contribution) {
     $comments = $DB->get_records_sql($sql, $params);
 
     return $comments;
-    
+
 }
 
 /**
