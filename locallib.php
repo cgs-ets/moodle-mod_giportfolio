@@ -2319,7 +2319,11 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
         ));
 
         if ($usercontrib == '') {
-            $parentandstudent = $user->parentsid .','.$user->id;
+            if (strlen($user->parentsid) > 0) {
+                $parentandstudent = $user->parentsid .','.$user->id;
+            } else {
+                $parentandstudent = $user->id;
+            }
             $sql = "SELECT id FROM mdl_giportfolio_reminder_sent WHERE userid IN ($parentandstudent) AND chapterid = $chapterid;";
             if ($DB->get_records_sql($sql)) {
                 $links[] = html_writer::tag('a', "$reminder", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
@@ -2383,7 +2387,12 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
                 array_push($links, $link . html_writer::tag('a', "$iconcomments", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]));
             }
         } else {
-            $parentandstudent = $user->parentsid .','.$user->id;
+
+            if (strlen($user->parentsid) > 0) {
+                $parentandstudent = $user->parentsid .','.$user->id;
+            } else {
+                $parentandstudent = $user->id;
+            }
 
             $sql = "SELECT id FROM mdl_giportfolio_reminder_sent WHERE userid IN ($parentandstudent) AND chapterid = $chapterid;";
 
