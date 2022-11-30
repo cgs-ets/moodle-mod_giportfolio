@@ -43,6 +43,9 @@ class giportfolio_chapter_edit_form extends moodleform {
 
         $mform->addElement('advcheckbox', 'subchapter', get_string('subchapter', 'mod_giportfolio'));
 
+        $mform->addElement('advcheckbox', 'locked', get_string('lock', 'mod_giportfolio'));
+        $mform->addHelpButton('locked', 'lock', 'giportfolio');
+
         $mform->addElement('editor', 'content_editor', get_string('content', 'mod_giportfolio'), null, $options);
         $mform->setType('content_editor', PARAM_RAW);
         $mform->addRule('content_editor', get_string('required'), 'required', null, 'client');

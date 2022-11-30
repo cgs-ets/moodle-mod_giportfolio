@@ -43,6 +43,7 @@ $string['confchapterdelete'] = 'Do you really want to delete this chapter?';
 $string['confchapterdeleteall'] = 'Do you really want to delete this chapter and all its subchapters?';
 $string['confcontribdelete'] = 'Are you sure that you want to delete this contribution and its comments?';
 $string['content'] = 'Content';
+
 $string['continuecontrib'] = 'Continue Contributing';
 $string['contribadded'] = 'Contribution added';
 $string['contribaddform'] = 'Add New Contribution ';
@@ -202,6 +203,7 @@ $string['toc'] = 'Table of contents';
 $string['top'] = 'top';
 $string['drag'] = 'Drag. IMPORTANT: Only works to add this chapter into another portfolio';
 $string['lock'] = 'Lock this chapter';
+$string['lock_help'] = 'If checked no contributions will be allowed. Useful for information chapters';
 $string['unlock'] = 'Unlock this chapter';
 $string['unpublish'] = 'Unpublish';
 $string['unshare'] = 'Stop sharing with other {$a}s'; // Students.
