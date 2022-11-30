@@ -182,7 +182,6 @@ if ($chapter->hidden and !$viewhidden) {
 $params = array('id' => $id, 'chapterid' => $chapterid, 'mentee' => $mentee); // We need the mentee param for the settings navigation.
 
 $PAGE->set_url('/mod/giportfolio/viewgiportfolio.php', $params);
-//$PAGE->add_body_class('limitedwidth');
 
 // Unset all page parameters.
 unset($id);
@@ -282,7 +281,7 @@ $extralinks = '';
 
 $uid = $data['mentee'] != 0 ? $uid = $data['mentee'] : $userid;
 
-if (has_capability('giportfoliotool/print:print', $context)) {
+if (has_capability('giportfoliotool/print:print', $context) && $giportfolio->printing == 0) {
     // Print links.
     $printallurl = new moodle_url('/mod/giportfolio/tool/print/index.php', array('id' => $cm->id, 'userid' => $uid));
     $extralinks .= html_writer::link($printallurl, get_string('printgiportfolio', 'giportfoliotool_print'));
@@ -380,6 +379,7 @@ if ((!$allowedit || $cangrade && $mentee != 0) && !$context->is_locked() || is_s
 $otherusers = array();
 
 if ($giportfolio->peersharing && $showshared) {
+
     $userids = array();
     foreach ($contriblist as $contrib) {
         if ($contrib->userid != $userid) {

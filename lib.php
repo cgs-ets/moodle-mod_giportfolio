@@ -538,7 +538,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     if (!empty($params['id']) && !empty($params['chapterid']) && has_capability('mod/giportfolio:viewgiportfolios', $context)) {
 
         $gradeconsole = get_string('studentgiportfolio', 'mod_giportfolio', $alias);
-        $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $params['id'], 'tab' =>'graphcontributors'));
+        $url = new moodle_url('/mod/giportfolio/submissions.php', array('id' => $params['id'], 'tab' => 'graphcontributors'));
         $giportfolionode->add(
             $gradeconsole,
             $url,
