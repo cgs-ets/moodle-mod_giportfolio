@@ -573,7 +573,7 @@ if ($contriblist) {
 
         $class = 'giportfolio-contribution';
         $class .= $ismine ? ' mine' : ' notmine';
-        $contributionbuffer .= html_writer::tag('article', $cout, array('class' => $class, 'id' => 'contribution' . $contributioncount));
+        $contributionbuffer .= html_writer::tag('article', $cout, array('class' => $class, 'id' => 'contribution' . $contrib->id));
 
         if ($giportfolio->displayoutline) {
 

@@ -14,32 +14,25 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Giportfolio import capability definition
- * Based on book import
- *
- * @package    booktool_importhtml
- * @copyright  2011 Petr Skoda {@link http://skodak.org}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace giportfoliotool_downloader\privacy;
+
+defined('MOODLE_INTERNAL') || die();
 
 /**
+ * Privacy provider implementation for giportfoliotool_importhtml.
  *
- * @package    booktool_importhtml
- * @copyright  2011 Petr Skoda {@link http://skodak.org}
+ * @copyright  2022 Veronica Bermegui
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class provider implements \core_privacy\local\metadata\null_provider {
 
-defined('MOODLE_INTERNAL') || die;
-
-$capabilities = array(
-    'giportfoliotool/importhtml:import' => array(
-        'riskbitmask' => RISK_XSS,
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-        )
-    ),
-);
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}

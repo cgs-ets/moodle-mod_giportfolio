@@ -1,0 +1,10 @@
+select#id_chapters {
+    min-width: 10rem;
+    min-height: 10rem;
+}
+
+form#download-contribution-form {
+    /* margin: 0 auto; */
+    text-align: center;
+    margin-top: 2rem;
+}

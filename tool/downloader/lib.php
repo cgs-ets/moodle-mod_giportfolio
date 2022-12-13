@@ -15,15 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Giportfolio import plugin version info
+ * Downloader lib
  *
- * @package    giportfoliotool_importhtml
+ * @package    giportfoliotool_downloader
  * @copyright  2022 Veronica Bermegui
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->component = 'giportfoliotool_importhtml'; // Full name of the plugin (used for diagnostics).
-$plugin->version   = 2022031501; // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2020060900; // Requires this Moodle version.
+/**
+ * Adds module specific settings to the settings block
+ *
+ * @param settings_navigation $settings The settings navigation object
+ * @param navigation_node $node The node to add module settings to
+ */
+function giportfoliotool_downloader_extend_settings_navigation(settings_navigation $settings, navigation_node $node) {
+    global $PAGE;
+    $params = $PAGE->url->params();
+    unset($params['mentee']);
+
+    if (has_capability('giportfoliotool/importhtml:import', $PAGE->cm->context)) {
+
+        $url = new moodle_url('/mod/giportfolio/tool/downloader/index.php', $params);
+        $node->add(get_string('downloader', 'giportfoliotool_downloader'), $url, navigation_node::TYPE_SETTING, null, null, null);
+    }
+}

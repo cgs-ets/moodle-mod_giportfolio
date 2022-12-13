@@ -17,7 +17,7 @@
 /**
  * Plugin external functions and services are defined here.
  *
- * @package   booktool_importhtml
+ * @package   giportfoliotool_importhtml
  * @category    external
  * @copyright 2022 Veronica Bermegui
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

@@ -41,9 +41,9 @@ function giportfoliotool_print_extend_settings_navigation(settings_navigation $s
         $studentchapter = true;
     } else {
 
-        $userid =  $USER->id;
+        $userid = $USER->id;
     }
-    if (empty($params['id']) or empty($params['chapterid'])) {
+    if (empty($params['id']) || empty($params['chapterid'])) {
         return;
     }
 

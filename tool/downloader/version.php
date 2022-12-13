@@ -15,31 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Giportfolio import capability definition
- * Based on book import
+ * Giportfolio downloader plugin version info
  *
- * @package    booktool_importhtml
- * @copyright  2011 Petr Skoda {@link http://skodak.org}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-/**
- *
- * @package    booktool_importhtml
- * @copyright  2011 Petr Skoda {@link http://skodak.org}
+ * @package    giportfoliotool_downloader
+ * @copyright  2022 Veronica Bermegui
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$capabilities = array(
-    'giportfoliotool/importhtml:import' => array(
-        'riskbitmask' => RISK_XSS,
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-        )
-    ),
-);
+$plugin->component = 'giportfoliotool_downloader'; // Full name of the plugin (used for diagnostics).
+$plugin->version   = 2022120500; // The current plugin version (Date: YYYYMMDDXX).
+$plugin->requires  = 2020060900; // Requires this Moodle version.

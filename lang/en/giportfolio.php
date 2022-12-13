@@ -241,7 +241,7 @@ $string['additionstitle'] = 'Additions';
 
 $string['userwithnocontrib'] = 'Reminder';
 $string['parentuserwithnocontrib'] = 'Parent reminder';
-$string['parentuserwithnocontribwarning'] = 'This section sends emails to the student\'s parent(s). To send reminders to students go to <a href="{$a}">Student contribution reminder</a>';
+$string['parentuserwithnocontribwarning'] = 'This section sends emails to the student\'s parent(s). To send reminders to students go to <a href="{$a}">Reminder</a>';
 $string['legends'] = 'Legend';
 $string['nocontrib'] = 'No contribution made by {$a->name}';
 $string['nocontrib_legend'] = 'No contribution made by student';

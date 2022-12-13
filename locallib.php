@@ -2082,7 +2082,7 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
     $ufields = user_picture::fields('u', $extrafields);
     $reminder = html_writer::span('<i class = "fa">&#xf2b7</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindersent', 'mod_giportfolio')]);
     $remindernotsent = html_writer::span('<i class = "fa">&#xf003;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindernotsent', 'mod_giportfolio'), 'hidden' => true]);
-
+    $parentcounter = 0;
     if (!empty($allusers) && $chapterid != 0) {
         $select = "SELECT DISTINCT $ufields";
 
@@ -2118,6 +2118,7 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
                     $parents = $DB->get_records_sql($sql);
                     $pouts = [];
                     $pout = '';
+                    $parentcounter++;
                     foreach ($parents as $parent) {
                         $checkboxattr = ['type' => 'checkbox',
                         'id' => "user_$parent->id",
@@ -2167,7 +2168,7 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
         'data-table-default-per-page' => ($perpage < DEFAULT_PAGE_SIZE) ? $perpage : DEFAULT_PAGE_SIZE,
     ]);
 
-    if ($chapterid) {
+    if ($chapterid && $parentcounter > 0) {
 
         $bulkoptions = (object) [
             'uniqueid' => $table->uniqueid,

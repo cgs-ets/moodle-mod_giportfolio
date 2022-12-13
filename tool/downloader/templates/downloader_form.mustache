@@ -1,0 +1,14 @@
+<form id ="download-contribution-form" class="mform" autocomplete="off"
+    action="{{config.wwwroot}}/mod/giportfolio/tool/downloader/index.php" method="post" accept-charset="utf-8"
+    id="{{formid}}"
+    data-boost-form-errors-enhanced="1">
+    <div style="display: none;">
+        <input name="id" type="hidden" value="{{id}}">
+        <input name="sesskey" type="hidden" value="{{sessionkey}}">
+        <input name="itemids" type="hidden" value="">
+        <input name="items" type="hidden" value="">
+        <input class="selectedusers" name="selectedusers" type="hidden" value="">
+        <input name="download" type="hidden" value="1">
+    </div>
+  <button type="submit" class="btn btn-primary">Download</button>
+</form>
