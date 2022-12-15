@@ -144,9 +144,9 @@ function giportfoliotool_downloader_download_files($items, $giportfolioname) {
 
     foreach ($items as $item) {
         foreach ($item->items as $i) {
-            // print_object($i); exit;
             $files = $fs->get_area_files($i->contextid, $i->component, $i->filearea,  $i->itemid);
             foreach ($files as $file) {
+
                 if ($file->get_filename() == '.') {
                     continue;
                 }
@@ -158,7 +158,6 @@ function giportfoliotool_downloader_download_files($items, $giportfolioname) {
 
                 $fname  = $item->username. '_' . $n;
                 $pathfilename = $i->chaptertitle . '/'. $fname;
-               // print_object($pathfilename); exit;
                 $filesforzipping[$pathfilename] = $file;
             }
         }

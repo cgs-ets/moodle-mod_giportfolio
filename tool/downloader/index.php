@@ -68,7 +68,6 @@ $printtable = false;
 $firstaccess = true;
 if ($mform->is_cancelled()) {
     $url = ($chapterid == 0) ? $CFG->wwwroot . "/mod/giportfolio/view.php?id=$cm->id" : $CFG->wwwroot ."/mod/giportfolio/viewgiportfolio.php?id=$cm->id&chapterid=$chapterid";
-   // var_dump($url);exit;
     redirect($url);
     $firstaccess = false;
 } else if ($fromform = $mform->get_data()) {
@@ -90,7 +89,7 @@ if ($printtable && !$nocontributions) {
     echo $OUTPUT->render_from_template('giportfoliotool_downloader/students_table', $students);
     echo $OUTPUT->render_from_template('giportfoliotool_downloader/downloader_form', $downloadformdata);
     $PAGE->requires->js_call_amd('giportfoliotool_downloader/downloader_control', 'init');
-} else if (!$firstaccess){
+} else if (!$firstaccess) {
     echo $OUTPUT->render_from_template('giportfoliotool_downloader/contributions_not_found', '');
 }
 
