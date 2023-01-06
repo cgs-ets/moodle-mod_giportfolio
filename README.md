@@ -62,7 +62,7 @@ Intentionally omitted features:
 * detailed student tracking (postponed till officially supported)
 * export as zipped set of HTML pages - instead use browser command Save page as... in print view
 
-**CGS Costumisations:** 
+**CGS Costumisations:**
 
 > Contributions
 >>
@@ -84,12 +84,15 @@ Intentionally omitted features:
 * Send custumised contributions reminder message to participants.
 * Send notifications to teachers based on groups and groupings.
 * Print style to match Book activity.
+* Download contribution files based on chapters.
 
 > Settings
 >>
 * Change on students skip intro page default to true.
 * Enable/Disable students to hide their contributions.
 * Disable delete button from contributions and comments.
-* Notify students of new comment
+* Notify students of new comment.
+* Send reminders to students.
+* Send reminders to parents (In case the setting is turned on)
 
 
