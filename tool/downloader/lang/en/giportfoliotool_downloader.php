@@ -15,31 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Giportfolio import capability definition
- * Based on book import
+ * giportfolio downloader language strings
  *
- * @package    booktool_importhtml
- * @copyright  2011 Petr Skoda {@link http://skodak.org}
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-/**
- *
- * @package    booktool_importhtml
- * @copyright  2011 Petr Skoda {@link http://skodak.org}
+ * @package    giportfoliotool_downloader
+ * @copyright  2022 Veronica Bermegui
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-$capabilities = array(
-    'giportfoliotool/importhtml:import' => array(
-        'riskbitmask' => RISK_XSS,
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW,
-        )
-    ),
-);
+$string['pluginname']       = 'Giportfolio chapter downlaoder';
+$string['privacy:metadata'] = 'The giportfolio downloader plugin does not store any personal data.';
+$string['downloader']       = 'Download contributions';
+$string['chapterselect']    = 'Select one or more chapters';
+$string['nocontributions']  = 'No contributions with files found';
+

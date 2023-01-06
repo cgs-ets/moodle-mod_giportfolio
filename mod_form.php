@@ -169,9 +169,6 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->setDefault('notifyaddentry', 0);
 
 
-
-
-
         $this->standard_grading_coursemodule_elements();
 
         $this->standard_coursemodule_elements();

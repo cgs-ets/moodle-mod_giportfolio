@@ -41,22 +41,22 @@ function giportfoliotool_print_extend_settings_navigation(settings_navigation $s
         $studentchapter = true;
     } else {
 
-        $userid =  $USER->id;
+        $userid = $USER->id;
     }
-    if (empty($params['id']) or empty($params['chapterid'])) {
+    if (empty($params['id']) || empty($params['chapterid'])) {
         return;
     }
 
     $giportfolio = $DB->get_record('giportfolio', array('id' => $PAGE->cm->instance), '*', MUST_EXIST);
 
-    if ($giportfolio->klassenbuchtrainer) {
+    if ($giportfolio->klassenbuchtrainer || $giportfolio->printing == 1) {
         return; // Not available when using Klassenbuch trainer mode.
     }
 
     if (has_capability('giportfoliotool/print:print', $context)) {
-    
+
         $params = $studentchapter == true ? array('id' => $params['id'], 'chapterid' => $params['chapterid'], 'userid' => $userid) : array('id' => $params['id'], 'userid' => $userid);
-      
+
         $url = new moodle_url('/mod/giportfolio/tool/print/index.php', $params);
         $action = new action_link($url, get_string('printgiportfolio', 'giportfoliotool_print'), new popup_action('click', $url));
         $giportfolionode->add(

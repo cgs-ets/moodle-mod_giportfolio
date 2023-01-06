@@ -43,6 +43,7 @@ $string['confchapterdelete'] = 'Do you really want to delete this chapter?';
 $string['confchapterdeleteall'] = 'Do you really want to delete this chapter and all its subchapters?';
 $string['confcontribdelete'] = 'Are you sure that you want to delete this contribution and its comments?';
 $string['content'] = 'Content';
+
 $string['continuecontrib'] = 'Continue Contributing';
 $string['contribadded'] = 'Contribution added';
 $string['contribaddform'] = 'Add New Contribution ';
@@ -202,6 +203,7 @@ $string['toc'] = 'Table of contents';
 $string['top'] = 'top';
 $string['drag'] = 'Drag. IMPORTANT: Only works to add this chapter into another portfolio';
 $string['lock'] = 'Lock this chapter';
+$string['lock_help'] = 'If checked no contributions will be allowed. Useful for information chapters';
 $string['unlock'] = 'Unlock this chapter';
 $string['unpublish'] = 'Unpublish';
 $string['unshare'] = 'Stop sharing with other {$a}s'; // Students.
@@ -227,18 +229,19 @@ $string['visibilityexplain_help'] = '
 $string['allowmentorcontrib'] = 'Allow Mentor contribution';
 $string['allownetcontribute'] = 'Allow Non-editing teachers contribution';
 $string['disabledeletebtn'] = 'Disable delete button from contributions and comments';
-$string['onbehalf'] = 'Contribute on behalf 
+$string['onbehalf'] = 'Contribute on behalf
 of {$a->name}';
 $string['contribute'] = 'Contribute';
 $string['chaptersupdated'] = 'Updated Chapters';
 $string['mentorcontribution'] = 'Mentor\'s contribution';
 $string['teachercontribution'] = 'Teacher\'s contribution';
-$string['graphofcontributors'] = 'Graph of contributors';
+$string['graphofcontributors'] = 'Graph';
 $string['navigatebychapter'] = 'Navigate by chapter';
 $string['additionstitle'] = 'Additions';
 
-$string['userwithnocontrib'] = '{$a} contribution reminder';
-
+$string['userwithnocontrib'] = 'Reminder';
+$string['parentuserwithnocontrib'] = 'Parent reminder';
+$string['parentuserwithnocontribwarning'] = 'This section sends emails to the student\'s parent(s). To send reminders to students go to <a href="{$a}">Reminder</a>';
 $string['legends'] = 'Legend';
 $string['nocontrib'] = 'No contribution made by {$a->name}';
 $string['nocontrib_legend'] = 'No contribution made by student';
@@ -262,7 +265,7 @@ $string['filter'] = 'Filter';
 $string['nofilters'] = 'No filters';
 $string['messageselectadd'] = 'Send E-mail';
 $string['remindernotification_subject'] = 'Portfolio contribution reminder';
-$string['remindernotificationmodal_body'] = '<p>Hi, <br> 
+$string['remindernotificationmodal_body'] = '<p>Hi, <br>
 It is time to add your contribution to \'{$a->chapter}\' in  \'{$a->portfolio}\' in course \'{$a->course}\'. <br><br>
 You can view this chapter and make your contribution at: <a href="{$a->link}" target = "_blank">{$a->chapter}</a></p>' ;
 $string['teacherchaptershiddenexception'] = 'All chapters are hidden. Please return to the course page and turn editing on.';
@@ -278,4 +281,4 @@ $string['linktochapter_desc'] = 'A link to this chapter will automatically be in
 
 
 
-         
+

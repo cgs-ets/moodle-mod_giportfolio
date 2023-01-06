@@ -1,11 +1,11 @@
 {{#ischapter}}
-    <div data-chapterid ="{{chapterid}}" class="rotated-text-container">
+    <div id ="{{chapterid}}" data-chapterid ="{{chapterid}}" class="rotated-text-container">
         <span data-chapterid = "{{chapterid}}" class="rotated-text" title = "{{title}}">{{title}}</span>
     </div>
     <div class = "subchapter-icon">
         <img class ="icon" alt ="Chapter" title = "Chapter" src="{{icon}}"/>
     </div>
-    <div>    
+    <div>
         {{#importedch}}
          <img class ="icon" alt ="Import" title = "Imported" src="{{importedch}}"/>
         {{/importedch}}
@@ -14,7 +14,7 @@
         {{#subchapters}}
             <div class = "chapter-expand-collapse">
                 <span> <i class="fa fa-caret-left" aria-hidden="true" title = "Collapse Chapter" data-chapterid = "{{chapterid}}"></i></span>
-                <span hidden> <i class="fa fa-caret-right" aria-hidden="true" title = "Expand Chapter" data-chapterid =" {{chapterid}}"></i></span>                 
+                <span hidden> <i class="fa fa-caret-right" aria-hidden="true" title = "Expand Chapter" data-chapterid =" {{chapterid}}"></i></span>
         </div>
         {{/subchapters}}
 {{/ischapter}}
@@ -22,7 +22,7 @@
 {{! Render subchapter }}
 
 {{^ischapter}}
-    <div data-chapterid ="{{chapterid}}" class="rotated-text-container">
+    <div id ="{{chapterid}}"  data-chapterid ="{{chapterid}}" class="rotated-text-container">
          <span data-chapterid ="{{chapterid}}" class="rotated-text" title = "{{title}}">{{title}}</span>
     </div>
     <div class = "subchapter-icon">

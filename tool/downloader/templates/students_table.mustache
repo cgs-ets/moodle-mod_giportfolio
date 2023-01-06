@@ -1,0 +1,29 @@
+<table class ="table">
+  <thead>
+    <tr>
+     <th><input type="checkbox" id="selectall" name="selectall" value="all"> Select</th>
+     <th>Student</th>
+     <th>Contributions</th>
+    </tr>
+  </thead>
+  <tbody id = "contribution-downloader-tb">
+  {{#students}}
+    <tr>
+      <td><input type="checkbox" id="user_{{studentid}}" data-username = "{{username}}"></td>
+      <td>{{{picture}}}</td>
+      <td id = "contributions_{{studentid}}" data-chapter-contributions = "{{chaptercontributions}}">
+        {{#contributiontitles}}
+            <a target = "_blank"
+               href="{{config.wwwroot}}/mod/giportfolio/viewgiportfolio.php?id={{id}}&mentee={{userid}}&chapterid={{chapter}}#contribution{{contributionid}}"
+               title="{{contributiontitle}}">{{contributiontitle}}
+            </a>
+            <br/>
+        {{/contributiontitles}}
+      </td>
+    </tr>
+   {{/students}}
+  </tbody>
+</table>
+
+
+

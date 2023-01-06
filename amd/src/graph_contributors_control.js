@@ -114,6 +114,7 @@ export const init = (chaptersubchapmap) => {
             }
         });
     };
+
     const filterTable = (studentids) => {
         const graphTableRows = document.querySelectorAll('#graphcontributors tbody > tr'); // Get the row of students
         graphTableRows.forEach(row => {
@@ -141,7 +142,6 @@ export const init = (chaptersubchapmap) => {
                 ch.subchapters.forEach(sch => {
 
                     let columnIndex = document.getElementById(sch).closest('th').cellIndex;
-
                     if (document.getElementById(sch).closest('th').classList.contains(Selectors.expand)) {
                         document.getElementById(sch).closest('th').classList.remove(Selectors.expand);
                     }

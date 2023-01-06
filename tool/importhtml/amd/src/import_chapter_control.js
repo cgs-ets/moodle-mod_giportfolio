@@ -361,17 +361,17 @@ export const init = ({
             },
 
             done: function (response) {
-                
+
                 document.getElementById('giportfolio-import-chapter-overlay').setAttribute('hidden', true);
                 document.querySelector('.gi-import-success').closest('div').removeAttribute('hidden');
-                
+
                 $(".gi-success").fadeOut(2600, function () {
                     $(this).attr('hidden', true);
                     $(this).css('display', '');
                 });
 
                 document.getElementById('toc').removeChild(document.querySelector('.ygtvitem'));
-               
+
                 document.querySelector('input[name="chapters"]').value = '';
                 document.querySelector('input[name="chapterids"]').value = '';
                 document.querySelector('input[name="chcm"]').value = '';
@@ -393,7 +393,7 @@ export const init = ({
                         document.querySelector('input[name="chapters"]').value = '';
                         document.querySelector('input[name="chcm"]').value = '';
                     });
-                
+
                     document.forms["merge-form"].submit(); // after doing the saving. Redirect to where I started
             },
 
@@ -422,8 +422,6 @@ export const init = ({
             }
 
         }]);
-
-        
 
     }
 

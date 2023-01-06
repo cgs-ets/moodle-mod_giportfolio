@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die;
  */
 function giportfoliotool_importhtml_extend_settings_navigation(settings_navigation $settings, navigation_node $node) {
     global $PAGE;
-    $params =$PAGE->url->params();
+    $params = $PAGE->url->params();
     unset($params['mentee']);
 
     if (has_capability('giportfoliotool/importhtml:import', $PAGE->cm->context)) {

@@ -36,7 +36,7 @@ global $CFG;
  */
 class mod_giportfolio_events_testcase extends advanced_testcase {
 
-    public function setUp() {
+    public function setUp() : void {
         $this->resetAfterTest();
     }
 

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of giportfolio module for Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -51,9 +50,8 @@ if ($currenttab !== 'all') {
 
 $PAGE->set_url($url);
 require_login($course->id, false, $cm);
+$context = context_module::instance($cm->id);
 
-
-$context = context_module::instance($cm->id); 
 if (!$context->is_locked() ) {  // To be able to display submission page when context is frozen.
     require_capability('mod/giportfolio:gradegiportfolios', $context);
 }
@@ -61,10 +59,11 @@ if (!$context->is_locked() ) {  // To be able to display submission page when co
 require_capability('mod/giportfolio:viewgiportfolios', $context);
 
 $PAGE->set_title(format_string($giportfolio->name));
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($giportfolio->name));
 
-$alias = get_student_alias($COURSE); // Pick the alias given to the students
+$alias = get_student_alias($COURSE); // Pick the alias given to the students.
 
 // Set up the list of tabs.
 $allurl = new moodle_url($PAGE->url);
@@ -73,6 +72,7 @@ $sincelastloginurl = new moodle_url($PAGE->url, array('tab' => 'sincelastlogin')
 $nocommentsurl = new moodle_url($PAGE->url, array('tab' => 'nocomments'));
 $graphcontributorsurl = new moodle_url($PAGE->url, array('tab' => 'graphcontributors'));
 $userwithnocontributionurl = new moodle_url($PAGE->url, array('tab' => 'contributionreminder'));
+$userwithnocontributionurlparents = new moodle_url($PAGE->url, array('tab' => 'contributionreminderparents'));
 
 $tabs = array(
     new tabobject('all', $allurl, get_string('allusers', 'mod_giportfolio', $alias)),
@@ -80,6 +80,7 @@ $tabs = array(
     new tabobject('nocomments', $nocommentsurl, get_string('nocomments', 'mod_giportfolio')),
     new tabobject('graphcontributors', $graphcontributorsurl, get_string('graphofcontributors', 'mod_giportfolio')),
     new tabobject('contributionreminder', $userwithnocontributionurl, get_string('userwithnocontrib', 'mod_giportfolio', $alias)),
+    new tabobject('contributionreminderparents', $userwithnocontributionurlparents, get_string('parentuserwithnocontrib', 'mod_giportfolio', $alias)),
 );
 
 echo get_string('studentgiportfolios', 'mod_giportfolio', $alias);
@@ -88,12 +89,12 @@ echo $OUTPUT->tabtree($tabs, $currenttab);
 
 // Check to see if groups are being used in this assignment.
 // Find out current groups mode.
-$groupmode = groups_get_activity_groupmode($cm); //Separate groups: 1 No groups: 0 // visible groups: 2
+$groupmode = groups_get_activity_groupmode($cm); // Separate groups: 1 No groups: 0 // visible groups: 2.
 $currentgroup = groups_get_activity_group($cm, true);
 
 
 
-// Change capability check to be able to display  users when context is frozen. CGS
+// Change capability check to be able to display  users when context is frozen. CGS.
 $allusers = get_users_by_capability($context, 'mod/giportfolio:printclassplan', 'u.id,u.picture,u.firstname,u.lastname,u.idnumber',
     'u.firstname ASC', '', '', $currentgroup, '', false, true);
 
@@ -124,7 +125,7 @@ $strsaveallfeedback = get_string('saveallfeedback', 'mod_giportfolio');
 $fastg = optional_param('fastg', 0, PARAM_BOOL);
 
 if ($fastg) { // Update the grade and the feedback.
-   
+
     if (isset($_POST["menu"])) {
         $menu = $_POST["menu"];
         giportfolio_quick_update_grades($cm->id, $menu, $currentgroup, $giportfolio->id);
@@ -138,11 +139,11 @@ if ($fastg) { // Update the grade and the feedback.
     echo html_writer::end_tag('div');
 }
 
-/// create the user filter form
+// Create the user filter form.
 
 $mform = new giportfolio_search_form(null, array('id' => $id, 'tab' => $currenttab));
 $mform->display();
-$customtabs = ['graphcontributors', 'contributionreminder'];
+$customtabs = ['graphcontributors', 'contributionreminder', 'contributionreminderparents'];
 
 // Print quickgrade form around the table.
 if ($quickgrade && !in_array($currenttab, $customtabs)) {
@@ -170,7 +171,6 @@ $listusersids = "'" . implode("', '", $alluserids) . "'";
 
 switch ($currenttab) {
     case 'graphcontributors':
-
         giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm);
         break;
 
@@ -180,8 +180,20 @@ switch ($currenttab) {
         giportfolio_reminder_table($PAGE, $allusers, $context, $username, $listusersids, $page, $giportfolio, $course, $chapterid, $cm->id);
         break;
 
+    case 'contributionreminderparents':
+        $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab . '&chapterid' . $chapterid;
+        $forstudents = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=contributionreminder'. '&chapterid' . $chapterid;
+        giportfolio_reminder_chapter_selector($cm, $urlroot, false, $giportfolio, $chapterid);
+        $output .= html_writer::start_div('parent-warning', ['class' => 'alert alert-warning']);
+        $output .= html_writer::tag('span', get_string('parentuserwithnocontribwarning', 'mod_giportfolio', $forstudents) );
+        $output .= html_writer::end_tag('span');
+        $output .= html_writer::end_div('parent-warning');
+        echo $output;
+        giportfolio_reminder_parents_table($PAGE, $allusers, $context, $username, $listusersids, $page, $giportfolio, $course, $chapterid, $cm->id);
+        break;
+
     default:
-    
+
         giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers,
         $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter);
         break;
@@ -242,7 +254,6 @@ function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
             $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id in ($chids)";
         }
 
-        
         return $DB->get_records_sql($sql);
     }
 
@@ -252,15 +263,14 @@ function display_chapters_not_seen( $giportfolio, $contributorid, $cm) {
     global $DB, $PAGE;
 
     $chapters =  get_updated_chapters_not_seen($giportfolio, $contributorid, $cm);
-   
     $morethanthree = count($chapters) > 3;
     $links = '';
     $index = 0;
 
-    // In case the chapter has no content, by pass it
+    // In case the chapter has no content, by pass it.
     $conditions = array ('giportfolioid' => $giportfolio->id, 'userid' => $contributorid);
     $countcontributions = $DB->count_records('giportfolio_contributions', $conditions);
- 
+
     if ($countcontributions > 0 ) {
         foreach ($chapters as $chapter) {
 
@@ -283,7 +293,7 @@ function display_chapters_not_seen( $giportfolio, $contributorid, $cm) {
 
         if ($morethanthree) {
             $params = ["class" => "giportfolio-more", "id" => $contributorid, 'title' => 'Show More'];
-            $icon = '<i class = "fa">&#xf067;</i>'; 
+            $icon = '<i class = "fa">&#xf067;</i>';
             $links .= html_writer::span($icon, '', $params);
             $jsmodule = array(
                 'name' => 'mod_giportfolio_morechapters',
