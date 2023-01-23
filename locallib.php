@@ -3113,9 +3113,9 @@ function giportfolio_send_comment_notification_to_teachers($contribution, $cm, $
     $recipients = giportfolio_filter_graders(($contribution[$contributionid])->userid, $cm);
 
     $studentmentor = false;
-    // Check if the user making the comment is the parent.
-    $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'userid' => ($contribution[$contributionid])->userid));
+    $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'chapterid' => ($contribution[$contributionid])->chapterid, 'userid' => ($contribution[$contributionid])->userid));
 
+    // Check if the user making the comment is the parent.
     if (($contribution[$contributionid])->allowmentorcontrib && ($contribution[$contributionid])->userid != $USER->id) {
         $mentorsid = explode(',',  giportfolio_get_mentees_mentor(($contribution[$contributionid])->userid));
         $studentmentor = in_array($USER->id, $mentorsid);
@@ -3253,7 +3253,7 @@ function giportfolio_minimise_recipient_record($recipient) {
     return $recipient;
 }
 
-// Get the students that did contribute
+// Get the students that did contribute.
 function giportfolio_get_students_with_no_contributions($chapterid, $giportfolioid) {
     global $DB;
 
@@ -3321,7 +3321,7 @@ function giportfolio_unlock_chapter($chapter) {
 function filter_student_with_contribution($data) {
     global $DB;
 
-    // Get the contributions made by the student
+    // Get the contributions made by the student.
     $sql = "SELECT userid FROM mdl_giportfolio_contributions WHERE chapterid = ? AND giportfolioid = ?";
     $params = ['chapterid' => $data->chapterid, 'giportfolioid' => $data->giportfolioid];
 
