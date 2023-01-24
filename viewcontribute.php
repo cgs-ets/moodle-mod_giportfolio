@@ -107,8 +107,8 @@ if ($chapter->hidden && !$viewhidden) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewcontribute.php', array('id' => $course->id)));
 }
 
-$params = array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid, 'cont' => $contribute);
-$PAGE->set_url('/mod/giportfolio/viewcontribute.php');
+// $params = array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid, 'cont' => $contribute);
+$PAGE->set_url('/mod/giportfolio/viewcontribute.php', ['id' => $id]);
 
 // Unset all page parameters.
 unset($id);
