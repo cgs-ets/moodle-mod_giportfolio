@@ -3093,14 +3093,18 @@ function giportfolio_send_comment_notification($contributionid) {
 }
 
 function giportfolio_send_comment_notification_to_students($contribution,  $cm, $contributionid, $recipient) {
+    $commentid = $contributionid.'_'.($contribution[$contributionid])->chapterid;
 
-    $url = new \moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'chapterid' => ($contribution[$contributionid])->chapterid));
+    $url = new \moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id,
+    'chapterid' => ($contribution[$contributionid])->chapterid));
+    $url->set_anchor($commentid);
+
     giportfolio_send_comment_notification_helper(($contribution[$contributionid])->userid, $contributionid, $contribution, $recipient, $url);
     // Check if the parent is allow to contribute.
     if (($contribution[$contributionid])->allowmentorcontrib) {
         $mentorsid = explode(',',  giportfolio_get_mentees_mentor(($contribution[$contributionid])->userid));
         foreach ($mentorsid as $id => $mentor) {
-            $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'userid' => ($contribution[$contributionid])->userid, 'mentor' => $mentor));
+            $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'userid' => ($contribution[$contributionid])->userid, 'mentor' => $mentor, 'chapterid' => ($contribution[$contributionid])->chapterid));
             $recipient = giportfolio_set_comment_notification_recipients($mentor);
             giportfolio_send_comment_notification_helper(($contribution[$contributionid])->userid, $contributionid, $contribution, $recipient, $url);
         }
@@ -3111,9 +3115,13 @@ function giportfolio_send_comment_notification_to_teachers($contribution, $cm, $
     global $USER;
     // Get the teachers that are part of the course and group.
     $recipients = giportfolio_filter_graders(($contribution[$contributionid])->userid, $cm);
-
+    $commentid = $contributionid.'_'.($contribution[$contributionid])->chapterid;
     $studentmentor = false;
-    $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id, 'chapterid' => ($contribution[$contributionid])->chapterid, 'userid' => ($contribution[$contributionid])->userid));
+    $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id,
+    'chapterid' => ($contribution[$contributionid])->chapterid,
+    'userid' => ($contribution[$contributionid])->userid));
+
+    $url->set_anchor($commentid);
 
     // Check if the user making the comment is the parent.
     if (($contribution[$contributionid])->allowmentorcontrib && ($contribution[$contributionid])->userid != $USER->id) {

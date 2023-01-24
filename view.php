@@ -96,7 +96,6 @@ if ($giportfolio->skipintro) {
 // Read chapters.
 
 $PAGE->set_url('/mod/giportfolio/view.php', array('id' => $id));
-// $PAGE->add_body_class('limitedwidth '); // Moodle 4 width
 // Unset all page parameters.
 unset($id);
 unset($bid);
@@ -109,7 +108,6 @@ unset($bid);
 $strgiportfolios = get_string('modulenameplural', 'mod_giportfolio');
 $strgiportfolio = get_string('modulename', 'mod_giportfolio');
 $strtoc = get_string('toc', 'mod_giportfolio');
-
 
 // Prepare header.
 $PAGE->set_title(format_string($giportfolio->name));
@@ -136,7 +134,6 @@ $viewdata->noneditingteachercancontribute = $noneditingteachercancontribute == 1
 
 $usersgiportfolios = giportfolio_get_giportfolios_number($giportfolio->id, $cm->id);
 $viewdata->submittedportfolios = html_writer::link(new moodle_url('/mod/giportfolio/submissions.php', array('id' => $cm->id, 'tab' => 'graphcontributors')), get_string('submitedporto', 'mod_giportfolio') . ' ' . $usersgiportfolios);
-
 $menteebuttons = [];
 
 if ($allowcontribute) {  // Student.

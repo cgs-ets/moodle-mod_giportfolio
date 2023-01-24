@@ -28,7 +28,7 @@ require_once($CFG->dirroot.'/mod/giportfolio/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
 require_once($CFG->dirroot.'/comment/lib.php');
 
-$userid = required_param('userid', PARAM_INT); // student
+$userid = required_param('userid', PARAM_INT); // Student.
 $id = optional_param('id', 0, PARAM_INT); // Course Module ID.
 $bid = optional_param('b', 0, PARAM_INT); // Giportfolio id.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
@@ -61,7 +61,7 @@ if ($cansee) {
 
 if ($mentor == 0 || !$cansee) {
     require_capability('mod/giportfolio:viewgiportfolios', $context);
-} 
+}
 
 $viewhidden = has_capability('mod/giportfolio:viewhiddenchapters', $context);
 $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context);
@@ -103,7 +103,7 @@ if ($chapter->userid && $chapter->userid != $userid) {
 }
 
 // Chapter is hidden for students.
-if ($chapter->hidden and !$viewhidden) {
+if ($chapter->hidden && !$viewhidden) {
     print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewcontribute.php', array('id' => $course->id)));
 }
 
@@ -127,7 +127,6 @@ $strtoc = get_string('toc', 'mod_giportfolio');
 // Prepare header.
 $PAGE->requires->jquery();
 $PAGE->set_title(format_string($giportfolio->name));
-$PAGE->add_body_classes(['mod_giportfolio', 'limitedwidth']); // Moodle 4 width
 $PAGE->set_heading(format_string($course->fullname));
 
 giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $course->id, $mentor);
@@ -138,7 +137,7 @@ $previd = null;
 $nextid = null;
 $last = null;
 foreach ($chapters as $ch) {
-    if (!$edit and $ch->hidden) {
+    if (!$edit && $ch->hidden) {
         continue;
     }
     if ($last == $chapter->id) {
@@ -152,9 +151,7 @@ foreach ($chapters as $ch) {
 }
 
 $chnavigation = '';
-//$mentor = '&amp;mentor='. $mentor;
-
-// This data is common for both prev and next forms
+// This data is common for both prev and next forms.
 $data = [
     'cmid' => $cm->id,
     'mentor' => $mentor ,
@@ -163,7 +160,9 @@ $data = [
     'viewcontribute' => 1
 ];
 
-if ($mentor == 0) unset($data['mentor']); // teachers/admin
+if ($mentor == 0) {
+    unset($data['mentor']); // Teachers/admin.
+}
 
 
 if ($previd) {
@@ -171,8 +170,8 @@ if ($previd) {
     $data['chapterid'] = $previd;
     $data['prev'] = 1;
     $chnavigation .= $OUTPUT->render_from_template('mod_giportfolio/chapter_navigation_prev', $data);
-   
-   
+
+
 } else {
     $data['inactive'] = 1;
     $chnavigation .= $OUTPUT->render_from_template('mod_giportfolio/chapter_navigation_prev', $data);
@@ -190,10 +189,7 @@ if ($nextid) {
 
     if ($course->id == $SITE->id) {
         $returnurl = "$CFG->wwwroot/";
-    } /*else if ($mentor != 0){
-        $returnurl = "$CFG->wwwroot/mod/giportfolio/submissions.php?id=$cm->id";
-    } */
-    else {
+    } else {
         $returnurl = "$CFG->wwwroot/mod/giportfolio/view.php?id=$cm->id";
     }
 
@@ -226,8 +222,8 @@ echo '<div class="navtop">'.$chnavigation.'</div>';
 // Chapter itself.
 echo $OUTPUT->box_start('generalbox giportfolio_content');
 
-// Add the anchor to show/hide the portfolio details. <span class="fa fa-caret-down badge-name"></span>
-$showhide = '<a type="button" class="show-hide-instructions" data-toggle="collapse" data-target="#collapseinstructions" aria-expanded="true" 
+// Add the anchor to show/hide the portfolio details. <span class="fa fa-caret-down badge-name"></span>.
+$showhide = '<a type="button" class="show-hide-instructions" data-toggle="collapse" data-target="#collapseinstructions" aria-expanded="true"
 aria-controls="collapseExample" title="Info"> <span class="fa fa-caret-down show-hide-details"></span> </a>';
 
 if (!$giportfolio->customtitles) {
@@ -253,7 +249,7 @@ $chaptertext = file_rewrite_pluginfile_urls(
 );
 
 $templatecontext = new \stdClass();
-$templatecontext->intro = format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context)); 
+$templatecontext->intro = format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
 $templatecontext->menteementor = ($mentor != 0 || (isset($mentee) && $mentee == 0)) && !$cangrade;
 
 echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', $templatecontext); // Show/hide instruction button.
@@ -261,21 +257,21 @@ echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', 
 if ($contriblist) {
     echo $OUTPUT->box_start('giportfolio_contributions');
 
-    $contribution_buffer = '';
-    $contribution_outline = '';
+    $contributionbuffer = '';
+    $contributionoutline = '';
     if ($giportfolio->displayoutline) {
         $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/outline.js'));
-        $contribution_outline = '<p class="giportfolio_outline">' . get_string('outline', 'mod_giportfolio')
+        $contributionoutline = '<p class="giportfolio_outline">' . get_string('outline', 'mod_giportfolio')
             . '<span id="toggleoutline" class="toggleoutline show-hide-details"> '
             . '<span id="togglehide" class="fa fa-caret-up" title= "Hide"></span>'
             . '<span id="toggleshow" class="fa fa-caret-down" title ="Show"></span> '
             . '</span></p><table id="giportfolio_outline" class="contents">';
     }
 
-    $contribution_count = 0;
+    $contributioncount = 0;
 
     comment::init();
-    
+
     $commentopts = (object)array(
         'context' => $context,
         'component' => 'mod_giportfolio',
@@ -299,11 +295,11 @@ if ($contriblist) {
                     'mentee' => $userid, 'mentor' => $contrib->mentorid, 'teacher' => $contrib->teacherid
                 )
             );
-  
-      
+
+
         // Check if the show hide option is available for students.
         if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) {
-                
+
             if ($contrib->hidden) {
                 $showurl = new moodle_url($baseurl, array('action' => 'show', 'sesskey' => sesskey()));
                 $showicon = $OUTPUT->pix_icon('t/show', get_string('show', 'mod_giportfolio'));
@@ -314,10 +310,10 @@ if ($contriblist) {
             }
             $showicon = html_writer::link($showurl, $showicon);
         }
-       
-        $actions = array();      
+
+        $actions = array();
         if (!$contrib->hidden) {
-           
+
             $editurl = new moodle_url($baseurl);
             $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'));
             $editicon = html_writer::link($editurl, $editicon);
@@ -332,14 +328,14 @@ if ($contriblist) {
                 } else {
                     $actions = array($editicon, $delicon, $showicon);
                 }
-            } 
-            
+            }
+
             $actions = array_merge($actions, $actionsharing);
             $cout = '';
             $hidementortag = ($contrib->mentorid == 0) ? 'hidden' : '';
-            $hideteachertag =($contrib->teacherid == 0) ? 'hidden' : '';
+            $hideteachertag = ($contrib->teacherid == 0) ? 'hidden' : '';
             $contribtitle = file_rewrite_pluginfile_urls($contrib->title, 'pluginfile.php', $context->id, 'mod_giportfolio', 'contribution', $contrib->id);
-            $cout .='<strong>'.$contribtitle.'</strong>'. implode(' ', $actions) ;
+            $cout .= '<strong>'.$contribtitle.'</strong>'. implode(' ', $actions);
             $cout .= '<span class="badge badge-info contributor-tag"'.$hidementortag.'>'.format_string(get_string('mentorcontribution', 'mod_giportfolio')).'</span>';
             $cout .= '<span class="badge badge-success contributor-tag"'.$hideteachertag.'>'.format_string(get_string('teachercontribution', 'mod_giportfolio')).'</span> <br>';
             $cout .= date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
@@ -348,18 +344,18 @@ if ($contriblist) {
             }
             $cout .= '<br/><br/>';
             $cout = html_writer::tag('contribheader', $cout);
-            
+
 
             // Print contribution body
             $contribtext = file_rewrite_pluginfile_urls($contrib->content, 'pluginfile.php', $context->id, 'mod_giportfolio',
                                                         'contribution', $contrib->id);
-            $cout .= html_writer::tag('contribtext', format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context)));      
-            if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) { 
+            $cout .= html_writer::tag('contribtext', format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context)));
+            if (giportfolio_hide_show_contribution($giportfolio->id) || has_capability('mod/giportfolio:addinstance', $context)) {
                 $showurl = new moodle_url($baseurl, array('action' => 'hide', 'sesskey' => sesskey()));
                 $showicon = $OUTPUT->pix_icon('t/hide', get_string('hide', 'mod_giportfolio'));
                 $cout .= html_writer::link($showurl, $shareicon);
             }
-            
+
             $files = giportfolio_print_attachments($contrib, $cm, $type = null, $align = "right");
             if ($files) {
                 $cout .= "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\" nowrap=\"nowrap\">\n";
@@ -368,39 +364,37 @@ if ($contriblist) {
                 $cout .= '<br>';
             }
 
-            $commentopts->itemid = $contrib->id;            
+            $commentopts->itemid = $contrib->id;
             $commentbox = new comment($commentopts);
-            $cout .= html_writer::tag('contribcomment', $commentbox->output(), array('id' => "commentforcontribution_$contrib->id _chapterid_$chapter->id"));
+            $cout .= html_writer::tag('contribcomment', $commentbox->output(), array('id' => "$contrib->id".'_'."$chapter->id"));
+            // Wrap contribution and make entry in the contents.
+            $contributioncount++;
+            $contributionbuffer .= html_writer::tag('article', $cout, array('class' => 'giportfolio-contribution', 'id' => 'contribution'.$contributioncount));
 
-            // Wrap contribution and make entry in the contents
-            $contribution_count++;
-            $contribution_buffer .= html_writer::tag('article', $cout, array('class' => 'giportfolio-contribution', 'id' => 'contribution'.$contribution_count));
-
-            if($giportfolio->displayoutline) {
-                $date_display = date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
-                if($contrib->timecreated !== $contrib->timemodified) {
-                    $date_display .= '&nbsp;<span class="timemodified">&raquo;<span class="timemodified_details">'
+            if ($giportfolio->displayoutline) {
+                $datedisplay = date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
+                if ($contrib->timecreated !== $contrib->timemodified) {
+                    $datedisplay .= '&nbsp;<span class="timemodified">&raquo;<span class="timemodified_details">'
                         .get_string('lastmodified', 'mod_giportfolio').'<br/>'
                         .date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified)
-                   .'</span></span>';
+                    .'</span></span>';
                 }
-             
 
-                $contribution_outline .= html_writer::tag('tr',
-                    '<td><a href="#contribution'.$contribution_count.'">'.format_string($contrib->title).'</a></td>'.
-                    '<td class="contribdate">'.$date_display.'</td>'.
+                $contributionoutline .= html_writer::tag('tr',
+                    '<td><a href="#contribution'.$contributioncount.'">'.format_string($contrib->title).'</a></td>'.
+                    '<td class="contribdate">'.$datedisplay.'</td>'.
                     '<td class="badge badge-info"'.$hidementortag.' ><strong>'.format_string(get_string('mentorcontribution', 'mod_giportfolio')).'</td>'.
                     '<td class="badge badge-success"'.$hideteachertag.' ><strong>'.format_string(get_string('teachercontribution', 'mod_giportfolio')).'</td>',
                     array('class' => ($ismine ? 'mine' : 'notmine'))
                 );
             }
-          
-            
+
+
             if ($giportfolio->disabledeletebtn && giportfolio_count_contributions_comments($contrib->id) > 0) {
                 $actions = array();
                 $PAGE->requires->js(new moodle_url($CFG->wwwroot . '/mod/giportfolio/deletecomment.js'));
             }
-            
+
             if (empty(giportfolio_has_seen_contribution($contrib->id))) { // First time the user sees the contrib.
                 giportfolio_follow_updates_entry($contrib);
             }
@@ -408,12 +402,12 @@ if ($contriblist) {
         }
     }
 
-    if($giportfolio->displayoutline) {
-        echo $contribution_outline.'</table><br/><hr class ="outline-separator"><br>';
+    if ($giportfolio->displayoutline) {
+        echo $contributionoutline.'</table><br/><hr class ="outline-separator"><br>';
     }
 
     echo '<p class="giportfolio_outline" >'. get_string('contributions', 'giportfolio').'</p>';
-    echo $contribution_buffer;
+    echo $contributionbuffer;
     echo $OUTPUT->box_end();
 }
 

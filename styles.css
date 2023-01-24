@@ -28,7 +28,8 @@ div.chapter-expand-collapse {
     vertical-align: middle;
 }
 
-.mod_giportfolio button.bigicon {
+.mod_giportfolio button.bigicon,
+.path-mod-giportfolio button.bigicon {
     vertical-align: middle;
     margin-right: 4px;
     margin-left: 4px;
@@ -41,18 +42,22 @@ div.chapter-expand-collapse {
     outline: none;
 }
 
-button.bigicon.inactive {
+.mod_giportfolio button.bigicon.inactive,
+.path-mod-giportfolio button.bigicon.inactive{
     color: grey;
     cursor: default;
 }
 
-.mod_giportfolio .navtop {
+.mod_giportfolio .navtop,
+.path-mod-giportfolio .navtop
+ {
     text-align: right;
     margin-bottom: 0.5em;
     position: relative;
 }
 
-.mod_giportfolio .navbottom {
+.mod_giportfolio .navbottom,
+.path-mod-giportfolio .navbottom {
     text-align: right;
     clear: both;
 }
@@ -654,13 +659,15 @@ span.merging-message {
         margin-top: 0;
     }
 
-    .mod_giportfolio button.bigicon {
+    .mod_giportfolio button.bigicon,
+    .path-mod-giportfolio button.bigicon {
         color: white;
         height: fit-content;
         width: min-content;
     }
 
-    .mod_giportfolio button.bigicon.inactive {
+    .mod_giportfolio button.bigicon.inactive,
+    .path-mod-giportfolio button.inactive {
         color: white;
         height: fit-content;
         width: min-content;
@@ -669,7 +676,11 @@ span.merging-message {
     .mod_giportfolio .navtop [method="GET"]>button.bigicon,
     .mod_giportfolio .navtop [method="post"]>button.bigicon,
     .mod_giportfolio .navbottom [method="GET"]>button.bigicon,
-    .mod_giportfolio .navbottom [method="post"]>button.bigicon {
+    .mod_giportfolio .navbottom [method="post"]>button.bigicon,
+    .path-mod_giportfolio .navtop [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navtop [method="post"]>button.bigicon,
+    .path-mod_giportfolio .navbottom [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navbottom [method="post"]>button.bigicon {
         background-color: #66A8D8;
         width: min-content;
         color: white;
@@ -677,12 +688,16 @@ span.merging-message {
     }
 
     .mod_giportfolio .navtop [method="GET"]>button.bigicon,
-    .mod_giportfolio .navbottom [method="GET"]>button.bigicon {
+    .mod_giportfolio .navbottom [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navtop [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navbottom [method="GET"]>button.bigicon {
         margin-left: 0px;
     }
 
     .mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
-    .mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive {
+    .mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive,
+    .path-mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
+    .path-mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive {
         background-color: #E2E6EA;
         color: white;
     }
@@ -694,14 +709,16 @@ span.merging-message {
 @media only screen and (device-width: 768px) {
 
     /* For general iPad layouts */
-    .mod_giportfolio button.bigicon {
-        color: white;
+    .mod_giportfolio button.bigicon ,
+    .path-mod_giportfolio button.bigicon{
+        color: black;
         height: fit-content;
         width: min-content;
     }
 
-    .mod_giportfolio button.bigicon.inactive {
-        color: white;
+    .mod_giportfolio button.bigicon.inactive,
+    .path-mod_giportfolio button.bigicon.inactive {
+        color: black;
         height: fit-content;
         width: min-content;
     }
@@ -709,7 +726,11 @@ span.merging-message {
     .mod_giportfolio .navtop [method="GET"]>button.bigicon,
     .mod_giportfolio .navtop [method="post"]>button.bigicon,
     .mod_giportfolio .navbottom [method="GET"]>button.bigicon,
-    .mod_giportfolio .navbottom [method="post"]>button.bigicon {
+    .mod_giportfolio .navbottom [method="post"]>button.bigicon,
+    .path-mod_giportfolio .navtop [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navtop [method="post"]>button.bigicon,
+    .path-mod_giportfolio .navbottom [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navbottom [method="post"]>button.bigicon  {
         background-color: #66A8D8;
         width: min-content;
         color: white;
@@ -717,12 +738,16 @@ span.merging-message {
     }
 
     .mod_giportfolio .navtop [method="GET"]>button.bigicon,
-    .mod_giportfolio .navbottom [method="GET"]>button.bigicon {
+    .mod_giportfolio .navbottom [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navtop [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navbottom [method="GET"]>button.bigicon {
         margin-left: 0px;
     }
 
     .mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
-    .mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive {
+    .mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive,
+    .path-mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
+    .path-mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive {
         background-color: #E2E6EA;
         color: white;
     }
@@ -734,13 +759,15 @@ span.merging-message {
 @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:portrait) {
 
     /* For portrait layouts only */
-    .mod_giportfolio button.bigicon {
+    .mod_giportfolio button.bigicon,
+    .path-mod_giportfolio button.bigicon {
         color: white;
         height: fit-content;
         width: min-content;
     }
 
-    .mod_giportfolio button.bigicon.inactive {
+    .mod_giportfolio button.bigicon.inactive,
+    .path-mod_giportfolio button.bigicon.inactive  {
         color: white;
         height: fit-content;
         width: min-content;
@@ -749,7 +776,11 @@ span.merging-message {
     .mod_giportfolio .navtop [method="GET"]>button.bigicon,
     .mod_giportfolio .navtop [method="post"]>button.bigicon,
     .mod_giportfolio .navbottom [method="GET"]>button.bigicon,
-    .mod_giportfolio .navbottom [method="post"]>button.bigicon {
+    .mod_giportfolio .navbottom [method="post"]>button.bigicon,
+    .path-mod_giportfolio .navtop [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navtop [method="post"]>button.bigicon,
+    .path-mod_giportfolio .navbottom [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navbottom [method="post"]>button.bigicon {
         background-color: #66A8D8;
         width: min-content;
         color: white;
@@ -757,12 +788,16 @@ span.merging-message {
     }
 
     .mod_giportfolio .navtop [method="GET"]>button.bigicon,
-    .mod_giportfolio .navbottom [method="GET"]>button.bigicon {
+    .mod_giportfolio .navbottom [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navtop [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navbottom [method="GET"]>button.bigicon {
         margin-left: 0px;
     }
 
     .mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
-    .mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive {
+    .mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive,
+    .path-mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
+    .path-mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive {
         background-color: #E2E6EA;
         color: white;
     }
@@ -772,13 +807,15 @@ span.merging-message {
 @media only screen and (min-device-width: 481px) and (max-device-width: 1024px) and (orientation:landscape) {
 
     /* For landscape layouts only */
-    .mod_giportfolio button.bigicon {
+    .mod_giportfolio button.bigicon,
+    .path-mod_giportfolio button.bigicon {
         color: white;
         height: fit-content;
         width: min-content;
     }
 
-    .mod_giportfolio button.bigicon.inactive {
+    .mod_giportfolio button.bigicon.inactive,
+    .path-mod_giportfolio button.bigicon.inactive {
         color: white;
         height: fit-content;
         width: min-content;
@@ -787,7 +824,11 @@ span.merging-message {
     .mod_giportfolio .navtop [method="GET"]>button.bigicon,
     .mod_giportfolio .navtop [method="post"]>button.bigicon,
     .mod_giportfolio .navbottom [method="GET"]>button.bigicon,
-    .mod_giportfolio .navbottom [method="post"]>button.bigicon {
+    .mod_giportfolio .navbottom [method="post"]>button.bigicon,
+    .path-mod_giportfolio .navtop [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navtop [method="post"]>button.bigicon,
+    .path-mod_giportfolio .navbottom [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navbottom [method="post"]>button.bigicon  {
         background-color: #66A8D8;
         width: min-content;
         color: white;
@@ -795,12 +836,16 @@ span.merging-message {
     }
 
     .mod_giportfolio .navtop [method="GET"]>button.bigicon,
-    .mod_giportfolio .navbottom [method="GET"]>button.bigicon {
+    .mod_giportfolio .navbottom [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navtop [method="GET"]>button.bigicon,
+    .path-mod_giportfolio .navbottom [method="GET"]>button.bigicon {
         margin-left: 0px;
     }
 
     .mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
-    .mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive {
+    .mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive,
+    .path-mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
+    .path-mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive {
         background-color: #E2E6EA;
         color: white;
     }

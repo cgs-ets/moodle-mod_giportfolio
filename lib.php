@@ -727,7 +727,7 @@ function giportfolio_print_comments($contribution) {
     global $DB;
 
     $sql = "SELECT content FROM mdl_comments WHERE commentarea = ? AND component = ?  AND itemid = ?";
-    $params = ['commentarea' => 'giportfolio_contribution', 'component' => 'mod_giportfolio', 'itemid'=> $contribution->id];
+    $params = ['commentarea' => 'giportfolio_contribution', 'component' => 'mod_giportfolio', 'itemid' => $contribution->id];
 
     $comments = $DB->get_records_sql($sql, $params);
 
@@ -930,7 +930,6 @@ function mod_giportfolio_comment_validate($opts) {
             'id' => $opts->itemid,
             'giportfolioid' => $opts->cm->instance
         ));
-
 
         if ($userid != $USER->id && !giportfolio_user_is_mentor($opts->context, $USER)) {
             return false;

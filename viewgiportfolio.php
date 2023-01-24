@@ -434,7 +434,6 @@ if ($contriblist) {
     }
 
     $contributioncount = 0;
-
     comment::init();
     $commentopts = (object) array(
         'context' => $context,
@@ -450,7 +449,7 @@ if ($contriblist) {
     $align = 'right';
     $showicon = '';
     $showurl = '';
-
+    $flagcounter = 0;
     foreach ($contriblist as $contrib) {
         $ismine = ($contrib->userid == $userid);
 
@@ -522,7 +521,7 @@ if ($contriblist) {
             continue;
         }
 
-        // if the context is frozen, no actions allowed.
+        // If the context is frozen, no actions allowed.
 
         if ($context->is_locked() && !is_siteadmin($USER->id) ) {
             $actions = [];
@@ -565,7 +564,7 @@ if ($contriblist) {
         if ($ismine) {
             $commentopts->itemid = $contrib->id;
             $commentbox = new comment($commentopts);
-            $cout .= html_writer::tag('contribcomment', $commentbox->output(true));
+            $cout .= html_writer::tag('contribcomment', $commentbox->output(true), array('id' => "$contrib->id".'_'."$chapter->id"));
             $cout .= '<br>';
         }
 
