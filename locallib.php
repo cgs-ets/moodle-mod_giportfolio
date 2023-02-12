@@ -1880,8 +1880,8 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
 
     $table = new flexible_table('mod-giportfolio-reminder-table');
 
-    $table->initialbars(true); // Display the alphabet
-    $table->define_columns($tablecolumns); // $tablecolumns
+    $table->initialbars(true); // Display the alphabet.
+    $table->define_columns($tablecolumns); // $tablecolumns.
     $table->define_headers($tableheaders);
     $table->define_baseurl($PAGE->url);
     // $table->sortable(true, 'lastname'); // Sorted by lastname by default.

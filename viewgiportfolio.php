@@ -67,18 +67,18 @@ $allowedit = has_capability('mod/giportfolio:edit', $context);
 $viewhidden = has_capability('mod/giportfolio:viewhiddenchapters', $context);
 $ismentor = in_array($USER->id, giportfolio_user_mentor_of_student($mentee));
 $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context) || $ismentor;
+$allowgrade = has_capability('mod/giportfolio:gradegiportfolios', $context, $USER->id, false);
 $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Allow a teacher to make a contrib on behalf of a student.
 
 $userid = $ismentor ? $mentee : $USER->id; // To allow teachers/parents to print students portfolio.
 
-if (!is_enrolled($context, $userid, '') && !is_siteadmin()) {
+if (!is_enrolled($context, $userid, '') && !is_siteadmin() && !$allowgrade) {
     print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
-if ((!is_enrolled($context, $USER->id, '') && $mentee == 0 && !$ismentor) && !is_siteadmin()) {
+if ((!is_enrolled($context, $USER->id, '') && $mentee == 0 && !$ismentor) && !is_siteadmin() && !$allowgrade) {
     print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
 }
-
 
 if ($allowedit) {
     if ($edit != -1 && confirm_sesskey()) {
