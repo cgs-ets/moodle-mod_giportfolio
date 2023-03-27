@@ -357,7 +357,9 @@ echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', 
 
 echo $OUTPUT->box_start('giportfolio_actions');
 
-if ((!$allowedit || $cangrade && $mentee != 0) && !$context->is_locked() || is_siteadmin($USER->id)) {
+// If a teacher is also a student in the course allow them to contribute on their portfolio.
+//(!$allowedit || $cangrade && $mentee != 0) && !$context->is_locked() || is_siteadmin($USER->id)
+if (!$context->is_locked()) {
     if (!empty($contribution)) {
         $params['cont'] = $contribute;
     }
