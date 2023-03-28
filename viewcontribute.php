@@ -33,6 +33,8 @@ $id = optional_param('id', 0, PARAM_INT); // Course Module ID.
 $bid = optional_param('b', 0, PARAM_INT); // Giportfolio id.
 $chapterid = optional_param('chapterid', 0, PARAM_INT); // Chapter ID.
 $contribute = optional_param('cont', 'no', PARAM_RAW);
+$fpv = optional_param('fpv', 0, PARAM_INT); // From parentview plugin.
+$pid = optional_param('pid', '0', PARAM_INT); // From parentview plugin. parent id.
 
 // Security checks START - teachers edit; students view.
 
@@ -52,11 +54,13 @@ require_course_login($course, true, $cm);
 $context = context_module::instance($cm->id);
 require_capability('mod/giportfolio:view', $context);
 
-$cansee = in_array($USER->id, giportfolio_user_mentor_of_student($userid));
+$cansee = in_array($USER->id, giportfolio_user_mentor_of_student($userid)) || $fpv == 1;
 $mentor = 0;
 
-if ($cansee) {
+if ($cansee && $fpv == 0) {
     $mentor = $USER->id;
+} else {
+    $mentor = $pid;
 }
 
 if ($mentor == 0 || !$cansee) {

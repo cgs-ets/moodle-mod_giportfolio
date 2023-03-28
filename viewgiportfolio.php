@@ -359,6 +359,7 @@ echo $OUTPUT->box_start('giportfolio_actions');
 
 // If a teacher is also a student in the course allow them to contribute on their portfolio.
 //(!$allowedit || $cangrade && $mentee != 0) && !$context->is_locked() || is_siteadmin($USER->id)
+
 if (!$context->is_locked()) {
     if (!empty($contribution)) {
         $params['cont'] = $contribute;
