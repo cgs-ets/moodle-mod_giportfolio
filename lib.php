@@ -491,6 +491,8 @@ function giportfolio_supports($feature) {
             return false;
         case FEATURE_COMPLETION_HAS_RULES:
             return false;
+        case FEATURE_MOD_PURPOSE:
+            return MOD_PURPOSE_ASSESSMENT;
 
         default:
             return null;

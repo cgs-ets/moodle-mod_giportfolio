@@ -98,7 +98,7 @@ if ($contributionid) {
     $contribution = $DB->get_record('giportfolio_contributions', array(
         'id' => $contributionid, 'chapterid' => $chapterid,
     ), '*', MUST_EXIST);
-    $contribution = $DB->get_record('giportfolio_contributions', array('id' => $contributionid), '*', MUST_EXIST);
+   // $contribution = $DB->get_record('giportfolio_contributions', array('id' => $contributionid), '*', MUST_EXIST);
     $mentee = $contribution->userid;
 
     if (in_array($USER->id, giportfolio_user_mentor_of_student($mentee))) {
@@ -112,7 +112,7 @@ if ($contributionid) {
     }
     $formdata->mentor = $contribution->mentorid;
     $formdata->mentee = $contribution->userid;
-    $formdata->teacherid =  $contribution->teacherid;
+    $formdata->teacherid = $contribution->teacherid;
     $formdata = clone ($contribution);
     $formdata = file_prepare_standard_editor(
         $formdata,
@@ -247,7 +247,7 @@ if ($mform->is_cancelled()) {
         $contribution = $DB->get_record('giportfolio_contributions', array('id' => $contributionid), '*', MUST_EXIST);
         $sendnotification = $giportfolio->notifyaddentry && $contribution->teacherid == 0;
         $sendnotificationtostudent = $giportfolio->notifyaddentryteacher && $contribution->teacherid != 0; // The teacher is contributing on behalf of the student
-      
+
     }
 
     $data->id = $contributionid;
@@ -275,9 +275,9 @@ if ($mform->is_cancelled()) {
     $DB->update_record('giportfolio_contributions', $data);
 
     giportfolio_automatic_grading($giportfolio, $userid);
-   
+
     if (isset($sendnotification) && $sendnotification) {
-      
+
         giportfolio_add_entry_send_notification($userid, $cm, $giportfolio, $chapter);
     }
 
