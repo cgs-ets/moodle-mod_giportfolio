@@ -31,12 +31,12 @@ div.chapter-expand-collapse {
 .mod_giportfolio button.bigicon,
 .path-mod-giportfolio button.bigicon {
     vertical-align: middle;
-    margin: 7px;
+    margin: 0 5px;
+    padding: 5px;
     border: 0;
     background-color: white;
     font-size: 1rem;
     outline: none;
-    padding: 0;
 }
 
 .mod_giportfolio button.bigicon.inactive,
