@@ -655,7 +655,7 @@ span.merging-message {
     }
 
     .mod_giportfolio button.bigicon {
-        color: white;
+        /*color: white;*/
         height: fit-content;
         width: min-content;
     }
