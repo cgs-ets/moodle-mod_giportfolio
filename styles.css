@@ -37,6 +37,7 @@ div.chapter-expand-collapse {
     background-color: white;
     font-size: 1rem;
     outline: none;
+    color: black;
 }
 
 .mod_giportfolio button.bigicon.inactive,
