@@ -137,14 +137,14 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->addElement('selectyesno', 'disabledeletebtn', get_string('disabledeletebtn', 'giportfolio'));
         $mform->setDefault('disabledeletebtn', 1);
 
-        if (giportfolio_include_klassenbuchtrainer()) {
-            $mform->addElement('selectyesno', 'klassenbuchtrainer', get_string('klassenbuchtrainer', 'giportfolio'));
-            $mform->addHelpButton('klassenbuchtrainer', 'klassenbuchtrainer', 'mod_giportfolio');
-            $mform->setDefault('klassenbuchtrainer', 0);
-        } else {
-            $mform->addElement('hidden', 'klassenbuchtrainer', 0);
-            $mform->setType('klassenbuchtrainer', 0);
-        }
+        // if (giportfolio_include_klassenbuchtrainer()) {
+        //     $mform->addElement('selectyesno', 'klassenbuchtrainer', get_string('klassenbuchtrainer', 'giportfolio'));
+        //     $mform->addHelpButton('klassenbuchtrainer', 'klassenbuchtrainer', 'mod_giportfolio');
+        //     $mform->setDefault('klassenbuchtrainer', 0);
+        // } else {
+        //     $mform->addElement('hidden', 'klassenbuchtrainer', 0);
+        //     $mform->setType('klassenbuchtrainer', 0); 
+        // }  FIX FOR MOODLE 4.4
 
         // Notifications header.
         $mform->addElement('header', 'notifications', get_string('notifications', 'giportfolio'));

@@ -345,7 +345,7 @@ function giportfolio_grade_item_update($giportfolio, $grades = null) {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
 
-    if (array_key_exists('cmidnumber', $giportfolio)) { // May not be always present.
+    if (property_exists( $giportfolio, 'cmidnumber')) { // May not be always present.
         $params = array('itemname' => $giportfolio->name, 'idnumber' => $giportfolio->cmidnumber);
     } else {
         $params = array('itemname' => $giportfolio->name);
