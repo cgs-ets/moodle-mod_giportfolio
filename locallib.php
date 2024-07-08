@@ -1705,7 +1705,6 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
                    </div>';
 
     $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
-    $extrafields = get_extra_user_fields($context);
     $tableheaders = array_merge(array('', get_string('fullnameuser')), $titles);
 
     require_once($CFG->libdir . '/tablelib.php');
@@ -1754,8 +1753,8 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
         $sort = ' ORDER BY ' . $sort;
     }
 
-    $ufields = user_picture::fields('u', $extrafields);
-
+    $ufields =  get_user_fields();
+   
     if (!empty($allusers)) {
         $select = "SELECT DISTINCT $ufields";
 
@@ -1874,7 +1873,7 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
 
     $tableheaders = array_merge([$OUTPUT->render($mastercheckbox), '', 'Fullname', 'Status', 'Date Sent']);
     $tablecolumns = array_merge(['', 'picture', 'fullname', 'Status', 'Date Sent']);
-    $extrafields = get_extra_user_fields($context);
+  
 
     require_once($CFG->libdir . '/tablelib.php');
 
@@ -1913,7 +1912,7 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
         $sort = ' ORDER BY ' . $sort;
     }
 
-    $ufields = user_picture::fields('u', $extrafields);
+    $ufields = get_user_fields();
     $reminder = html_writer::span('<i class = "fa">&#xf2b7</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindersent', 'mod_giportfolio')]);
     $remindernotsent = html_writer::span('<i class = "fa">&#xf003;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindernotsent', 'mod_giportfolio'), 'hidden' => true]);
 
@@ -2041,7 +2040,7 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
 
     $tableheaders = array_merge([$OUTPUT->render($mastercheckbox),  'Student', 'Status', 'Date Sent']);
     $tablecolumns = array_merge([ '', 'Student', 'Status', 'Date Sent']);
-    $extrafields = get_extra_user_fields($context);
+  
 
     require_once($CFG->libdir . '/tablelib.php');
 
@@ -2079,7 +2078,7 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
         $sort = ' ORDER BY ' . $sort;
     }
 
-    $ufields = user_picture::fields('u', $extrafields);
+    $ufields = get_user_fields();
     $reminder = html_writer::span('<i class = "fa">&#xf2b7</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindersent', 'mod_giportfolio')]);
     $remindernotsent = html_writer::span('<i class = "fa">&#xf003;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindernotsent', 'mod_giportfolio'), 'hidden' => true]);
     $parentcounter = 0;
@@ -2632,7 +2631,7 @@ function giportfolio_set_last_chapter_seen($giportfolioid, $chapterid = null) {
 function giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers, $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter) {
     global $CFG, $PAGE, $USER, $DB, $OUTPUT;
     $tabindex = 1; // Tabindex for quick grading tabbing; Not working for dropdowns yet.
-    $extrafields = get_extra_user_fields($context);
+  
 
     list($tablecolumns, $tableheaders, $showgradecol) = giportfolio_table_columns($giportfolio->id, $context);
 
@@ -2711,7 +2710,7 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
         $sort = ' ORDER BY ' . $sort;
     }
 
-    $ufields = user_picture::fields('u', $extrafields);
+    $ufields = get_user_fields();
 
     if (!empty($allusers)) {
         $select = "SELECT DISTINCT $ufields ";
@@ -3020,7 +3019,7 @@ function giportfolio_table_columns($giportfolioid, $context) {
     global $DB;
 
     $grade = $DB->get_field('giportfolio', 'grade', array('id' => $giportfolioid));
-    $extrafields = get_extra_user_fields($context);
+  
     $tablecolumns = [];
     $extrafieldnames = array();
     $showgradecol = false;
@@ -3338,4 +3337,13 @@ function filter_student_with_contribution($data) {
     $result = array_keys($result);
 
     return $result;
+}
+
+// Utility function to get fields from mdl_user table
+function get_user_fields() {
+    $ufields = \core_user\fields::for_name()->with_userpic()->get_required_fields();
+    $ufields[0] = 'u.id';
+    $ufields = implode(', ', $ufields);
+
+    return $ufields;
 }
