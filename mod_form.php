@@ -142,8 +142,9 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         //     $mform->addHelpButton('klassenbuchtrainer', 'klassenbuchtrainer', 'mod_giportfolio');
         //     $mform->setDefault('klassenbuchtrainer', 0);
         // } else {
-        //     $mform->addElement('hidden', 'klassenbuchtrainer', 0);
-        //     $mform->setType('klassenbuchtrainer', 0); 
+            $mform->addElement('hidden', 'klassenbuchtrainer', 0);
+            // $mform->setType('klassenbuchtrainer', 0); 
+            $mform->setDefault('klassenbuchtrainer', 0);
         // }  FIX FOR MOODLE 4.4
 
         // Notifications header.

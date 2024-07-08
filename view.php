@@ -215,7 +215,7 @@ $viewdata->playbutton = ($allowcontribute || $allowedit || $allowviewgiportfolio
 $viewdata->playbuttonurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'sesskey' => $USER->sesskey));
 $viewdata->playparentbutton = $mentor;
 $viewdata->skipintro = $giportfolio->skipintro;
-$viewdata->intro = format_text($intro, $giportfolio->intro, array('noclean' => true, 'context' => $context));
+$viewdata->intro = format_text($intro, FORMAT_MOODLE, array('noclean' => true, 'context' => $context));
 $viewdata->chapternumbers = get_string('chapternumber', 'mod_giportfolio') . count($chapters);
 $viewdata->contextlocked = $context->is_locked();
 $viewdata->chapterishidden = giportfolio_all_chapters_hidden($giportfolio);
