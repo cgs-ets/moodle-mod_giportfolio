@@ -59,10 +59,11 @@ $strgiportfolios = get_string('modulenameplural', 'mod_giportfolio');
 echo $OUTPUT->header();
 echo $OUTPUT->heading(format_string($giportfolio->name));
 
-$mfordata = new stdClass;
+$mformdata = new stdClass;
 $mformdata->giportfolioid = $giportfolio->id;
 $mformdata->moduleid = $id;
-$mfordata->cm = $cm;
+$mformdata->cm = $cm;
+
 $mform = new downloader_form(null, ['giportfolioid' => $giportfolio->id, "id" => $id, 'chapterid' => $chapterid]);
 $printtable = false;
 $firstaccess = true;

@@ -60,13 +60,16 @@ function giportfoliotool_downloader_get_students($giportfolioid, $chapterid, $id
         'includefullname' => true,
     );
 
+    
     $studentaux = [];
     foreach ($students as $student) {
+    
         $title = new stdClass();
         $title->userid = $student->id;
         $title->chapter = $student->chapterid;
         $title->contributionid = $student->contributionid; // Itemid in the file table.
-        $title->contributiontitle = $student->contributiontitle . " ($student->chaptertitle)";
+        $title->contributiontitle = isset($student->contributiontitles) ? $student->contributiontitles . " ($student->chaptertitle)" 
+                                                                        :  $student->contributiontitle. " ($student->chaptertitle)" ;
         $file = new stdClass();
         $file->fileid = $student->fileid;
         $file->contextid = $student->contextid;
@@ -75,10 +78,9 @@ function giportfoliotool_downloader_get_students($giportfolioid, $chapterid, $id
         $file->filename = $student->filename;
         $file->chaptertitle = $student->chaptertitle;
         $file->itemid = $student->contributionid;
-
+       
         if (isset($studentaux[$student->id])) {
-            if (!isset($studentaux[$student->id]->contributiontitles['contributions'][$student->contributionid])
-                && !in_array($title, $studentaux[$student->id]->contributiontitles['contributions'][$student->contributionid])) {
+            if (!isset($studentaux[$student->id]->contributiontitles['contributions'][$student->contributionid])) {
                 $studentaux[$student->id]->contributiontitles['contributions'][$student->contributionid] = $title;
             }
             $studentaux[$student->id]->chaptercontributions[$student->contributionid][] = $file;
@@ -98,10 +100,12 @@ function giportfoliotool_downloader_get_students($giportfolioid, $chapterid, $id
 
     }
 
-    unset($students);
+    $students = [];
+   
     foreach ($studentaux as $aux) {
+       
         $chaptercontributionsaux = [];
-        $aux->chaptertitles = array_values($aux->chaptertitles['chapters']);
+        $aux->chaptertitles = is_array($aux->chaptertitle) ? array_values($aux->chaptertitle) : $aux->chaptertitle; 
         $aux->contributiontitles = array_values($aux->contributiontitles['contributions']);
 
         foreach ($aux->chaptercontributions as $chac) {
