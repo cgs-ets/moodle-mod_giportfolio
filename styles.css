@@ -41,14 +41,13 @@ div.chapter-expand-collapse {
 }
 
 .mod_giportfolio button.bigicon.inactive,
-.path-mod-giportfolio button.bigicon.inactive{
+.path-mod-giportfolio button.bigicon.inactive {
     color: grey;
     cursor: default;
 }
 
 .mod_giportfolio .navtop,
-.path-mod-giportfolio .navtop
- {
+.path-mod-giportfolio .navtop {
     text-align: right;
     margin-bottom: 0.5em;
     position: relative;
@@ -248,6 +247,7 @@ body#page-mod-giportfolio-editcontribution.mod_giportfolio .generalbox {
 p.giportfolio_outline {
     font-weight: bold;
     font-size: large;
+    display: inline;
 }
 
 .path-mod-giportfolio td.contribdate {
@@ -619,6 +619,20 @@ span.merging-message {
     font-weight: 600;
 }
 
+.giportfolio-numberhours {
+    display: inline;
+}
+
+.box.py-3.giportfolio_contributions {
+    position: relative;
+}
+
+.giportfolio-total-hours {
+    display: inline;
+    margin-left: 75%;
+    position: absolute;
+}
+
 /* Media Query: large smartphone (Vertical) */
 /* Any screen that also has amax less than 600px*/
 @media screen and (max-width: 600px) {
@@ -657,6 +671,11 @@ span.merging-message {
         margin-top: 0;
     }
 
+
+    .giportfolio-total-hours {
+        margin-left: 30%;
+    }
+
     .mod_giportfolio button.bigicon,
     .path-mod-giportfolio button.bigicon {
         /*color: white;*/
@@ -692,13 +711,13 @@ span.merging-message {
         margin-left: 0px;
     }
 
-    .mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
+    /* .mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
     .mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive,
     .path-mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
     .path-mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive {
-        /*background-color: #E2E6EA;
-        color: white;*/
-    }
+        background-color: #E2E6EA;
+        color: white;
+    } */
 
 }
 
@@ -707,8 +726,8 @@ span.merging-message {
 @media only screen and (device-width: 768px) {
 
     /* For general iPad layouts */
-    .mod_giportfolio button.bigicon ,
-    .path-mod_giportfolio button.bigicon{
+    .mod_giportfolio button.bigicon,
+    .path-mod_giportfolio button.bigicon {
         color: black;
         height: fit-content;
         width: min-content;
@@ -728,7 +747,7 @@ span.merging-message {
     .path-mod_giportfolio .navtop [method="GET"]>button.bigicon,
     .path-mod_giportfolio .navtop [method="post"]>button.bigicon,
     .path-mod_giportfolio .navbottom [method="GET"]>button.bigicon,
-    .path-mod_giportfolio .navbottom [method="post"]>button.bigicon  {
+    .path-mod_giportfolio .navbottom [method="post"]>button.bigicon {
         /*background-color: #66A8D8;
         color: white;*/
         width: min-content;
@@ -742,13 +761,13 @@ span.merging-message {
         margin-left: 0px;
     }
 
-    .mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
+    /* .mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
     .mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive,
     .path-mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
     .path-mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive {
-        /*background-color: #E2E6EA;
-        color: white;*/
-    }
+        background-color: #E2E6EA;
+        color: white;
+    } */
 
 }
 
@@ -765,7 +784,7 @@ span.merging-message {
     }
 
     .mod_giportfolio button.bigicon.inactive,
-    .path-mod_giportfolio button.bigicon.inactive  {
+    .path-mod_giportfolio button.bigicon.inactive {
         /*color: white;*/
         height: fit-content;
         width: min-content;
@@ -792,13 +811,13 @@ span.merging-message {
         margin-left: 0px;
     }
 
-    .mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
+    /* .mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
     .mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive,
     .path-mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
     .path-mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive {
-        /*background-color: #E2E6EA;
-        color: white;*/
-    }
+        background-color: #E2E6EA;
+        color: white;
+    } */
 
 }
 
@@ -826,7 +845,7 @@ span.merging-message {
     .path-mod_giportfolio .navtop [method="GET"]>button.bigicon,
     .path-mod_giportfolio .navtop [method="post"]>button.bigicon,
     .path-mod_giportfolio .navbottom [method="GET"]>button.bigicon,
-    .path-mod_giportfolio .navbottom [method="post"]>button.bigicon  {
+    .path-mod_giportfolio .navbottom [method="post"]>button.bigicon {
         /*background-color: #66A8D8;
         color: white;*/
         width: min-content;
@@ -840,11 +859,11 @@ span.merging-message {
         margin-left: 0px;
     }
 
-    .mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
+    /* .mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
     .mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive,
     .path-mod_giportfolio .navtop [method="post"]>button.bigicon.inactive,
     .path-mod_giportfolio .navbottom [method="post"]>button.bigicon.inactive {
-        /*background-color: #E2E6EA;
-        color: white;*/
-    }
+        background-color: #E2E6EA;
+        color: white;
+    } */
 }

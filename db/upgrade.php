@@ -747,6 +747,31 @@ function xmldb_giportfolio_upgrade($oldversion) {
     }
 
 
+    if ($oldversion < 2024080100) {
+
+        // Define field numberhours to be added to giportfolio.
+        $table = new xmldb_table('giportfolio');
+        $field = new xmldb_field('numberhours', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'disabledeletebtn');
+
+        // Conditionally launch add field numberhours.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+          // Define field numhours to be added to giportfolio_contributions.
+          $table = new xmldb_table('giportfolio_contributions');
+          $field = new xmldb_field('numhours', XMLDB_TYPE_NUMBER, '15, 2', null, null, null, null, 'shared');
+  
+          // Conditionally launch add field numhours.
+          if (!$dbman->field_exists($table, $field)) {
+              $dbman->add_field($table, $field);
+          }
+
+        // Giportfolio savepoint reached.
+        upgrade_mod_savepoint(true, 2024080100, 'giportfolio');
+    }
+
+
 
    
     return true;

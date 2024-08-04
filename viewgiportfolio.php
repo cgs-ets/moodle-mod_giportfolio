@@ -77,7 +77,7 @@ if (!is_enrolled($context, $userid, '') && !is_siteadmin() && !$allowgrade) {
 }
 
 if ((!is_enrolled($context, $USER->id, '') && $mentee == 0 && !$ismentor) && !is_siteadmin() && !$allowgrade) {
-    print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
+    print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id))); // TODO
 }
 
 if ($allowedit) {
@@ -373,10 +373,9 @@ if (!$context->is_locked()) {
     $ctx->mentor = $mentor;
     $ctx->mentee = $mentee;
     $ctx->locked = $chapter->locked;
+    $ctx->numberhours = $giportfolio->numberhours;
 
     echo $OUTPUT->render_from_template('mod_giportfolio/add_contribution_button', $ctx);
-
-    echo '<br><br>';
 }
 
 $otherusers = array();
@@ -390,7 +389,7 @@ if ($giportfolio->peersharing && $showshared) {
         }
     }
     if ($userids) {
-        $namefields = get_all_user_name_fields(true);
+        $namefields = get_all_user_name_fields(true); // TODO
         $users = $DB->get_records_list('user', 'id', $userids, '', 'id,' . $namefields);
         foreach ($users as $user) {
             $fullname = fullname($user);
@@ -417,11 +416,11 @@ if (!$isuserchapter && $giportfolio->peersharing) {
 echo $OUTPUT->box_end(); // giportfolio_actions
 
 // Output the 'class plan' content.
-if ($giportfolio->klassenbuchtrainer && giportfolio_include_klassenbuchtrainer()) {
-    echo $OUTPUT->box_start('giportfolio_klassenbuchtrainer');
-    echo klassenbuchtool_lernschritte_get_subcontent($chapter->id, $context, 'giportfolio');
-    echo $OUTPUT->box_end(); // giportfolio_klassenbuchtrainer
-}
+// if ($giportfolio->klassenbuchtrainer && giportfolio_include_klassenbuchtrainer()) {
+//     echo $OUTPUT->box_start('giportfolio_klassenbuchtrainer');
+//     echo klassenbuchtool_lernschritte_get_subcontent($chapter->id, $context, 'giportfolio');
+//     echo $OUTPUT->box_end(); // giportfolio_klassenbuchtrainer
+// }
 
 if ($contriblist) {
     echo $OUTPUT->box_start('giportfolio_contributions');
@@ -453,15 +452,17 @@ if ($contriblist) {
     $showicon = '';
     $showurl = '';
     $flagcounter = 0;
+    $totalhours = 0;
+
     foreach ($contriblist as $contrib) {
         $ismine = ($contrib->userid == $userid);
 
         if ($ismine) {
 
-            $baseurl = new moodle_url(
-                '/mod/giportfolio/editcontribution.php',
-                array('id' => $cm->id, 'contributionid' => $contrib->id, 'chapterid' => $contrib->chapterid)
-            );
+            $baseurl = new moodle_url('/mod/giportfolio/editcontribution.php', 
+                                     array('id' => $cm->id, 
+                                           'contributionid' => $contrib->id, 
+                                           'chapterid' => $contrib->chapterid));
 
             $editurl = new moodle_url($baseurl);
             $editicon = $OUTPUT->pix_icon('t/edit', get_string('edit'));
@@ -516,6 +517,7 @@ if ($contriblist) {
 
             $userfullname = '';
             $actions = array_merge($actions, $actionsharing);
+
         } else if ($giportfolio->peersharing) {
             $actions = array(); // No actions when viewing another user's contribution.
             $userfullname = $otherusers[$contrib->userid] . ': ';
@@ -538,12 +540,24 @@ if ($contriblist) {
         $cout .= '<span class="badge badge-info contributor-tag"' . $hidementortag . '>' . format_string(get_string('mentorcontribution', 'mod_giportfolio')) . '</span>';
         $cout .= '<span class="badge badge-success contributor-tag"' . $hideteachertag . '>' . format_string(get_string('teachercontribution', 'mod_giportfolio')) . '</span> <br>';
         $cout .= date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
+
         if ($contrib->timecreated !== $contrib->timemodified) {
             $cout .= '<br/><i>' . get_string('lastmodified', 'mod_giportfolio') . date('l jS F Y' . ($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified) . '</i>';
         }
-        $cout .= '<br/><br/>';
+
+        $cout .= html_writer::start_tag('br').html_writer::end_tag('br');
+
+        if ($giportfolio->numberhours) {
+
+            $cout .= html_writer::start_tag('h6', ['class' => 'giportfolio-numberhours']) . get_string('hourslabel', 'giportfolio')  . html_writer::end_tag('h6') . $contrib->numhours;
+            $cout .= html_writer::start_tag('br').html_writer::end_tag('br');
+
+            //  Sum the hours to display
+            $totalhours += $contrib->numhours;
+        }
 
         $cout = html_writer::tag('contribheader', $cout);
+
         $contribtext = file_rewrite_pluginfile_urls(
             $contrib->content,
             'pluginfile.php',
@@ -554,15 +568,14 @@ if ($contriblist) {
         );
 
         $cout .= html_writer::tag('contribtext', format_text($contribtext, $contrib->contentformat, array('noclean' => true, 'context' => $context)));
-
         $files = giportfolio_print_attachments($contrib, $cm, $type = null, $align = "right");
+
         if ($files) {
             $cout .= "<table border=\"0\" width=\"100%\" align=\"$align\"><tr><td align=\"$align\" nowrap=\"nowrap\">\n";
             $cout .= $files;
             $cout .= "</td></tr></table>\n";
             $cout .= '<br>';
         }
-
 
         if ($ismine) {
             $commentopts->itemid = $contrib->id;
@@ -610,7 +623,15 @@ if ($contriblist) {
     }
 
 
-    echo '<p class="giportfolio_outline" >Contributions</p>';
+    echo html_writer::start_tag('p', ['class'=> 'giportfolio_outline']) . get_string('contributions', 'giportfolio') . html_writer::end_tag('p');
+
+    if ($giportfolio->numberhours) {
+        $totalhoursctx = new \stdClass();
+        $totalhoursctx->totalhours = $totalhours;
+    }
+    
+    echo $OUTPUT->render_from_template('mod_giportfolio/total_hours_display', $totalhoursctx);
+    
     echo $contributionbuffer;
     echo $OUTPUT->box_end();
 

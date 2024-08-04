@@ -43,6 +43,9 @@ $string['confchapterdelete'] = 'Do you really want to delete this chapter?';
 $string['confchapterdeleteall'] = 'Do you really want to delete this chapter and all its subchapters?';
 $string['confcontribdelete'] = 'Are you sure that you want to delete this contribution and its comments?';
 $string['content'] = 'Content';
+$string['numberofhours'] = 'Number of hours';
+$string['hourslabel'] = 'Hours: ';
+
 
 $string['continuecontrib'] = 'Continue Contributing';
 $string['contribadded'] = 'Contribution added';
@@ -172,7 +175,9 @@ $string['outline_hide'] = 'Hide';
 $string['page-mod-giportfolio-x'] = 'Any portfolio module page';
 $string['pagesize'] = 'Submissions shown per page';
 $string['participantadd'] = 'Participants can add Chapters';
-$string['peersharing'] = 'Participants can share contributions with other participants';
+$string['numberhours'] = 'Participants can record number of hours';
+$string['numberhours_help'] = 'For portfolios where time spent on the activity is required. F';
+$string['peersharing']    = 'Participants can share contributions with other participants';
 $string['peersharing_help'] = 'If enabled, participants can share contributions with others';
 $string['hideshow'] = 'Participants can hide or show their contributions';
 $string['pluginadministration'] = 'Portfolio administration';
@@ -257,6 +262,10 @@ $string['contrcomments'] = 'Multiple comments';
 $string['additionlegend'] = '(by {$a})';
 $string['remindersent'] = 'Reminder sent';
 $string['remindernotsent'] = 'Reminder not sent';
+$string['registeredhours'] = 'Registered hours';
+$string['total'] = 'Total hours';
+$string['average'] = 'Average';
+$string['maximum'] = 'Maximum';
 $string['wcc'] = 'Who can contribute?';
 $string['wcchelp'] = 'If a portfolio is set to allow mentors to contribute, you can see who those mentors are';
 $string['nomentorassociated'] = 'No mentor associated to this {$a}';
@@ -278,7 +287,7 @@ $string['msg_sent'] = 'Reminder(s) sent';
 $string['messageprovider:contributionreminder'] = 'Contribution reminder';
 $string['linktochapter'] = 'Link to chapter: {$a}' ;
 $string['linktochapter_desc'] = 'A link to this chapter will automatically be included in the message.';
-
+$string['grade'] = 'Grade';
 
 
 

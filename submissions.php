@@ -73,6 +73,7 @@ $nocommentsurl = new moodle_url($PAGE->url, array('tab' => 'nocomments'));
 $graphcontributorsurl = new moodle_url($PAGE->url, array('tab' => 'graphcontributors'));
 $userwithnocontributionurl = new moodle_url($PAGE->url, array('tab' => 'contributionreminder'));
 $userwithnocontributionurlparents = new moodle_url($PAGE->url, array('tab' => 'contributionreminderparents'));
+$hoursregistered = new moodle_url($PAGE->url, array('tab'=> 'registeredhours'));
 
 $tabs = array(
     new tabobject('all', $allurl, get_string('allusers', 'mod_giportfolio', $alias)),
@@ -80,7 +81,8 @@ $tabs = array(
     new tabobject('nocomments', $nocommentsurl, get_string('nocomments', 'mod_giportfolio')),
     new tabobject('graphcontributors', $graphcontributorsurl, get_string('graphofcontributors', 'mod_giportfolio')),
     new tabobject('contributionreminder', $userwithnocontributionurl, get_string('userwithnocontrib', 'mod_giportfolio', $alias)),
-    new tabobject('contributionreminderparents', $userwithnocontributionurlparents, get_string('parentuserwithnocontrib', 'mod_giportfolio', $alias)),
+    new tabobject('contributionreminderparents', $userwithnocontributionurlparents, get_string('parentuserwithnocontrib', 'mod_giportfolio')),
+    new tabobject('registeredhours', $hoursregistered, get_string('registeredhours', 'mod_giportfolio')),
 );
 
 echo get_string('studentgiportfolios', 'mod_giportfolio', $alias);
@@ -170,6 +172,7 @@ $listusersids = "'" . implode("', '", $alluserids) . "'";
 // Generate table.
 
 switch ($currenttab) {
+
     case 'graphcontributors':
         giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm);
         break;
@@ -190,6 +193,11 @@ switch ($currenttab) {
         $output .= html_writer::end_div('parent-warning');
         echo $output;
         giportfolio_reminder_parents_table($PAGE, $allusers, $context, $username, $listusersids, $page, $giportfolio, $course, $chapterid, $cm->id);
+        break;
+    
+    case 'registeredhours':
+        $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab;
+        giportfolio_registeredhours_content($allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm);
         break;
 
     default:
@@ -223,7 +231,7 @@ function quickgrade_mode_allowed($cmid) {
 }
 
 // Part of CGS customisation.  List chapters with new contribution.
-function get_updated_chapters_not_seen($giportfolio, $contributorid, $cm) {
+function get_updated_chapters_not_seen($giportfolio, $contributorid) {
     global $DB, $USER, $PAGE;
     $conditions = array ('giportfolioid' => $giportfolio->id, 'userid' => $contributorid);
     $countcontributions = $DB->count_records('giportfolio_contributions', $conditions);

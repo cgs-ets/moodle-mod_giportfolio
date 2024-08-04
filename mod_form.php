@@ -102,16 +102,24 @@ class mod_giportfolio_mod_form extends moodleform_mod {
         $mform->addHelpButton('displayoutline', 'displayoutline', 'mod_giportfolio');
         $mform->setDefault('displayoutline', 0);
 
+        // Participant can add chapters option settings
         $mform->addElement('selectyesno', 'participantadd', get_string('participantadd', 'giportfolio'));
         $mform->setDefault('participantadd', 1);
+
+        // Participant can add the number of hours worked
+        $mform->addElement('selectyesno', 'numberhours', get_string('numberhours', 'giportfolio'));
+        $mform->addHelpButton('numberhours', 'numberhours', 'giportfolio');
+        $mform->setDefault('participantnumberhours', 0);        
 
         $mform->addElement('text', 'chapternumber', get_string('chapternumberinit', 'giportfolio'), 'Required');
         $mform->addRule('chapternumber', 'Required', 'required', null, 'client');
         $mform->setDefault('chapternumber', 1);
         $mform->setType('chapternumber', PARAM_INT);
+
         $mform->addRule('chapternumber', 'must be numeric', 'numeric', null, 'client');
         $mform->addRule('chapternumber', 'add valid number', 'nonzero', null, 'client');
         $mform->addRule('chapternumber', 'add positive number', 'regex', '/^[1-9][0-9]*$/', 'client'); // Positive number. 
+        
         $mform->addElement('checkbox', 'publishnotification', get_string('publishnotification', 'giportfolio'));
         $mform->setDefault('publishnotification', 0);
 

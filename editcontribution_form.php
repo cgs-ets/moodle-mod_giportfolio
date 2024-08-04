@@ -66,6 +66,13 @@ class mod_giportfolio_contribution_edit_form extends moodleform {
         $mform->addElement('filemanager', 'attachment_filemanager', get_string('attachment', 'giportfolio'),
                            null, $attachmentoptions);
 
+        // If number of hours is set to true (From the portfolio setting) display this
+        if ($giportfolio->numberhours == 1) {
+            $mform->addElement('float', 'numhours', get_string('numberofhours', 'mod_giportfolio'));
+            $mform->addRule('numhours', 'add positive number', 'regex', '/^\d+(\.\d+)?$/', 'client');
+        }
+
+
         // Parent view of own child's activity functionality.
         $mform->addElement('hidden', 'mentor');
         $mform->setType('mentor', PARAM_INT);
@@ -76,6 +83,8 @@ class mod_giportfolio_contribution_edit_form extends moodleform {
         // Track if the update is being done from a contribution on behalf of the student.
         $mform->addElement('hidden', 'cont');
         $mform->setType('cont', PARAM_RAW);
+
+
 
         $this->add_action_buttons(true, get_string('updatecontrib', 'giportfolio'));
     }
