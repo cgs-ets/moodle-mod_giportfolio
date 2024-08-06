@@ -143,9 +143,12 @@ if ($fastg) { // Update the grade and the feedback.
 
 // Create the user filter form.
 
-$mform = new giportfolio_search_form(null, array('id' => $id, 'tab' => $currenttab));
-$mform->display();
-$customtabs = ['graphcontributors', 'contributionreminder', 'contributionreminderparents'];
+if (!in_array($currenttab, ['registeredhours', 'contributionreminderparents'])) {
+    $mform = new giportfolio_search_form(null, array('id' => $id, 'tab' => $currenttab));
+    $mform->display();
+}
+
+$customtabs = ['graphcontributors', 'contributionreminder', 'contributionreminderparents', 'registeredhours'];
 
 // Print quickgrade form around the table.
 if ($quickgrade && !in_array($currenttab, $customtabs)) {
@@ -164,6 +167,7 @@ if ($quickgrade && !in_array($currenttab, $customtabs)) {
 
 
 $alluserids = array();
+
 foreach ($allusers as $user) {
     array_push($alluserids, $user->id);
 }
@@ -196,8 +200,15 @@ switch ($currenttab) {
         break;
     
     case 'registeredhours':
-        $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab;
-        giportfolio_registeredhours_content($allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm);
+        if ($giportfolio->numberhours) {
+            $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab;
+            giportfolio_registeredhours_content($allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm);
+        } else {
+            $output .= html_writer::start_div('registeredhours-warning', ['class' =>'alert alert-danger', 'role' => 'alert']);
+            $output .= html_writer::start_span('span') . get_string('registerhoursnotallowed', 'giportfolio') . html_writer::end_span();
+            $output .=html_writer::end_div('registeredhours-warning');
+            echo $output;
+        }
         break;
 
     default:

@@ -633,6 +633,11 @@ span.merging-message {
     position: absolute;
 }
 
+.alert-danger.registeredhours-warning,
+.alert.alert-warning.parent-warning {
+    width: fit-content;
+}
+
 /* Media Query: large smartphone (Vertical) */
 /* Any screen that also has amax less than 600px*/
 @media screen and (max-width: 600px) {

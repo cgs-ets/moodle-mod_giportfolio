@@ -264,6 +264,7 @@ $string['remindersent'] = 'Reminder sent';
 $string['remindernotsent'] = 'Reminder not sent';
 $string['registeredhours'] = 'Registered hours';
 $string['total'] = 'Total hours';
+$string['registerhoursnotallowed'] = 'Participants cannot record number of hours on this portfolio';
 $string['average'] = 'Average';
 $string['maximum'] = 'Maximum';
 $string['wcc'] = 'Who can contribute?';

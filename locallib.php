@@ -1915,8 +1915,8 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
     }
 
     $ufields = get_user_fields();
-    $reminder = html_writer::span('<i class = "fa">&#xf2b7</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindersent', 'mod_giportfolio')]);
-    $remindernotsent = html_writer::span('<i class = "fa">&#xf003;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindernotsent', 'mod_giportfolio'), 'hidden' => true]);
+    $reminder = html_writer::span('<i class = "fa fa-envelope-open-o"></i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindersent', 'mod_giportfolio')]);
+    $remindernotsent = html_writer::span('<i class = "fa  fa-envelope-o"></i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindernotsent', 'mod_giportfolio'), 'hidden' => true]);
 
     if (!empty($allusers) && $chapterid != 0) {
         $select = "SELECT DISTINCT $ufields";
@@ -1933,7 +1933,8 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
 
         foreach ($pusers as $puser) {
 
-            if (in_array($puser->id, $dontremind)) { continue;  // This students did contribute
+            if (in_array($puser->id, $dontremind)) { 
+                continue;  // This students did contribute
             }
 
             if ($currentposition == $offset && $offset < $endposition) {
@@ -2082,9 +2083,10 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
     }
 
     $ufields = get_user_fields();
-    $reminder = html_writer::span('<i class = "fa">&#xf2b7</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindersent', 'mod_giportfolio')]);
-    $remindernotsent = html_writer::span('<i class = "fa">&#xf003;</i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindernotsent', 'mod_giportfolio'), 'hidden' => true]);
+    $reminder = html_writer::span('<i class = "fa  fa-envelope-open-o"></i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindersent', 'mod_giportfolio')]);
+    $remindernotsent = html_writer::span('<i class = "fa fa-envelope-o "></i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('remindernotsent', 'mod_giportfolio'), 'hidden' => true]);
     $parentcounter = 0;
+
     if (!empty($allusers) && $chapterid != 0) {
         $select = "SELECT DISTINCT $ufields";
 

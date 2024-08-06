@@ -628,9 +628,9 @@ if ($contriblist) {
     if ($giportfolio->numberhours) {
         $totalhoursctx = new \stdClass();
         $totalhoursctx->totalhours = $totalhours;
+        echo $OUTPUT->render_from_template('mod_giportfolio/total_hours_display', $totalhoursctx);
     }
     
-    echo $OUTPUT->render_from_template('mod_giportfolio/total_hours_display', $totalhoursctx);
     
     echo $contributionbuffer;
     echo $OUTPUT->box_end();
