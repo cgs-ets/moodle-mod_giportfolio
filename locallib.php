@@ -1671,6 +1671,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     foreach ($chapters as $i => $chapter) {
         $d = new stdClass();
         $d->chapterid = $i;
+
         if (isset($chapter->subchapters)) {
 
             $d->subchapters = array_values($chapter->subchapters);
@@ -1686,8 +1687,10 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
         $titlectx->importedch = ($chapter->importsrc != '') ? $OUTPUT->image_url('import_icon', 'mod_giportfolio') : false;
 
         if (!$chapter->subchapter) {
+
             $titlectx->icon = $OUTPUT->image_url('chapter', 'mod_giportfolio');
             $titles[] = $OUTPUT->render_from_template('mod_giportfolio/graph_title_header', $titlectx);
+
         } else {
 
             $titlectx->icon = $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio');
@@ -1720,13 +1723,6 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     $table->collapsible(true);
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
-
-    foreach ($table->column_class as $name) {
-        if (!in_array($name, ['picture', 'fullname', get_string('additionstitle', 'giportfolio')])) {  // These are the columns for the chapter titles
-            $table->column_class($name, 'ch-title');
-        }
-    }
-
     $table->set_attribute('cellspacing', '0');
     $table->set_attribute('id', 'graphcontributors');
     $table->set_attribute('data-giportfolio', $giportfolio->id);
@@ -2635,15 +2631,8 @@ function giportfolio_registeredhours_content($allusers, $context, $username, $li
     $table->collapsible(true);
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
-
-    // foreach ($table->column_class as $name) {
-    //     if (!in_array($name, ['picture', 'fullname', get_string('additionstitle', 'giportfolio')])) {  // These are the columns for the chapter titles
-    //         $table->column_class($name, 'ch-title');
-    //     }
-    // }
-
     $table->set_attribute('cellspacing', '0');
-    $table->set_attribute('id', 'graphcontributors');
+    $table->set_attribute('id', 'graphcontributors'); // Leave the same id as the graph because the controls are all the same
     $table->set_attribute('data-giportfolio', $giportfolio->id);
     $table->set_attribute('class', 'graphofcontributors generaltable flexible boxaligncenter');
     $table->set_attribute('width', '100%');
@@ -2694,10 +2683,9 @@ function giportfolio_registeredhours_content($allusers, $context, $username, $li
                 $offset++;
                 // Get the total hours PER chapter
                $totalperchapter = giportfolio_get_registered_hours_total_per_chapter($chaptersid, $puser->id, $giportfolio->id);
-               error_log(print_r($totalperchapter, true));
                 // Get the calculated values in total
                list($total, $average, $maximum) = giportfolio_get_registered_hours_calculations($chaptersid, $puser->id, $giportfolio);
-               
+                
                 $row = array_merge(array($picture, $userlink), $totalperchapter, $total);
                 $rowclass = "user-id-$puser->id";
                 $table->add_data($row, $rowclass);
@@ -2710,6 +2698,10 @@ function giportfolio_registeredhours_content($allusers, $context, $username, $li
     }
 
     $table->finish_html();
+
+    $chaptersubchap = json_encode($chaptersubchap);
+
+    $PAGE->requires->js_call_amd('mod_giportfolio/graph_contributors_control', 'init', [$chaptersubchap]);
 
    
 }
@@ -2728,9 +2720,12 @@ function giportfolio_get_registered_hours_calculations($chaptersid, $user, $gipo
     $total = [];
     $avg = [];
     $max = [];
-
+    
     foreach($calc as $c) {
-
+        $c->total = !empty($c->total) ?   html_writer::start_span('badge badge-primary') 
+                                        . $c->total 
+                                        . html_writer::end_span() 
+                                    :    html_writer::start_span('badge badge-secondary'). '0' .html_writer::end_span();
         $total[] = $c->total;
         $avg[] = $c->average;
         $max[] = $c->maximum;
@@ -2753,9 +2748,9 @@ function giportfolio_get_registered_hours_total_per_chapter($chaptersid, $user, 
         $result = $DB->get_record_sql($sql);
 
         if ($result->total) {
-            $total[] = $result->total;
+            $total[] = html_writer::start_span('badge badge-primary'). $result->total .html_writer::end_span();
         } else {
-            $total[] = 0;
+            $total[] = html_writer::start_span('badge badge-secondary'). '0' .html_writer::end_span();
         }
        
     }

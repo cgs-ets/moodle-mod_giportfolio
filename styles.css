@@ -634,8 +634,20 @@ span.merging-message {
 }
 
 .alert-danger.registeredhours-warning,
-.alert.alert-warning.parent-warning {
-    width: fit-content;
+.alert.alert-warning.parent-warning,
+.alert.alert-primary.giportfoliotool-print-total-hours,
+.graph-contributions-resize-m {
+    width: fit-content !important;
+}
+
+.graph-contributions-resize-sm {
+    width: 1rem !important;
+}
+
+
+
+.giportfolio-print {
+    background-color: #F2F2F2;
 }
 
 /* Media Query: large smartphone (Vertical) */

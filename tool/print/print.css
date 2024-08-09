@@ -162,8 +162,10 @@ i.icon.fa.fa-caret-right.fa-fw {
 /* Exclude elements from printing. */
 @media print {
     .hidden-print {
-        display: none !important; /* stylelint-disable-line declaration-no-important */
+        display: none !important;
+        /* stylelint-disable-line declaration-no-important */
     }
+
     .giportfolio .giportfolio_title {
         margin-top: 45%;
     }
@@ -178,9 +180,9 @@ i.icon.fa.fa-caret-right.fa-fw {
     text-align: center;
     white-space: nowrap;
     vertical-align: baseline;
-    -webkit-transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-    -o-transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    -webkit-transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    -o-transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
 }
 
 .badge-success {

@@ -220,7 +220,9 @@ $viewdata->chapternumbers = get_string('chapternumber', 'mod_giportfolio') . cou
 $viewdata->contextlocked = $context->is_locked();
 $viewdata->chapterishidden = giportfolio_all_chapters_hidden($giportfolio);
 $viewdata->menteebuttons = $menteebuttons;
-
+// echo "<pre>";
+// print_r($viewdata); exit;
+// echo "</pre>";
 echo $OUTPUT->render_from_template('mod_giportfolio/view_portfolio_entry', $viewdata);
 
 echo $OUTPUT->box_end();

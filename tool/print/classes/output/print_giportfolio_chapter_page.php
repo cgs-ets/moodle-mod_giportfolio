@@ -62,6 +62,12 @@ class print_giportfolio_chapter_page implements renderable, templatable {
     protected $contribution;
 
     /**
+     * @var object $userid The giportfolio userid object.
+     */
+    protected $userid;
+
+
+    /**
      * Construct this renderable.
      *
      * @param object $giportfolio The giportfolio

@@ -70,6 +70,7 @@ class mod_giportfolio_contribution_edit_form extends moodleform {
         if ($giportfolio->numberhours == 1) {
             $mform->addElement('float', 'numhours', get_string('numberofhours', 'mod_giportfolio'));
             $mform->addRule('numhours', 'add positive number', 'regex', '/^\d+(\.\d+)?$/', 'client');
+            $mform->addRule('numhours', get_string('required'), 'required', null, 'client');
         }
 
 

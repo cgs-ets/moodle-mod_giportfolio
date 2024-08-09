@@ -25,7 +25,6 @@ import jQuery from 'jquery';
 import Ajax from 'core/ajax';
 
 const Selectors = {
-    headers: document.querySelectorAll('th.ch-title'), // This controls the collapsing.
     collapse: 'collapse-chapter-column',
     expand: 'collapse-chapter-column',
     headersContainer: document.querySelectorAll('.rotated-text-container') // Includes the div I need to call WS.
@@ -36,8 +35,17 @@ export const init = (chaptersubchapmap) => {
 
     Selectors.chaptersMap = JSON.parse(chaptersubchapmap);
 
+    //  Add the .ch-title class to the table headers for chapters and subchaters
+    const table = document.getElementById('graphcontributors');
+
+    table.getElementsByTagName('th').forEach(header => {
+        if (header.classList['value'].match('picture|fullname') == null) {
+            header.classList.add('ch-title')
+        }
+    });
+
     const initListeners = () => {
-        Selectors.headers.forEach(chapter => {
+        document.querySelectorAll('th.ch-title').forEach(chapter => {
 
             chapter.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -57,6 +65,7 @@ export const init = (chaptersubchapmap) => {
                 const myArray = myRe.exec(this.classList);
                 const colIndex = myArray[0].split('c');
 
+
                 if (e.target.classList.contains("fa-caret-left")) {
                     collapse(e.target);
                 } else if (e.target.classList.contains("fa-caret-right")) {
@@ -65,10 +74,14 @@ export const init = (chaptersubchapmap) => {
                     hide(colIndex[colIndex.length - 1], this.firstElementChild);
                     e.target.classList.remove("fa-minus");
                     e.target.classList.add("fa-plus");
+                    e.target.parentNode.parentNode.parentNode.classList.add('graph-contributions-resize-sm')
+                    e.target.parentNode.parentNode.parentNode.classList.remove('graph-contributions-resize-m')
                 } else {
                     show(colIndex[colIndex.length - 1], this.firstElementChild);
                     e.target.classList.remove("fa-plus");
                     e.target.classList.add("fa-minus");
+                    e.target.parentNode.parentNode.parentNode.classList.remove('graph-contributions-resize-sm')
+                    e.target.parentNode.parentNode.parentNode.classList.add('graph-contributions-resize-m')
                 }
 
             });
@@ -84,6 +97,7 @@ export const init = (chaptersubchapmap) => {
 
                     const chapterid = e.target.getAttribute('data-chapterid');
                     const giportfolioid = document.getElementById('graphcontributors').getAttribute('data-giportfolio');
+
                     Ajax.call([{
 
                         methodname: 'mod_giportfolio_filter_student_with_contribution',
@@ -201,6 +215,7 @@ export const init = (chaptersubchapmap) => {
 
     const hide = (colIndex, chaptertitle) => {
         const t = document.querySelector("#graphcontributors tbody");
+
         if (t) {
 
             Array.from(t.rows).forEach((tr) => {

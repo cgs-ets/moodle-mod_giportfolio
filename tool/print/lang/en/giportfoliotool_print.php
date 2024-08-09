@@ -37,3 +37,5 @@ $string['attachment']                   = 'Attachment(s)';
 $string['mentorcontribution']           = '{$a->firstname} {$a->lastname} (Parent) contribution';
 $string['teachercontribution']          = '{$a->firstname} {$a->lastname} (Teacher) contribution';
 $string['studentcontribution']          = '{$a->firstname} {$a->lastname} (Portfolio owner) contribution';
+$string['hours']                        = 'Hours';
+$string['totalhoursregistered']         = 'Total hours registered: {$a}';
