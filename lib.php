@@ -36,7 +36,7 @@ function giportfolio_get_numbering_types() {
         PORTFOLIO_NUM_NONE => get_string('numbering0', 'mod_giportfolio'),
         PORTFOLIO_NUM_NUMBERS => get_string('numbering1', 'mod_giportfolio'),
         PORTFOLIO_NUM_BULLETS => get_string('numbering2', 'mod_giportfolio'),
-        PORTFOLIO_NUM_INDENTED => get_string('numbering3', 'mod_giportfolio')
+        PORTFOLIO_NUM_INDENTED => get_string('numbering3', 'mod_giportfolio'),
     );
 }
 
@@ -143,6 +143,8 @@ function giportfolio_update_instance($data, $mform) {
     if ($regrade) {
         giportfolio_regrade($giportfolio);
     }
+
+    giportfolio_grade_item_update($giportfolio);
 
     return true;
 }
@@ -343,6 +345,7 @@ function giportfolio_upgrade_grades() {
  */
 function giportfolio_grade_item_update($giportfolio, $grades = null) {
     global $CFG;
+
     require_once($CFG->libdir . '/gradelib.php');
 
     if (property_exists( $giportfolio, 'cmidnumber')) { // May not be always present.
@@ -372,6 +375,7 @@ function giportfolio_grade_item_update($giportfolio, $grades = null) {
     }
 
     return grade_update('mod/giportfolio', $giportfolio->courseid, 'mod', 'giportfolio', $giportfolio->id, 0, $grades, $params);
+
 }
 
 /**
