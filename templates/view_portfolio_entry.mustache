@@ -54,12 +54,11 @@
 {{/playparentbutton}}
 
 {{! TODO: This is making the view double for non-editing teachers. }}
-{! {{#noneditingteacher}}
-{!   {{^skipintro}}
-        {! {{{intro}}}
-    {! {{/skipintro}}
-    {! {{#noneditingteachercancontribute}}
-        {!   {{{submittedportfolios}}}
-    {! {{/noneditingteachercancontribute}}
-{! {{/noneditingteacher}}
-
+{{! #noneditingteacher}}
+    {{!^skipintro}}
+        {{{!intro}}}
+    {{!/skipintro}}
+    {{!#noneditingteachercancontribute}}
+        {{{!submittedportfolios}}}
+    {{!/noneditingteachercancontribute}}
+{{!/noneditingteacher}}
