@@ -2648,7 +2648,7 @@ function giportfolio_registeredhours_content($allusers, $context, $username, $li
     $table->set_attribute('cellspacing', '0');
     $table->set_attribute('id', 'graphcontributors'); // Leave the same id as the graph because the controls are all the same.
     $table->set_attribute('data-giportfolio', $giportfolio->id);
-    $table->set_attribute('class', 'graphofcontributors generaltable flexible boxaligncenter');
+    $table->set_attribute('class', 'graphofcontributors generaltable flexible boxaligncenter hours-table');
     $table->set_attribute('width', '100%');
 
     // Start working -- this is necessary as soon as the niceties are over.

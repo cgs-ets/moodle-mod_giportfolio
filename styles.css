@@ -331,6 +331,13 @@ p.alert.alert-info.giportfolio-restricted-access {
   text-align: center;
 }
 
+/* c can have any number, depending on the number of chapters.
+ nth-last-child(2) selects the second to last th in the thead.*/
+.graphofcontributors.generaltable.flexible.boxaligncenter.hours-table
+  th:nth-last-child(2),
+.graphofcontributors.generaltable.flexible.boxaligncenter th:last-child {
+  width: 250px !important;
+}
 /* Custom CSS for rotated header.. */
 #page-mod-giportfolio-submissions .rotated-text-container {
   display: inline-block;
