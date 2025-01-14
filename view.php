@@ -138,6 +138,7 @@ $menteebuttons = [];
 
 if ($allowcontribute) {  // Student.
     $usercontribution = giportfolio_get_user_contribution_status($giportfolio->id, $USER->id);
+    $cumulativehours = 00.00;
     if ($usercontribution) {
         // Get user grade and feedback.
         $usergrade = grade_get_grades($course->id, 'mod', 'giportfolio', $giportfolio->id, $USER->id);
@@ -156,8 +157,12 @@ if ($allowcontribute) {  // Student.
                 $viewdata->finalfeedback = get_string('usergradefeedback', 'mod_giportfolio') . $userfinalgrade->feedback;
             }
         }
+
+        $cumulativehours = giportfolio_get_cumulative_hours($USER->id, $giportfolio->id);
     }
 
+    $viewdata->hashours = $giportfolio->numberhours > 0;
+    $viewdata->cumulativehours = $cumulativehours;
     $viewdata->lastupdated = ($usercontribution) ? get_string('lastupdated', 'mod_giportfolio') . date('l jS \of F Y h:i:s A', $usercontribution) : '';
     $viewdata->chapternumber = get_string('chapternumber', 'mod_giportfolio') . count($chapters);
 } else if ($mentor) { // Parent.
@@ -220,9 +225,7 @@ $viewdata->chapternumbers = get_string('chapternumber', 'mod_giportfolio') . cou
 $viewdata->contextlocked = $context->is_locked();
 $viewdata->chapterishidden = giportfolio_all_chapters_hidden($giportfolio);
 $viewdata->menteebuttons = $menteebuttons;
-// echo "<pre>";
-// print_r($viewdata); exit;
-// echo "</pre>";
+
 echo $OUTPUT->render_from_template('mod_giportfolio/view_portfolio_entry', $viewdata);
 
 echo $OUTPUT->box_end();

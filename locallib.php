@@ -953,8 +953,7 @@ function giportfolio_get_user_default_chapter($giportfolioid) {
     $conditions = ['giportfolioid' => $giportfolioid];
 
     $r = array_values($DB->get_records($table,  $conditions, '', 'chapterid', 1, 1));
-    return($r[0]);
-
+    return ($r[0]);
 }
 
 
@@ -1088,7 +1087,7 @@ function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid, $
     $bc->content .= '<strong>' . get_string('lastupdated', 'mod_giportfolio') . '</strong>';
     $bc->content .= '<br/>';
     $bc->content .= $lastupdated;
-    
+
     if ($mentor == 0) {
         $hasgrade = ($userfinalgrade && (!is_null($userfinalgrade->grade) || $userfinalgrade->feedback));
         $gradelocked = ($userfinalgrade && $userfinalgrade->locked);
@@ -1298,7 +1297,10 @@ function giportfolio_get_first_userchapter($giportfolioid, $chapterid, $userid) 
                ) AND giportfolioid= :giportfolioid2 AND id= :chapterid
                ";
     $params = array(
-        'giportfolioid' => $giportfolioid, 'giportfolioid2' => $giportfolioid, 'chapterid' => $chapterid, 'userid' => $userid
+        'giportfolioid' => $giportfolioid,
+        'giportfolioid2' => $giportfolioid,
+        'chapterid' => $chapterid,
+        'userid' => $userid
     );
 
     return $DB->get_record_sql($sql, $params);
@@ -1335,7 +1337,8 @@ function giportfolio_delete_user_contributions($chapterid, $userid, $giportfolio
             $delcontrib->userid = $usercontrib->userid;
 
             $DB->delete_records('giportfolio_contributions', array(
-                'id' => $delcontrib->id, 'userid' => $delcontrib->userid,
+                'id' => $delcontrib->id,
+                'userid' => $delcontrib->userid,
                 'chapterid' => $delcontrib->chapterid
             ));
         }
@@ -1589,7 +1592,8 @@ function giportfolio_add_entry_send_notification($userid, $cm, $giportfolio, $ch
 
     if ($graders) {
         $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
-            'id' => $cm->id, 'chapterid' => $chapter->id,
+            'id' => $cm->id,
+            'chapterid' => $chapter->id,
             'userid' => $userid
         ));
         $subj = get_string('notifyaddentry_subject', 'mod_giportfolio', fullname($USER));
@@ -1690,7 +1694,6 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
             $titlectx->icon = $OUTPUT->image_url('chapter', 'mod_giportfolio');
             $titles[] = $OUTPUT->render_from_template('mod_giportfolio/graph_title_header', $titlectx);
-
         } else {
 
             $titlectx->icon = $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio');
@@ -1702,14 +1705,14 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
     // Look for chapters created by the student.
     $studentchapterctx = new stdClass();
-    $studentchapterctx->shortext = shorten_text(get_string('additionstitle', 'giportfolio')) ;
+    $studentchapterctx->shortext = shorten_text(get_string('additionstitle', 'giportfolio'));
     $studentchapterctx->icon = $OUTPUT->image_url('addition_icon', 'mod_giportfolio');
-    
+
     // Look for chapters created by the student.
     $titles[] = $OUTPUT->render_from_template('mod_giportfolio/chapter_created_by_student', $studentchapterctx);
-    
-    $tablecolumns = array_merge(array('picture', 'fullname'), $titles);
-    $tableheaders = array_merge(array('', get_string('fullnameuser')), $titles);
+
+    $tablecolumns = array_merge(['picture', 'fullname'], $titles);
+    $tableheaders = array_merge(['', get_string('fullnameuser')], $titles);
 
     require_once($CFG->libdir . '/tablelib.php');
     $table = new flexible_table('mod-giportfolio-graph-contribution');
@@ -1750,8 +1753,8 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
         $sort = ' ORDER BY ' . $sort;
     }
 
-    $ufields =  get_user_fields();
-   
+    $ufields = get_user_fields();
+
     if (!empty($allusers)) {
         $select = "SELECT DISTINCT $ufields";
 
@@ -1778,7 +1781,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
                     fullname($puser, has_capability('moodle/site:viewfullnames', $context)) . '</a>';
                 $offset++;
                 list($legends, $additions) = giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $puser, $cm);
-                $row = array_merge(array($picture, $userlink), $legends, $additions);
+                $row = array_merge([$picture, $userlink], $legends, $additions);
                 $rowclass = "user-id-$puser->id";
                 $table->add_data($row, $rowclass);
             }
@@ -1786,7 +1789,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
             $currentposition++;
         }
     } else {
-        echo html_writer::tag('div', get_string('nosubmisson', 'mod_giportfolio'), array('class' => 'nosubmisson'));
+        echo html_writer::tag('div', get_string('nosubmisson', 'mod_giportfolio'), ['class' => 'nosubmisson']);
     }
 
     $table->finish_html();
@@ -1871,7 +1874,7 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
 
     $tableheaders = array_merge([$OUTPUT->render($mastercheckbox), '', 'Fullname', 'Status', 'Date Sent']);
     $tablecolumns = array_merge(['', 'picture', 'fullname', 'Status', 'Date Sent']);
-  
+
 
     require_once($CFG->libdir . '/tablelib.php');
 
@@ -1929,15 +1932,15 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
 
         foreach ($pusers as $puser) {
 
-            if (in_array($puser->id, $dontremind)) { 
+            if (in_array($puser->id, $dontremind)) {
                 continue;  // This students did contribute
             }
 
             if ($currentposition == $offset && $offset < $endposition) {
-                $options = array(
+                $options = [
                     'visibletoscreenreaders' => false,
                     'includefullname' => false,          // New in Moodle 3.4. Setting to true will render the user's full name beside it. Defaults to false.
-                );
+                ];
 
                 $picture = $OUTPUT->user_picture($puser, $options);
                 $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $puser->id . '&amp;course=' . $course->id . '">' .
@@ -1948,10 +1951,10 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
                 if ($chapters = $DB->get_record_sql($sql)) {
 
                     $datemod = userdate($chapters->timemodified, get_string('strftimedaydate', 'core_langconfig'));
-                    $row = array_merge($checkboxes, array($picture, $userlink, $reminder, $datemod));
+                    $row = array_merge($checkboxes, [$picture, $userlink, $reminder, $datemod]);
                 } else {
                     $s = html_writer::span('', '', ['class' => 'giportfolio-legend', 'hidden' => true]);
-                    $row = array_merge($checkboxes, array($picture, $userlink, $remindernotsent, $s));
+                    $row = array_merge($checkboxes, [$picture, $userlink, $remindernotsent, $s]);
                 }
                 $rowclass = "user-row-$puser->id";
                 $table->add_data($row, $rowclass);
@@ -2039,8 +2042,8 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
     echo html_writer::end_div();
 
     $tableheaders = array_merge([$OUTPUT->render($mastercheckbox),  'Student', 'Status', 'Date Sent']);
-    $tablecolumns = array_merge([ '', 'Student', 'Status', 'Date Sent']);
-  
+    $tablecolumns = array_merge(['', 'Student', 'Status', 'Date Sent']);
+
 
     require_once($CFG->libdir . '/tablelib.php');
 
@@ -2120,21 +2123,22 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
                     $pout = '';
                     $parentcounter++;
                     foreach ($parents as $parent) {
-                        $checkboxattr = ['type' => 'checkbox',
-                        'id' => "user_$parent->id",
-                        "name" => "user$parent->id",
-                        "data-action" => "toggle",
-                        "data-togglegroup" => "participants-table",
-                        "data-toggle" => "slave",
-                        "class" => 'parent-reminder-checkbox'];
+                        $checkboxattr = [
+                            'type' => 'checkbox',
+                            'id' => "user_$parent->id",
+                            "name" => "user$parent->id",
+                            "data-action" => "toggle",
+                            "data-togglegroup" => "participants-table",
+                            "data-toggle" => "slave",
+                            "class" => 'parent-reminder-checkbox'
+                        ];
                         $pout .= html_writer::tag('input', '', $checkboxattr);
                         $pout .= html_writer::end_tag('input');
                         $pout .= html_writer::tag('label',  $OUTPUT->user_picture($parent, $options));
                         $pout .= html_writer::end_tag('label');
                         $pout .= html_writer::empty_tag('br');
                     }
-                    $pouts [] = $pout;
-
+                    $pouts[] = $pout;
                 }
 
                 $sql = "SELECT *
@@ -2316,13 +2320,14 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
     foreach ($chaptersid as $chapterid) {
 
         $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array(
-            'id' => $cm->id, 'chapterid' => $chapterid,
+            'id' => $cm->id,
+            'chapterid' => $chapterid,
             'mentee' => $user->id
         ));
 
         if ($usercontrib == '') {
             if (strlen($user->parentsid) > 0) {
-                $parentandstudent = $user->parentsid .','.$user->id;
+                $parentandstudent = $user->parentsid . ',' . $user->id;
             } else {
                 $parentandstudent = $user->id;
             }
@@ -2330,12 +2335,11 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             if ($DB->get_records_sql($sql)) {
                 $links[] = html_writer::tag('a', "$reminder", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
             } else {
-                if (count ($teachercontributions) > 0 && in_array($chapterid, $teachercontributions)) {
+                if (count($teachercontributions) > 0 && in_array($chapterid, $teachercontributions)) {
                     $links[] = html_writer::tag('a', "$iconteacher", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
                 } else {
                     $links[] = html_writer::tag('a', "$nocontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
                 }
-
             }
             continue;
         }
@@ -2391,7 +2395,7 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
         } else {
 
             if (strlen($user->parentsid) > 0) {
-                $parentandstudent = $user->parentsid .','.$user->id;
+                $parentandstudent = $user->parentsid . ',' . $user->id;
             } else {
                 $parentandstudent = $user->id;
             }
@@ -2416,13 +2420,13 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
         }
     }
 
-    $additions[] = giportfolio_get_user_generated_chapters_not_seen($giportfolio->id, $user->id, $cm, $usercontrib);
+    $additions[] = giportfolio_get_user_generated_chapters_not_seen($giportfolio->id, $user->id, $cm, $usercontrib, true);
 
     return [$links, $additions];
 }
 
 // Helper functions for giportfolio_get_contributions_to_display.
-function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $userid, $cm) {
+function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $userid, $cm, $forgraph = false) {
     global $DB, $PAGE, $USER;
 
     // Collect the chapters created by the student.
@@ -2453,39 +2457,50 @@ function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $useri
 
         $countcontributions = $DB->get_records_sql($sql);
         $chaptercontributions = [];
+        $unseencontribution = html_writer::span('<i class = "fa fa-square-o fa-fw"></i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('unseencontrib', 'mod_giportfolio')]);
+        $seencontribution = html_writer::span('<i class = "fa fa-check-square-o fa-fw"></i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('seencontrib', 'mod_giportfolio')]);
 
         foreach ($countcontributions as $contribution) {
 
-            if (in_array($contribution->contribid, $contributionsseen)) {
+            if (in_array($contribution->contribid, $contributionsseen) && !$forgraph) {
                 continue;
+            } else if (in_array($contribution->contribid, $contributionsseen) && $forgraph) {
+                $icon = $seencontribution;
+            } else if (!in_array($contribution->contribid, $contributionsseen) && $forgraph) {
+                $icon = $unseencontribution;
             }
 
-            $url = new moodle_url('/mod/giportfolio/viewcontribute.php', array(
-                'id' => $cm->id, 'chapterid' => $contribution->chapterid,
-                'userid' => $userid, 'cont' => 'no'
-            ));
+            $url = new moodle_url('/mod/giportfolio/viewcontribute.php', [
+                'id' => $cm->id,
+                'chapterid' => $contribution->chapterid,
+                'userid' => $userid,
+                'cont' => 'no',
+            ]);
 
-            $chaptercontributions[$contribution->chapterid] = ['url' => $url, 'title' => $contribution->title];
+            $chaptercontributions[$contribution->chapterid] = ['url' => $url, 'title' => shorten_text($contribution->title, 20), 'icon' => $icon];
         }
 
         foreach ($chaptercontributions as $i => $chapter) {
 
-            if (in_array($i, $contributionsseen)) {
+            if (in_array($i, $contributionsseen) && !$forgraph) {
                 continue;
             }
 
             if ($index >= 3) {
-
+                $class = 'giportfolio-updatedch' . ' contributor_' . $userid;
                 $params = [
                     'href' => $chapter['url'],
                     'target' => '_blank',
-                    'class' => 'giportfolio-updatedch' . ' contributor_' . $userid,
-                    'id' => 'contributor_' . $userid
+                    'class' => $class,
+                    'id' => 'contributor_' . $userid,
                 ];
 
-                $links .= html_writer::tag("a", $chapter['title'],  $params);
+                $chapter['icon'] = preg_replace('/class="(.*?)"/', 'class="$1 ' . $class . '"', $chapter['icon']);
+                $links .= html_writer::tag("a", $chapter['title'],  $params) . $chapter['icon'] . '<br>';
             } else {
-                $links .= html_writer::tag('a', $chapter['title'], ['href' => $chapter['url'], 'target' => '_blank']) . '<br>';
+
+                $params = ['href' => $chapter['url'], 'target' => '_blank'];
+                $links .= html_writer::tag('a', $chapter['title'], $params) .  $chapter['icon'] . '<br>';
             }
 
             $index++;
@@ -2498,13 +2513,13 @@ function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $useri
             $params = ["class" => "giportfolio-more", "id" => $userid, 'title' => 'Show More'];
             $icon = '<i class = "fa">&#xf067;</i>';
             $links .= html_writer::span($icon, '', $params);
-            $jsmodule = array(
+            $jsmodule = [
                 'name' => 'mod_giportfolio_morechapters',
                 'fullpath' => new moodle_url('/mod/giportfolio/morechapters.js'),
-                'contributorid' => $userid
-            );
+                'contributorid' => $userid,
+            ];
 
-            $PAGE->requires->js_init_call('M.mod_giportfolio_showMore.init', array($userid), true, $jsmodule);
+            $PAGE->requires->js_init_call('M.mod_giportfolio_showMore.init', [$userid], true, $jsmodule);
         }
     }
 
@@ -2557,11 +2572,11 @@ function giportfolio_count_contributions_comments($contributionid) {
 }
 
 // Registered hours tab content
-function giportfolio_registeredhours_content($allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course) {
+function giportfolio_registeredhours_content($allusers, $context, $username, $listusersids, $perpage, $page, $giportfolio, $course, $cm) {
     global $OUTPUT, $CFG, $DB, $PAGE;
 
     $chapters = giportfolio_preload_chapters($giportfolio);
-    
+
     $chaptersid = [];
     $titles = [];
     $chaptersubchap = [];
@@ -2592,37 +2607,36 @@ function giportfolio_registeredhours_content($allusers, $context, $username, $li
         }
 
         $chaptersid[] = $chapter->id;
-
     }
 
-    // $studentchapterctx = new stdClass();
-    // $studentchapterctx->shortext = shorten_text(get_string('additionstitle', 'giportfolio')) ;
-    // $studentchapterctx->icon = $OUTPUT->image_url('addition_icon', 'mod_giportfolio');
-    
+    $studentchapterctx = new stdClass();
+    $studentchapterctx->shortext = shorten_text(get_string('additionstitle', 'giportfolio'));
+    $studentchapterctx->icon = $OUTPUT->image_url('addition_icon', 'mod_giportfolio');
+
     // Look for chapters created by the student.
-    //$titles[] = $OUTPUT->render_from_template('mod_giportfolio/chapter_created_by_student', $studentchapterctx);
-    
-    $totalTitle = new stdClass();
-    $totalTitle->title = get_string('total', 'giportfolio');
+    $titles[] = $OUTPUT->render_from_template('mod_giportfolio/chapter_created_by_student', $studentchapterctx);
+
+    $totaltitle = new stdClass();
+    $totaltitle->title = get_string('total', 'giportfolio');
     // $averageTitle = new stdClass();
     // $averageTitle->title = get_string('average', 'giportfolio');
     // $maximumTitle = new stdClass();
     // $maximumTitle->title = get_string('maximum', 'giportfolio');
 
-    $total   = $OUTPUT->render_from_template('mod_giportfolio/table_titles', $totalTitle);
+    $total   = $OUTPUT->render_from_template('mod_giportfolio/table_titles', $totaltitle);
     // $average = $OUTPUT->render_from_template('mod_giportfolio/table_titles', $averageTitle);
     // $maximum = $OUTPUT->render_from_template('mod_giportfolio/table_titles', $maximumTitle);
-    
+
     $hourscalc = [$total/*, $average, $maximum*/];
 
-    $tablecolumns = array_merge(array('picture', 'fullname'), $titles , $hourscalc);
-    $tableheaders = array_merge(array('', get_string('fullnameuser')), $titles, $hourscalc);
+    $tablecolumns = array_merge(['picture', 'fullname'], $titles, $hourscalc);
+    $tableheaders = array_merge(['', get_string('fullnameuser')], $titles, $hourscalc);
 
     require_once($CFG->libdir . '/tablelib.php');
 
     $table = new flexible_table('mod-giportfolio-registeredhours-contribution');
 
-    $table->initialbars(true); // Display the alphabet
+    $table->initialbars(true); // Display the alphabet.
     $table->define_columns($tablecolumns);
     $table->define_headers($tableheaders);
     $table->define_baseurl($PAGE->url);
@@ -2632,7 +2646,7 @@ function giportfolio_registeredhours_content($allusers, $context, $username, $li
     $table->column_class('picture', 'picture');
     $table->column_class('fullname', 'fullname');
     $table->set_attribute('cellspacing', '0');
-    $table->set_attribute('id', 'graphcontributors'); // Leave the same id as the graph because the controls are all the same
+    $table->set_attribute('id', 'graphcontributors'); // Leave the same id as the graph because the controls are all the same.
     $table->set_attribute('data-giportfolio', $giportfolio->id);
     $table->set_attribute('class', 'graphofcontributors generaltable flexible boxaligncenter');
     $table->set_attribute('width', '100%');
@@ -2658,15 +2672,14 @@ function giportfolio_registeredhours_content($allusers, $context, $username, $li
         $sort = ' ORDER BY ' . $sort;
     }
 
-    $ufields =  get_user_fields();
-   
+    $ufields = get_user_fields();
+
     if (!empty($allusers)) {
         $select = "SELECT DISTINCT $ufields";
 
         $sql = ' FROM {user} u ' . $extratables .
             ' WHERE ' . $where . 'u.id IN (' . $listusersids . ') ';
 
-        
         $pusers = $DB->get_records_sql($select . $sql . $sort, $params, $table->get_page_start(), $table->get_page_size());
         $table->pagesize($perpage, count($pusers));
 
@@ -2682,11 +2695,19 @@ function giportfolio_registeredhours_content($allusers, $context, $username, $li
                     fullname($puser, has_capability('moodle/site:viewfullnames', $context)) . '</a>';
                 $offset++;
                 // Get the total hours PER chapter
-               $totalperchapter = giportfolio_get_registered_hours_total_per_chapter($chaptersid, $puser->id, $giportfolio->id);
+                $totalperchapter = giportfolio_get_registered_hours_total_per_chapter($chaptersid, $puser->id, $giportfolio->id);
+                // Get the totals hour per added chapter by student.
+                $totaladditionalchapters = giportfolio_get_user_generated_chapters_hours($giportfolio->id, $puser->id, $cm);
                 // Get the calculated values in total
-               list($total, $average, $maximum) = giportfolio_get_registered_hours_calculations($chaptersid, $puser->id, $giportfolio);
-                
-                $row = array_merge(array($picture, $userlink), $totalperchapter, $total);
+                // list($total, $average, $maximum) = giportfolio_get_registered_hours_calculations($chaptersid, $puser->id, $giportfolio);
+                $total = giportfolio_get_cumulative_hours($puser->id, $giportfolio->id);
+
+                $total = $total != 0.00 ?   html_writer::start_span('badge badge-primary')
+                . number_format($total, 2)
+                . html_writer::end_span()
+                :    html_writer::start_span('badge badge-secondary') . '0.00' . html_writer::end_span();
+
+                $row = array_merge([$picture, $userlink], $totalperchapter, $totaladditionalchapters, [$total]);
                 $rowclass = "user-id-$puser->id";
                 $table->add_data($row, $rowclass);
             }
@@ -2702,60 +2723,113 @@ function giportfolio_registeredhours_content($allusers, $context, $username, $li
     $chaptersubchap = json_encode($chaptersubchap);
 
     $PAGE->requires->js_call_amd('mod_giportfolio/graph_contributors_control', 'init', [$chaptersubchap]);
-
-   
 }
 
 // Calculates total, average and max per portfolio
 function giportfolio_get_registered_hours_calculations($chaptersid, $user, $giportfolio) {
     global $DB;
-   
+
     list($insql, $inparams) = $DB->get_in_or_equal($chaptersid);
 
     $sql = "SELECT SUM(numhours) AS 'total', AVG(numhours) AS 'average', MAX(numhours) AS 'maximum'
-    FROM {giportfolio_contributions}
-    WHERE chapterid $insql AND userid = $user AND giportfolioid = $giportfolio->id";
+            FROM {giportfolio_contributions}
+            WHERE chapterid $insql AND userid = $user AND giportfolioid = $giportfolio->id";
 
     $calc = $DB->get_records_sql($sql, $inparams);
     $total = [];
     $avg = [];
     $max = [];
-    
-    foreach($calc as $c) {
-        $c->total = !empty($c->total) ?   html_writer::start_span('badge badge-primary') 
-                                        . $c->total 
-                                        . html_writer::end_span() 
-                                    :    html_writer::start_span('badge badge-secondary'). '0' .html_writer::end_span();
+
+    foreach ($calc as $c) {
+        $c->total = !empty($c->total) ?   html_writer::start_span('badge badge-primary')
+            . number_format($c->total, 2)
+            . html_writer::end_span()
+            :    html_writer::start_span('badge badge-secondary') . '0.00' . html_writer::end_span();
         $total[] = $c->total;
         $avg[] = $c->average;
         $max[] = $c->maximum;
     }
 
     return [$total, $avg, $max];
-
 }
 
+function giportfolio_get_chaptersids_created_by_student($giportfolioid, $userid) {
+    global $DB;
+    // Get the chapters created by the student.
+    $sql = "SELECT id
+            FROM {giportfolio_chapters}
+            WHERE giportfolioid =:giportfolioid
+            AND userid = :userid;";
+    $params = ['giportfolioid' => $giportfolioid, 'userid' => $userid];
+
+    $chapters = $DB->get_records_sql($sql, $params);
+    $chapterids = implode(',', array_keys($chapters));
+    return $chapterids;
+}
+
+// Get the   hours in contributrions from chapters created by the student
+function giportfolio_get_user_generated_chapters_hours($giportfolioid, $userid, $cm) {
+    global $DB;
+    // Get the chapters created by the student.
+    $chapterids = giportfolio_get_chaptersids_created_by_student($giportfolioid, $userid);
+    $links = '';
+
+    if($chapterids) {
+        // Get the chapters content.
+        $sql = "SELECT gcont.id AS 'contribid', gcont.chapterid, gchap.title, gcont.numhours
+                FROM {giportfolio_contributions}  gcont
+                JOIN  {giportfolio_chapters} gchap
+                ON  gcont.chapterid = gchap.id
+                WHERE gcont.giportfolioid = :giportfolioid
+                AND gcont.userid = :userid
+                AND gcont.chapterid IN ($chapterids)";
+
+        $params = ['giportfolioid' => $giportfolioid, 'userid' => $userid];
+        $contributions = $DB->get_records_sql($sql, $params);
+
+        // Get the title of the chapter
+        $chapteradded = [];
+
+        foreach($contributions as $contribution) {
+            $url = new moodle_url('/mod/giportfolio/viewcontribute.php', [
+                'id' => $cm->id,
+                'chapterid' => $contribution->chapterid,
+                'userid' => $userid,
+                'cont' => 'no',
+            ]);
+
+            $params = ['href' => $url, 'target' => '_blank'];
+            $hours = number_format($contribution->numhours, 2);
+            $badge = html_writer::start_span('badge badge-primary sp') . $hours . html_writer::end_span();
+            $links .= html_writer::tag("a", shorten_text($contribution->title, 20),  $params) . '  ' . $badge .'<br>';
+        }
+
+
+    }
+    return [$links];
+}
 function giportfolio_get_registered_hours_total_per_chapter($chaptersid, $user, $giportfolioid) {
     global $DB;
 
     $total = [];
 
-    foreach($chaptersid as $chid) {
+    foreach ($chaptersid as $chid) {
         $sql = "SELECT SUM(numhours) AS 'total'
-        FROM {giportfolio_contributions}
-        WHERE chapterid = $chid AND userid = $user AND giportfolioid = $giportfolioid";
-        
+                FROM {giportfolio_contributions}
+                WHERE chapterid = $chid AND userid = $user
+                AND giportfolioid = $giportfolioid";
+
         $result = $DB->get_record_sql($sql);
 
         if ($result->total) {
-            $total[] = html_writer::start_span('badge badge-primary'). $result->total .html_writer::end_span();
+            $result->total = number_format($result->total, 2);
+            $total[] = html_writer::start_span('badge badge-primary') . $result->total . html_writer::end_span();
         } else {
-            $total[] = html_writer::start_span('badge badge-secondary'). '0' .html_writer::end_span();
+            $total[] = html_writer::start_span('badge badge-secondary') . '0.00' . html_writer::end_span();
         }
-       
     }
 
-    
+
     return $total;
 }
 
@@ -2795,7 +2869,7 @@ function giportfolio_all_chapters_hidden($giportfolio) {
     return count($chapters) == $counthidden;
 }
 
-function giportfolio_remove_last_chapter_seen($chapter) {
+function giportfolio_remove_last_chapter_seen($chapter){
     global $DB;
 
     $sql = "SELECT id FROM mdl_giportfolio_last_seen WHERE chapterid = $chapter->id";
@@ -2836,7 +2910,6 @@ function giportfolio_set_last_chapter_seen($giportfolioid, $chapterid = null) {
 function giportfolio_submissionstables($context, $username, $currenttab, $giportfolio, $allusers, $listusersids, $perpage, $page, $cm, $url, $course, $quickgrade, $filter) {
     global $CFG, $PAGE, $USER, $DB, $OUTPUT;
     $tabindex = 1; // Tabindex for quick grading tabbing; Not working for dropdowns yet.
-  
 
     list($tablecolumns, $tableheaders, $showgradecol) = giportfolio_table_columns($giportfolio->id, $context);
 
@@ -2904,7 +2977,8 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
         $extratables = 'JOIN {giportfolio_contributions} c ON c.giportfolioid = :portfolioid AND c.userid = u.id
                     LEFT JOIN {grade_grades} g ON g.itemid = :gradeid AND g.userid = u.id';
         $params['gradeid'] = $DB->get_field('grade_items', 'id', array(
-            'itemtype' => 'mod', 'itemmodule' => 'giportfolio',
+            'itemtype' => 'mod',
+            'itemmodule' => 'giportfolio',
             'iteminstance' => $giportfolio->id
         ));
         $params['portfolioid'] = $giportfolio->id;
@@ -3048,7 +3122,6 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
             $currentposition++;
         }
         $table->finish_html();
-
     } else {
         echo html_writer::tag('div', get_string('nosubmisson', 'mod_giportfolio'), array('class' => 'nosubmisson'));
     }
@@ -3056,7 +3129,8 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
     // Print quickgrade form around the table.
     if ($quickgrade && $table->started_output && !empty($allusers)) {
         $savefeedback = html_writer::empty_tag('input', array(
-            'type' => 'submit', 'name' => 'fastg',
+            'type' => 'submit',
+            'name' => 'fastg',
             'value' => get_string('saveallfeedback', 'mod_giportfolio')
         ));
         echo html_writer::tag('div', $savefeedback, array('class' => 'fastgbutton'));
@@ -3225,7 +3299,7 @@ function giportfolio_table_columns($giportfolioid, $context) {
     global $DB;
 
     $grade = $DB->get_field('giportfolio', 'grade', array('id' => $giportfolioid));
-  
+
     $tablecolumns = [];
     $extrafieldnames = array();
     $showgradecol = false;
@@ -3238,16 +3312,21 @@ function giportfolio_table_columns($giportfolioid, $context) {
     if ($grade != 0) {
         $colums = array('lastupdate', 'viewgiportfolio', 'chaptersupdated', 'grade', 'feedback');
         $columntitles = array(
-            get_string('lastupdated', 'giportfolio'), get_string('viewgiportfolio', 'giportfolio'),
-            get_string('chaptersupdated', 'giportfolio'), get_string('grade', 'giportfolio'), get_string('feedback')
+            get_string('lastupdated', 'giportfolio'),
+            get_string('viewgiportfolio', 'giportfolio'),
+            get_string('chaptersupdated', 'giportfolio'),
+            get_string('grade', 'giportfolio'),
+            get_string('feedback')
 
         );
         $showgradecol = true;
     } else {
         $colums = array('lastupdate', 'viewgiportfolio', 'chaptersupdated', 'feedback');
         $columntitles = array(
-            get_string('lastupdated', 'giportfolio'), get_string('viewgiportfolio', 'giportfolio'),
-            get_string('chaptersupdated', 'giportfolio'), get_string('feedback')
+            get_string('lastupdated', 'giportfolio'),
+            get_string('viewgiportfolio', 'giportfolio'),
+            get_string('chaptersupdated', 'giportfolio'),
+            get_string('feedback')
         );
     }
 
@@ -3300,10 +3379,12 @@ function giportfolio_send_comment_notification($contributionid) {
 }
 
 function giportfolio_send_comment_notification_to_students($contribution,  $cm, $contributionid, $recipient) {
-    $commentid = $contributionid.'_'.($contribution[$contributionid])->chapterid;
+    $commentid = $contributionid . '_' . ($contribution[$contributionid])->chapterid;
 
-    $url = new \moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id,
-    'chapterid' => ($contribution[$contributionid])->chapterid));
+    $url = new \moodle_url('/mod/giportfolio/viewgiportfolio.php', array(
+        'id' => $cm->id,
+        'chapterid' => ($contribution[$contributionid])->chapterid
+    ));
     $url->set_anchor($commentid);
 
     giportfolio_send_comment_notification_helper(($contribution[$contributionid])->userid, $contributionid, $contribution, $recipient, $url);
@@ -3322,11 +3403,13 @@ function giportfolio_send_comment_notification_to_teachers($contribution, $cm, $
     global $USER;
     // Get the teachers that are part of the course and group.
     $recipients = giportfolio_filter_graders(($contribution[$contributionid])->userid, $cm);
-    $commentid = $contributionid.'_'.($contribution[$contributionid])->chapterid;
+    $commentid = $contributionid . '_' . ($contribution[$contributionid])->chapterid;
     $studentmentor = false;
-    $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array('id' => $cm->id,
-    'chapterid' => ($contribution[$contributionid])->chapterid,
-    'userid' => ($contribution[$contributionid])->userid));
+    $url = new \moodle_url('/mod/giportfolio/viewcontribute.php', array(
+        'id' => $cm->id,
+        'chapterid' => ($contribution[$contributionid])->chapterid,
+        'userid' => ($contribution[$contributionid])->userid
+    ));
 
     $url->set_anchor($commentid);
 
@@ -3397,7 +3480,8 @@ function giportfolio_send_reminder($data) {
     foreach ($pusers as $user) {
 
         $url = new moodle_url('/mod/giportfolio/viewgiportfolio.php', [
-            'id' => $data->chapter->cm, 'chapterid' => $data->chapter->chapterid
+            'id' => $data->chapter->cm,
+            'chapterid' => $data->chapter->chapterid
         ]);
 
         $link = html_writer::link($url, $url->out(false));
@@ -3554,4 +3638,19 @@ function get_user_fields() {
     $ufields = implode(', ', $ufields);
 
     return $ufields;
+}
+/**
+ *Get the sum of all the hours registered by the student
+ */
+function giportfolio_get_cumulative_hours($userid, $giportfolioid) {
+    global $DB;
+
+    $sql = "SELECT SUM(numhours) as hours
+            FROM mdl_giportfolio_contributions
+            WHERE userid = :userid
+            AND giportfolioid = :giportfolioid";
+
+    $r = $DB->get_record_sql($sql, ['userid' => $userid, 'giportfolioid' => $giportfolioid]);
+
+    return number_format($r->hours, 2);
 }

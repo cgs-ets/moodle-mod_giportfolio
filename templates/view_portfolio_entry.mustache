@@ -20,6 +20,12 @@
   }}
 
 {{#playbutton}}
+
+    {{#hashours}}
+        {{#student}}
+            <h5>Cumulative Hours: {{cumulativehours}}</h5>
+        {{/student}}
+    {{/hashours}}
     {{> mod_giportfolio/start_contribute_play_button}}
     {{^skipintro}}
         {{{intro}}}
