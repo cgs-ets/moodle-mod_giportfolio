@@ -1,13 +1,13 @@
 /* ===== Format the page ===== */
 
 @page {
-    size: A4;
-    /* margin: 70pt 60pt 70pt; */
+  size: A4;
+  /* margin: 70pt 60pt 70pt; */
 }
 
 /* Titles of the chapters are h2 */
 h2 {
-    page-break-before: always;
+  page-break-before: always;
 }
 
 h1,
@@ -15,187 +15,197 @@ h2,
 h3,
 h4,
 h5 {
-    font-weight: bold;
-    page-break-after: avoid;
-    page-break-inside: avoid;
+  font-weight: bold;
+  page-break-after: avoid;
+  page-break-inside: avoid;
 }
 
-h1+p,
-h2+p,
-h3+p {
-    page-break-before: avoid;
-    page-break-inside: avoid;
+h1 + p,
+h2 + p,
+h3 + p {
+  page-break-before: avoid;
+  page-break-inside: avoid;
 }
 
 table,
 figure {
-    page-break-inside: avoid;
+  page-break-inside: avoid;
 }
-
 
 /* ===== TOC numbering styles ===== */
 
 /* numbering == NONE */
 .giportfolio_toc_none {
-    page-break-before: always;
+  page-break-before: always;
 }
 
 .giportfolio_toc_none ul {
-    margin-left: 0;
-    padding-left: 0;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .giportfolio_toc_none ul ul {
-    margin-left: 0;
-    padding-left: 0;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .giportfolio_toc_none li {
-    margin-top: 10px;
-    list-style: none;
+  margin-top: 10px;
+  list-style: none;
 }
 
 .giportfolio_toc_none li li {
-    margin-top: 0;
-    list-style: none;
+  margin-top: 0;
+  list-style: none;
 }
 
 /* numbering == NUMBERED */
 .giportfolio_toc_numbered {
-    page-break-before: always;
+  page-break-before: always;
 }
 
 .giportfolio_toc_numbered ul {
-    margin-left: 0;
-    padding-left: 0;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .giportfolio_toc_numbered ul ul {
-    margin-left: 0;
-    padding-left: 0;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .giportfolio_toc_numbered li {
-    margin-top: 10px;
-    list-style: none;
+  margin-top: 10px;
+  list-style: none;
 }
 
 .giportfolio_toc_numbered li li {
-    margin-top: 0;
-    list-style: none;
+  margin-top: 0;
+  list-style: none;
 }
 
 /* numbering == BULLETS */
 .giportfolio_toc_bullets {
-    page-break-before: always;
+  page-break-before: always;
 }
 
 .giportfolio_toc_bullets ul {
-    margin-left: 0;
-    padding-left: 0;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .giportfolio_toc_bullets ul ul {
-    margin-left: 20px;
-    padding-left: 0;
+  margin-left: 20px;
+  padding-left: 0;
 }
 
 .giportfolio_toc_bullets li {
-    margin-top: 10px;
-    list-style: none;
+  margin-top: 10px;
+  list-style: none;
 }
 
 .giportfolio_toc_bullets li li {
-    margin-top: 0;
-    list-style: circle;
+  margin-top: 0;
+  list-style: circle;
 }
 
 /* numbering == INDENTED */
 .giportfolio_toc_indented {
-    page-break-before: always;
+  page-break-before: always;
 }
 
 .giportfolio_toc_indented ul {
-    margin-left: 0;
-    padding-left: 0;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .giportfolio_toc_indented ul ul {
-    margin-left: 20px;
-    padding-left: 0;
+  margin-left: 20px;
+  padding-left: 0;
 }
 
 .giportfolio_toc_indented li {
-    margin-top: 10px;
-    list-style: none;
+  margin-top: 10px;
+  list-style: none;
 }
 
 .giportfolio_toc_indented li li {
-    margin-top: 0;
-    list-style: none;
+  margin-top: 0;
+  list-style: none;
 }
 
 /* Comments */
 
 .comment-area {
-    display: none;
+  display: none;
 }
 
 ul.comment-list.comments-loaded {
-    max-width: fit-content;
+  max-width: fit-content;
 }
 
 .comment-delete {
-    display: none;
-    padding: 1rem;
+  display: none;
+  padding: 1rem;
 }
 
 i.icon.fa.fa-caret-right.fa-fw {
-    display: none;
+  display: none;
 }
 
 #page-mod-giportfolio-print .giportfolio .giportfolio_chapter,
 #page-mod-giportfolio-print .giportfolio .giportfolio_description {
-    page-break-before: always;
+  page-break-before: always;
 }
 
 /* Exclude elements from printing. */
 @media print {
-    .hidden-print {
-        display: none !important;
-        /* stylelint-disable-line declaration-no-important */
-    }
+  .hidden-print {
+    display: none !important;
+    /* stylelint-disable-line declaration-no-important */
+  }
 
-    .giportfolio .giportfolio_title {
-        margin-top: 45%;
-    }
+  .giportfolio .giportfolio_title {
+    margin-top: 45%;
+  }
 }
 
 .badge {
-    display: inline-block;
-    padding: .25em .4em;
-    font-size: 75%;
-    font-weight: 700;
-    line-height: 1;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: baseline;
-    -webkit-transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-    -o-transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  -webkit-transition: color 0.15s ease-in-out,
+    background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out;
+  -o-transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
+    border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .badge-success {
-    color: #fff;
-    background-color: #357a32;
+  color: #fff;
+  background-color: #357a32;
 }
 
 .badge-primary {
-    color: #fff;
-    background-color: #007bff;
+  color: #fff;
+  background-color: #007bff;
 }
 
 .badge-info {
-    color: #fff;
-    background-color: #17a2b8;
+  color: #fff;
+  background-color: #17a2b8;
+}
+
+.hr-giportfolioprint {
+  border: none;
+  height: 2px; /* Set height to make it thicker */
+  background-color: #333; /* Set the color of the line */
+  margin: 20px 0; /* Add some spacing above and below */
 }

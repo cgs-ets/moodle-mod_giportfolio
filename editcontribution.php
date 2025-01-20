@@ -98,7 +98,7 @@ if ($contributionid) {
     $contribution = $DB->get_record('giportfolio_contributions', array(
         'id' => $contributionid, 'chapterid' => $chapterid,
     ), '*', MUST_EXIST);
-   // $contribution = $DB->get_record('giportfolio_contributions', array('id' => $contributionid), '*', MUST_EXIST);
+
     $mentee = $contribution->userid;
 
     if (in_array($USER->id, giportfolio_user_mentor_of_student($mentee))) {
@@ -134,6 +134,10 @@ if ($contributionid) {
     );
     $formdata->contributionid = $formdata->id;
     $formdata->teacherid = $contribution->teacherid;
+
+    if($giportfolio->numberhours) {
+        $formdata->numhours = number_format($contribution->numhours, 2);
+    }
 } else {
     $formdata = new stdClass();
     $formdata->teacherid = ($mentor == 0 && $mentee != 0 && $USER->id != $mentee) ? $USER->id : 0; // Teacher on behalf of the student

@@ -77,7 +77,7 @@ if (!is_enrolled($context, $userid, '') && !is_siteadmin() && !$allowgrade) {
 }
 
 if ((!is_enrolled($context, $USER->id, '') && $mentee == 0 && !$ismentor) && !is_siteadmin() && !$allowgrade) {
-    print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id))); // TODO
+    print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
 if ($allowedit) {
@@ -459,9 +459,9 @@ if ($contriblist) {
 
         if ($ismine) {
 
-            $baseurl = new moodle_url('/mod/giportfolio/editcontribution.php', 
-                                     array('id' => $cm->id, 
-                                           'contributionid' => $contrib->id, 
+            $baseurl = new moodle_url('/mod/giportfolio/editcontribution.php',
+                                     array('id' => $cm->id,
+                                           'contributionid' => $contrib->id,
                                            'chapterid' => $contrib->chapterid));
 
             $editurl = new moodle_url($baseurl);
@@ -548,12 +548,12 @@ if ($contriblist) {
         $cout .= html_writer::start_tag('br').html_writer::end_tag('br');
 
         if ($giportfolio->numberhours) {
-
+            $contrib->numhours = number_format($contrib->numhours , 2);
             $cout .= html_writer::start_tag('h6', ['class' => 'giportfolio-numberhours']) . get_string('hourslabel', 'giportfolio')  . html_writer::end_tag('h6') . $contrib->numhours;
             $cout .= html_writer::start_tag('br').html_writer::end_tag('br');
 
             //  Sum the hours to display
-            $totalhours += $contrib->numhours;
+            $totalhours += $contrib->numhours; // TODO
         }
 
         $cout = html_writer::tag('contribheader', $cout);
@@ -630,8 +630,8 @@ if ($contriblist) {
         $totalhoursctx->totalhours = $totalhours;
         echo $OUTPUT->render_from_template('mod_giportfolio/total_hours_display', $totalhoursctx);
     }
-    
-    
+
+
     echo $contributionbuffer;
     echo $OUTPUT->box_end();
 

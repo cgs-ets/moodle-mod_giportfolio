@@ -183,14 +183,14 @@ switch ($currenttab) {
 
     case 'contributionreminder':
         $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab . '&chapterid' . $chapterid;
-        giportfolio_reminder_chapter_selector($cm, $urlroot, false, $giportfolio, $chapterid);
+        giportfolio_reminder_chapter_selector($cm, $urlroot, $giportfolio, $chapterid, false);
         giportfolio_reminder_table($PAGE, $allusers, $context, $username, $listusersids, $page, $giportfolio, $course, $chapterid, $cm->id);
         break;
 
     case 'contributionreminderparents':
         $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab . '&chapterid' . $chapterid;
         $forstudents = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=contributionreminder'. '&chapterid' . $chapterid;
-        giportfolio_reminder_chapter_selector($cm, $urlroot, false, $giportfolio, $chapterid);
+        giportfolio_reminder_chapter_selector($cm, $urlroot,  $giportfolio, $chapterid, false);
         $output .= html_writer::start_div('parent-warning', ['class' => 'alert alert-warning']);
         $output .= html_writer::tag('span', get_string('parentuserwithnocontribwarning', 'mod_giportfolio', $forstudents) );
         $output .= html_writer::end_tag('span');
@@ -198,7 +198,7 @@ switch ($currenttab) {
         echo $output;
         giportfolio_reminder_parents_table($PAGE, $allusers, $context, $username, $listusersids, $page, $giportfolio, $course, $chapterid, $cm->id);
         break;
-    
+
     case 'registeredhours':
         if ($giportfolio->numberhours) {
             $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab;

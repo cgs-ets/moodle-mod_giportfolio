@@ -110,7 +110,7 @@ class renderer extends plugin_renderer_base {
      * @return string html for the TOC
      */
     public function render_print_giportfolio_toc($chapters, $giportfolio, $cm) {
-        
+
         $first = true;
 
         $context = context_module::instance($cm->id);
@@ -224,20 +224,32 @@ class renderer extends plugin_renderer_base {
             $chapter->id
         );
 
+        $giportfoliochapter .= '<br><br>';
         $giportfoliochapter .= format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
         // Add the contributions.
         $giportfoliochaptercontributions = '';
         $giportfoliochaptercontributions .= html_writer::start_div('giportfolio_chapter_contribution p-t-1', ['id' => 'ch' . $chapter->id]);
-        
-       
-        
-        if ($contributions) {
-           
-            $giportfoliochaptercontributions .= $this->output->heading('Contributions', 2, 'text-center p-b-2');
-            $totalhours = 0;
 
+        if ($contributions) {
+
+            if($giportfolio->numberhours) {
+                $newtitle = $title . ' - ' . 'Contributions';
+                $giportfoliochaptercontributions .= $this->output->heading($newtitle, 2, 'text-center p-b-2') . '<br><br>';
+                $totalhours = get_total_hours_by_chapter_contribution($chapter->id, $userid);
+
+                $giportfoliochaptercontributions .= $this->output->heading(get_string('totalhoursregistered', 'giportfoliotool_print', $totalhours), 3, 'text-right p-b-2') . '<br><br>';
+
+            } else {
+                $giportfoliochaptercontributions .= $this->output->heading('Contributions', 2, 'text-center p-b-2');
+            }
+
+            $counter = 0;
             foreach ($contributions as $contribution) {
 
+                if ($counter > 0) {
+                    $giportfoliochaptercontributions .= '<hr class="hr-giportfolioprint">';
+                }
+                $contheading = '';
                 // Get author of the contribution
                 if ($contribution->mentorid != 0) {
                     $uid = $contribution->mentorid;
@@ -250,9 +262,8 @@ class renderer extends plugin_renderer_base {
                 } else {
                     $uid = $contribution->userid;
                     $author = get_contribution_author($uid);
-                    // $contheading = '<span class="badge badge-primary contributor-tag" >' . format_string(get_string('studentcontribution', 'giportfoliotool_print', $author)) . '</span><br>';
                 }
-               
+
                 $giportfoliochaptercontributions .=  "<strong> $contribution->title </strong> $contheading";
 
                 if ($contribution->timecreated !== $contribution->timemodified) {
@@ -264,10 +275,11 @@ class renderer extends plugin_renderer_base {
                 $giportfoliochaptercontributions .= "<br><br>";
 
                 if ($giportfolio->numberhours && $contribution->numhours != null) {
+                    $contribution->numhours = number_format($contribution->numhours, 2);
                     $giportfoliochaptercontributions .= "<strong>" . get_string('hours', 'giportfoliotool_print') . ": </strong>" . $contribution->numhours; //hours
-                    $totalhours +=  $contribution->numhours;
+                    // $totalhours +=  $contribution->numhours;
                 }
-               
+
                 $giportfoliochaptercontributions .= "<br><br>";
 
                 $contributiontext = file_rewrite_pluginfile_urls(
@@ -288,10 +300,8 @@ class renderer extends plugin_renderer_base {
                     $giportfoliochaptercontributions .=  $table;
                 }
 
-             
-
                 // Get comments.
-                
+
                 $comments = giportfolio_print_comments($contribution);
 
                 if ($comments) {
@@ -310,18 +320,11 @@ class renderer extends plugin_renderer_base {
                     $giportfoliochaptercontributions .= html_writer::tag('contribcomment', $commentbox->output(true));
                     $giportfoliochaptercontributions .= '<br>';
                 }
+                $counter++;
             }
-            
+
             $giportfoliochaptercontributions .= html_writer::end_div();
             $giportfoliochapter .= $giportfoliochaptercontributions;
-
-            if ($giportfolio->numberhours) {
-
-                $giportfoliochapter .= html_writer::start_div('alert alert-primary giportfoliotool-print-total-hours', ['role'=> 'alert']) 
-                                    .  html_writer::tag('span', get_string('totalhoursregistered', 'giportfoliotool_print', $totalhours))
-                                    .  html_writer::end_div() ;
-            }
-
 
         }
 

@@ -1815,7 +1815,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
 // Render table to send reminders. CGS customisation.
 
-function giportfolio_reminder_chapter_selector($cm, $urlroot, $return = false, $giportfolio, $chapterid) {
+function giportfolio_reminder_chapter_selector($cm, $urlroot,  $giportfolio, $chapterid, $return = false,) {
     global $OUTPUT;
 
     if ($urlroot instanceof moodle_url) {

@@ -33,7 +33,42 @@ require_once($CFG->dirroot . '/mod/giportfolio/locallib.php');
 
 function get_contribution_author($id) {
     global $DB;
-    
+
     $author = $DB->get_record('user', ['id' => $id], 'firstname, lastname');
     return $author;
+}
+
+
+function get_total_hours($giportfolioid, $userid) {
+
+    global $DB;
+
+    $sql = "SELECT SUM (gcont.numhours)
+            FROM {giportfolio} gi
+            JOIN {giportfolio_chapters} gc ON gi.id = gc.giportfolioid
+            JOIN {giportfolio_contributions} gcont ON gcont.giportfolioid = gi.id
+            WHERE gi.id = :giportfolioid and gcont.userid = :userid";
+
+    $params = ['giportfolioid' => $giportfolioid, 'userid' => $userid];
+
+    $totalhours = $DB->get_field_sql($sql, $params);
+    $totalhours = number_format($totalhours, 2);
+
+    return $totalhours;
+
+}
+
+function get_total_hours_by_chapter_contribution($chapterid, $userid) {
+
+    global $DB;
+
+    $sql= "SELECT SUM (gcont.numhours)
+            FROM {giportfolio_contributions} gcont
+            WHERE gcont.chapterid = :chapterid and gcont.userid = :userid";
+    $params = ['chapterid' => $chapterid, 'userid' => $userid];
+    $hoursperchapter = $DB->get_field_sql($sql, $params);
+    $hoursperchapter = number_format($hoursperchapter, 2);
+
+    return $hoursperchapter;
+
 }

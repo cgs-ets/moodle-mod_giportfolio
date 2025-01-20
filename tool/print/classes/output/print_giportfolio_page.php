@@ -71,7 +71,7 @@ class print_giportfolio_page implements renderable, templatable {
      * @return stdClass
      */
     public function export_for_template(renderer_base $output) {
-        global $OUTPUT, $CFG, $SITE, $USER;
+        global $OUTPUT, $CFG, $SITE, $USER, $DB;
 
         $context = context_module::instance($this->cm->id);
         $chapters = giportfolio_preload_chapters($this->giportfolio);
@@ -91,7 +91,16 @@ class print_giportfolio_page implements renderable, templatable {
         $data->modulename = format_string($this->giportfolio->name, true, array('context' => $context));
         $data->username = fullname($USER, true);
         $data->printdate = userdate(time());
+
+        if($this->giportfolio->numberhours) {
+
+            $data->hashours = true;
+            $data->totalhours =  get_total_hours($this->giportfolio->id, $USER->id);
+        }
+
+
         $data->toc = $output->render_print_giportfolio_toc($chapters, $this->giportfolio, $this->cm);
+
         foreach ($chapters as $ch) {
             list($chaptercontent, $chaptervisible) = $output->render_print_giportfolio_chapter($ch, $chapters, $this->giportfolio,
                     $this->cm, $this->userid);
