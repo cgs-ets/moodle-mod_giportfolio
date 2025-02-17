@@ -258,6 +258,8 @@ $templatecontext->menteementor = ($mentor != 0 || (isset($mentee) && $mentee == 
 
 echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', $templatecontext); // Show/hide instruction button.
 
+$totalhours = 0;
+
 if ($contriblist) {
     echo $OUTPUT->box_start('giportfolio_contributions');
 
@@ -273,6 +275,7 @@ if ($contriblist) {
     }
 
     $contributioncount = 0;
+    $totalhours = 0;
 
     comment::init();
 
@@ -404,6 +407,17 @@ if ($contriblist) {
             }
 
         }
+
+        if ($giportfolio->numberhours) {
+            $contrib->numhours = number_format($contrib->numhours , 2);
+            $cout .= html_writer::start_tag('h6', ['class' => 'giportfolio-numberhours']) . get_string('hourslabel', 'giportfolio')  . html_writer::end_tag('h6') . $contrib->numhours;
+            $cout .= html_writer::start_tag('br').html_writer::end_tag('br');
+
+            //  Sum the hours to display
+            $totalhours += $contrib->numhours;
+        }
+
+
     }
 
     if ($giportfolio->displayoutline) {
@@ -411,6 +425,13 @@ if ($contriblist) {
     }
 
     echo '<p class="giportfolio_outline" >'. get_string('contributions', 'giportfolio').'</p>';
+
+    if ($giportfolio->numberhours) {
+        $totalhoursctx = new \stdClass();
+        $totalhoursctx->totalhours = $totalhours;
+        echo $OUTPUT->render_from_template('mod_giportfolio/total_hours_display', $totalhoursctx);
+    }
+
     echo $contributionbuffer;
     echo $OUTPUT->box_end();
 }

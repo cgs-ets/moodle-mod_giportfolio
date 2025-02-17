@@ -553,7 +553,7 @@ if ($contriblist) {
             $cout .= html_writer::start_tag('br').html_writer::end_tag('br');
 
             //  Sum the hours to display
-            $totalhours += $contrib->numhours; // TODO
+            $totalhours += $contrib->numhours;
         }
 
         $cout = html_writer::tag('contribheader', $cout);
