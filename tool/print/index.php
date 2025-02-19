@@ -99,7 +99,7 @@ if ($chapter) {
     $page = new giportfoliotool_print\output\print_giportfolio_chapter_page($giportfolio, $cm, $chapter, $userid);
 } else {
     \giportfoliotool_print\event\giportfolio_printed::create_from_giportfolio($giportfolio, $context)->trigger();
-    $page = new giportfoliotool_print\output\print_giportfolio_page($giportfolio, $cm, $userid);
+    $page = new giportfoliotool_print\output\print_giportfolio_page($giportfolio, $cm, $userid, $chapters);
 }
 
 echo $renderer->render($page);

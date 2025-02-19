@@ -52,16 +52,19 @@ class print_giportfolio_page implements renderable, templatable {
      */
     protected $cm;
 
+    protected $chapters;
+
     /**
      * Construct this renderable.
      *
      * @param object $giportfolio The giportfolio
      * @param object $cm The course module
      */
-    public function __construct($giportfolio, $cm, $userid) {
+    public function __construct($giportfolio, $cm, $userid, $chapters) {
         $this->giportfolio = $giportfolio;
         $this->cm = $cm;
         $this->userid = $userid;
+        $this->chapters = $chapters;
     }
 
     /**
@@ -74,7 +77,6 @@ class print_giportfolio_page implements renderable, templatable {
         global $OUTPUT, $CFG, $SITE, $USER, $DB;
 
         $context = context_module::instance($this->cm->id);
-        $chapters = giportfolio_preload_chapters($this->giportfolio);
         $course = get_course($this->giportfolio->course);
 
         $data = new stdClass();
@@ -96,13 +98,15 @@ class print_giportfolio_page implements renderable, templatable {
 
             $data->hashours = true;
             $data->totalhours =  get_total_hours($this->giportfolio->id, $USER->id);
+
+            $this->chapters = reorder_toc($this->chapters);
+
         }
 
+        $data->toc = $output->render_print_giportfolio_toc($this->chapters, $this->giportfolio, $this->cm);
 
-        $data->toc = $output->render_print_giportfolio_toc($chapters, $this->giportfolio, $this->cm);
-
-        foreach ($chapters as $ch) {
-            list($chaptercontent, $chaptervisible) = $output->render_print_giportfolio_chapter($ch, $chapters, $this->giportfolio,
+        foreach ($this->chapters as $ch) {
+            list($chaptercontent, $chaptervisible) = $output->render_print_giportfolio_chapter($ch, $this->chapters, $this->giportfolio,
                     $this->cm, $this->userid);
             $chapter = new stdClass();
             $chapter->content = $chaptercontent;

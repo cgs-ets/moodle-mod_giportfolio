@@ -46,12 +46,13 @@ define('PORTFOLIO_NUM_INDENTED', '3');
  * @return array of id=>chapter
  */
 function giportfolio_preload_chapters($giportfolio) {
-    global $DB;
+    global $DB, $USER;
+
     $chapters = $DB->get_records(
-        'giportfolio_chapters',
-        array('giportfolioid' => $giportfolio->id, 'userid' => 0),
-        'pagenum',
-        'id, pagenum, subchapter, title, hidden, userid, importsrc, content, contentformat, locked'
+            'giportfolio_chapters',
+            array('giportfolioid' => $giportfolio->id, 'userid' => 0),
+            'pagenum',
+            'id, pagenum, subchapter, title, hidden, userid, importsrc, content, contentformat, locked'
     );
 
     if (!$chapters) {
@@ -245,7 +246,8 @@ function giportfolio_get_chapter_title($chid, $chapters, $giportfolio, $context)
 
     $title = trim(format_string($ch->title, true, array('context' => $context)));
     $numbers = array();
-    if ($giportfolio->numbering == PORTFOLIO_NUM_NUMBERS) {
+
+    if ($giportfolio->numbering == PORTFOLIO_NUM_NUMBERS ) {
         if ($ch->parent && $chapters[$ch->parent]->number) {
             $numbers[] = $chapters[$ch->parent]->number;
         }
@@ -722,30 +724,240 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
                         '&amp;chapterid=' . $ch->id . '&amp;up=0&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '">
                         <img src="' . $OUTPUT->image_url('t/down') . '" class="iconsmall" alt="' . get_string('down') . '" /></a>';
                 }
+
+                // if (giportfolio_check_user_chapter($ch, $userid)) {
+                    $toc .= '<a title="' . get_string('edit')
+                        . '" href="editstudent.php?cmid=' . $cm->id . '&amp;id='
+                        . $ch->id . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '"> '
+                        . '<img src="' . $OUTPUT->image_url('t/edit') . '" class="iconsmall" alt="' . get_string('edit') . '" /></a>';
+                // }
+
+                // if (giportfolio_check_user_chapter($ch, $userid)) {
+                    $toc .= ' <a title="' . get_string('delete') . '" href="deleteuserchapter.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id . '&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
+                        <img src="' . $OUTPUT->image_url('t/delete') . '" class="iconsmall" alt="' . get_string('delete') . '" /></a>';
+                // }
             }
 
-            if (giportfolio_check_user_chapter($ch, $userid)) {
-                $toc .= '<a title="' . get_string('edit')
-                    . '" href="editstudent.php?cmid=' . $cm->id . '&amp;id='
-                    . $ch->id . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '"> '
-                    . '<img src="' . $OUTPUT->image_url('t/edit') . '" class="iconsmall" alt="' . get_string('edit') . '" /></a>';
-            }
 
-            if (giportfolio_check_user_chapter($ch, $userid)) {
-                $toc .= ' <a title="' . get_string('delete') . '" href="deleteuserchapter.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id . '&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
-                    <img src="' . $OUTPUT->image_url('t/delete') . '" class="iconsmall" alt="' . get_string('delete') . '" /></a>';
-            }
-
-            if (
-                giportfolio_check_user_chapter($ch, $userid) ||
-                giportfolio_get_last_chapter($giportfolio->id, $ch->id)
-            ) {
+            if ( giportfolio_check_user_chapter($ch, $userid) ||
+                giportfolio_get_last_chapter($giportfolio->id, $ch->id)) {
 
                 $toc .= ' <a title="' . get_string('addafter', 'mod_giportfolio') . '" href="editstudent.php?cmid=' . $cm->id .
                     '&amp;pagenum=' . $ch->pagenum . '&amp;subchapter=' . $ch->subchapter . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
                     <img src="' . $OUTPUT->image_url('add', 'mod_giportfolio') . '" class="iconsmall" alt="' .
                     get_string('addafter', 'mod_giportfolio') . '" /></a>';
             }
+
+            $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
+            $first = 0;
+        }
+        $toc .= '</ul></li></ul>';
+    } else {
+        // Normal student nonediting view.
+        $toc .= '<ul>';
+        // SYNERGY - Find the open chapter.
+        $currentch = 0;
+        $opench = 0;
+        foreach ($chapters as $ch) {
+            if (!$currentch || !$ch->subchapter) {
+                $currentch = $ch->id;
+            }
+            if ($ch->id == $chapter->id) {
+                $opench = $currentch;
+                break;
+            }
+        }
+        // SYNERGY - Find the open chapter.
+        foreach ($chapters as $ch) {
+            $title = trim(format_string($ch->title, true, array('context' => $context)));
+            if (!$ch->hidden) {
+                if (!$ch->subchapter) {
+                    $nch++;
+                    $ns = 0;
+                    // SYNERGY - Make sure the right subchapters are expanded by default.
+                    $li = '<li>';
+                    if ($ch->id == $opench || !$giportfolio->collapsesubchapters) {
+                        $li = '<li class="expanded">';
+                    }
+                    $toc .= ($first) ? $li : '</ul></li>' . $li;
+                    // SYNERGY - Make sure the right subchapters are expanded by default.
+                    if ($giportfolio->numbering == PORTFOLIO_NUM_NUMBERS) {
+                        $title = "$nch $title";
+                    }
+                } else {
+                    $ns++;
+                    $toc .= ($first) ? '<li><ul><li>' : '<li>';
+                    if ($giportfolio->numbering == PORTFOLIO_NUM_NUMBERS) {
+                        $title = "$nch.$ns $title";
+                    }
+                }
+                if ($ch->id == $chapter->id) {
+                    $toc .= '<strong>' . $title . '</strong>';
+                } else {
+                    $toc .= '<a title="' . s($title) . '" href="viewgiportfolio.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id
+                        . '&amp;mentee=' . $mentee . '">' .
+                        $title . '</a>';
+                }
+                $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
+                $first = 0;
+            }
+        }
+        $toc .= '</ul></li></ul>';
+    }
+
+    $toc .= '</div>';
+
+    $toc = str_replace('<ul></ul>', '', $toc); // Cleanup of invalid structures.
+
+    return $toc;
+}
+/**
+ * Generate user toc structure. Test ordering based on thecreation date of the chapters. Only for portfolios that have registered hours.
+ *
+ * @param array $chapters
+ * @param stdClass $chapter
+ * @param stdClass $giportfolio
+ * @param stdClass $cm
+ * @param bool $edit
+ * @param $userid
+ * @param $useredit
+ * @param $mentor
+ * @param $mentee
+ * @param $contribute
+ * @return string
+ */
+function giportfolio_get_usertoc_2($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $useredit, $mentor = 0, $mentee = 0, $contribute = 'no') {
+    global $USER, $OUTPUT;
+
+    $toc = ''; // Representation of toc (HTML).
+    $nch = 0; // Chapter number.
+    $ns = 0; // Subchapter number.
+    $first = 1;
+
+    $context = context_module::instance($cm->id);
+
+    // SYNERGY - add 'giportfolio-toc' ID.
+    $tocid = ' id="giportfolio-toc" ';
+    switch ($giportfolio->numbering) {
+        case PORTFOLIO_NUM_NONE:
+            $toc .= '<div class="giportfolio_toc_none" ' . $tocid . '>';
+            break;
+        case PORTFOLIO_NUM_NUMBERS:
+            $toc .= '<div class="giportfolio_toc_numbered" ' . $tocid . '>';
+            break;
+        case PORTFOLIO_NUM_BULLETS:
+            $toc .= '<div class="giportfolio_toc_bullets" ' . $tocid . '>';
+            break;
+        case PORTFOLIO_NUM_INDENTED:
+            $toc .= '<div class="giportfolio_toc_indented" ' . $tocid . '>';
+            break;
+    }
+    // SYNERGY - add 'giportfolio-toc' ID.
+
+    $allowuser = giportfolio_get_collaborative_status($giportfolio);
+
+    if ($allowuser && $useredit) { // Edit students view.
+        $toc .= '<ul>';
+        $i = 0;
+        // SYNERGY - Find the open chapter.
+        $currentch = 0;
+        $opench = 0;
+        foreach ($chapters as $ch) {
+            if (!$currentch || !$ch->subchapter) {
+                $currentch = $ch->id;
+            }
+            if ($ch->id == $chapter->id) {
+                $opench = $currentch;
+                break;
+            }
+        }
+        // SYNERGY - Find the open chapter.
+        echo '<br/>';
+        foreach ($chapters as $ch) {
+            $i++;
+            $title = trim(format_string($ch->title, true, array('context' => $context)));
+            if (!$ch->subchapter) {
+                $toc .= ($first) ? '<li>' : '</ul></li><li>';
+                if (!$ch->hidden) {
+                    $nch++;
+                    $ns = 0;
+                    // SYNERGY - Make sure the right subchapters are expanded by default.
+                    $li = '<li>';
+                    if ($ch->id == $opench || !$giportfolio->collapsesubchapters) {
+                        $li = '<li class="expanded">';
+                    }
+                    $toc .= ($first) ? $li : '</ul></li>' . $li;
+                    // SYNERGY - Make sure the right subchapters are expanded by default.
+                    if ($giportfolio->numbering == PORTFOLIO_NUM_NUMBERS) {
+                        $title = "$nch $title";
+                    }
+                } else {
+                    if ($giportfolio->numbering == PORTFOLIO_NUM_NUMBERS) {
+                        $title = "x $title";
+                    }
+                    $title = '<span class="dimmed_text">' . $title . '</span>';
+                }
+            } else {
+                $toc .= ($first) ? '<li><ul><li>' : '<li>';
+                if (!$ch->hidden) {
+                    $ns++;
+                    if ($giportfolio->numbering == PORTFOLIO_NUM_NUMBERS) {
+                        $title = "$nch.$ns $title";
+                    }
+                } else {
+                    if ($giportfolio->numbering == PORTFOLIO_NUM_NUMBERS) {
+                        $title = "x.x $title";
+                    }
+                    $title = '<span class="dimmed_text">' . $title . '</span>';
+                }
+            }
+
+            if ($ch->id == $chapter->id) {
+                $toc .= '<strong>' . $title . '</strong>';
+            } else {
+                $toc .= '<a title="' . s($title) . '" href="viewgiportfolio.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id .
+                    '&amp;useredit=1' . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">' . $title . '</a>';
+            }
+            $toc .= '&nbsp;&nbsp;';
+            $userid = ($USER->id == $mentor) ? $mentee : $userid;
+
+            if (giportfolio_check_user_chapter($ch, $userid)) {
+                if ($i != 1) {
+                    if (!giportfolio_get_first_userchapter($giportfolio->id, $ch->id, $userid)) {
+                        $toc .= ' <a title="' . get_string('up') . '" href="moveuserchapter.php?id=' . $cm->id .
+                            '&amp;chapterid=' . $ch->id . '&amp;up=1&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
+                            <img src="' . $OUTPUT->image_url('t/up') . '" class="iconsmall" alt="' . get_string('up') . '" /></a>';
+                    }
+                }
+                if ($i != count($chapters)) {
+                    $toc .= ' <a title="' . get_string('down') . '" href="moveuserchapter.php?id=' . $cm->id .
+                        '&amp;chapterid=' . $ch->id . '&amp;up=0&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '">
+                        <img src="' . $OUTPUT->image_url('t/down') . '" class="iconsmall" alt="' . get_string('down') . '" /></a>';
+                }
+
+                // if (giportfolio_check_user_chapter($ch, $userid)) {
+                    $toc .= '<a title="' . get_string('edit')
+                        . '" href="editstudent.php?cmid=' . $cm->id . '&amp;id='
+                        . $ch->id . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '"> '
+                        . '<img src="' . $OUTPUT->image_url('t/edit') . '" class="iconsmall" alt="' . get_string('edit') . '" /></a>';
+                // }
+
+                // if (giportfolio_check_user_chapter($ch, $userid)) {
+                    $toc .= ' <a title="' . get_string('delete') . '" href="deleteuserchapter.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id . '&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
+                        <img src="' . $OUTPUT->image_url('t/delete') . '" class="iconsmall" alt="' . get_string('delete') . '" /></a>';
+                // }
+            }
+
+
+            if ( giportfolio_check_user_chapter($ch, $userid) ||
+                giportfolio_get_last_chapter($giportfolio->id, $ch->id)) {
+
+                $toc .= ' <a title="' . get_string('addafter', 'mod_giportfolio') . '" href="editstudent.php?cmid=' . $cm->id .
+                    '&amp;pagenum=' . $ch->pagenum . '&amp;subchapter=' . $ch->subchapter . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
+                    <img src="' . $OUTPUT->image_url('add', 'mod_giportfolio') . '" class="iconsmall" alt="' .
+                    get_string('addafter', 'mod_giportfolio') . '" /></a>';
+            }
+
             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
             $first = 0;
         }
@@ -907,7 +1119,6 @@ function giportfolio_get_userviewtoc($chapters, $chapter, $giportfolio, $cm, $ed
     $toc .= '</div>';
 
     $toc = str_replace('<ul></ul>', '', $toc); // Cleanup of invalid structures.
-
     return $toc;
 }
 

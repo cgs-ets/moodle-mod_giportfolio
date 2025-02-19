@@ -29,8 +29,6 @@ require_once(dirname(__FILE__) . '/lib.php');
 global $CFG;
 require_once($CFG->dirroot . '/mod/giportfolio/locallib.php');
 
-
-
 function get_contribution_author($id) {
     global $DB;
 
@@ -43,11 +41,14 @@ function get_total_hours($giportfolioid, $userid) {
 
     global $DB;
 
-    $sql = "SELECT SUM (gcont.numhours)
-            FROM {giportfolio} gi
-            JOIN {giportfolio_chapters} gc ON gi.id = gc.giportfolioid
-            JOIN {giportfolio_contributions} gcont ON gcont.giportfolioid = gi.id
-            WHERE gi.id = :giportfolioid and gcont.userid = :userid";
+    $sql = "SELECT SUM(gcont.numhours) AS total_hours
+            FROM (
+                SELECT DISTINCT gcont.id, gcont.numhours
+                FROM {giportfolio} gi
+                JOIN {giportfolio_chapters} gc ON gi.id = gc.giportfolioid
+                JOIN {giportfolio_contributions} gcont ON gcont.giportfolioid = gi.id
+                WHERE gi.id = :giportfolioid AND gcont.userid = :userid
+            ) AS gcont";
 
     $params = ['giportfolioid' => $giportfolioid, 'userid' => $userid];
 
@@ -71,4 +72,33 @@ function get_total_hours_by_chapter_contribution($chapterid, $userid) {
 
     return $hoursperchapter;
 
+}
+
+// Portfolio with hours are used for service learning. Where the student will add their chapters
+// The parent portfolio will provide two chapters Begin and End.
+// The students chapters will have to be printed in between the Begin and End chapters.
+function reorder_toc($chapters) {
+
+    $studentchapters = [];
+    $newstruct = [];
+    $teacherchapters = [];
+
+    foreach ($chapters as $ch) {
+        if ($ch->userid ==  0) {
+            $teacherchapters [] = $ch;
+        } else {
+            $studentchapters[] = $ch;
+        }
+
+    }
+
+    // Reorganize chapters as: first teacher chapter, then all student chapters, then remaining teacher chapters
+    $newstruct = array_merge(
+    array_slice($teacherchapters, 0, 1), // First teacher chapter
+    $studentchapters,                   // All student chapters
+    array_slice($teacherchapters, 1) );   // Remaining teacher chapters
+    // Reindex the array by 'userid'
+    $chapters = array_column($newstruct, null, 'id');
+
+   return $chapters;
 }

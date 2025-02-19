@@ -118,7 +118,7 @@ if ($updatepref) {
 
 
 
-$perpage = get_user_preferences('giportfolio_perpage', 10);
+$perpage = get_user_preferences('giportfolio_perpage', 25);
 $quickgrade = get_user_preferences('giportfolio_quickgrade', 0);
 $filter = get_user_preferences('giportfoliot_filter', 0);
 
