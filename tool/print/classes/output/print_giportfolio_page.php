@@ -99,7 +99,7 @@ class print_giportfolio_page implements renderable, templatable {
             $data->hashours = true;
             $data->totalhours =  get_total_hours($this->giportfolio->id, $USER->id);
 
-            $this->chapters = reorder_toc($this->chapters);
+            $this->chapters = giportfolio_reorder_usertoc($this->chapters);
 
         }
 

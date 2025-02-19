@@ -79,6 +79,12 @@ $additionalchapters = giportfolio_preload_userchapters($giportfolio, $userid);
 if ($additionalchapters) {
     $chapters = $chapters + $additionalchapters;
 }
+
+// Reorder Toc when numberhours is enable
+if($giportfolio->numberhours) {
+    $chapters = giportfolio_reorder_usertoc($chapters);
+}
+
 // SYNERGY.
 
 // Check chapterid and read chapter data.

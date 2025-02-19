@@ -73,32 +73,3 @@ function get_total_hours_by_chapter_contribution($chapterid, $userid) {
     return $hoursperchapter;
 
 }
-
-// Portfolio with hours are used for service learning. Where the student will add their chapters
-// The parent portfolio will provide two chapters Begin and End.
-// The students chapters will have to be printed in between the Begin and End chapters.
-function reorder_toc($chapters) {
-
-    $studentchapters = [];
-    $newstruct = [];
-    $teacherchapters = [];
-
-    foreach ($chapters as $ch) {
-        if ($ch->userid ==  0) {
-            $teacherchapters [] = $ch;
-        } else {
-            $studentchapters[] = $ch;
-        }
-
-    }
-
-    // Reorganize chapters as: first teacher chapter, then all student chapters, then remaining teacher chapters
-    $newstruct = array_merge(
-    array_slice($teacherchapters, 0, 1), // First teacher chapter
-    $studentchapters,                   // All student chapters
-    array_slice($teacherchapters, 1) );   // Remaining teacher chapters
-    // Reindex the array by 'userid'
-    $chapters = array_column($newstruct, null, 'id');
-
-   return $chapters;
-}

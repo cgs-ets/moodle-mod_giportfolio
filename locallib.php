@@ -295,6 +295,9 @@ function giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, $edi
     $userid = ($mentor != 0 && $mentee != 0 || has_capability('mod/giportfolio:gradegiportfolios', $context)) ? $mentee : $USER->id;
 
     if ((giportfolio_get_collaborative_status($giportfolio) && !$edit) || $mentee != 0) {
+        if($giportfolio->numberhours) {
+            $chapters = giportfolio_reorder_usertoc($chapters);
+        }
         $toc = giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, $userid, $userdit, $mentor, $mentee, $contribute);
     } else {
         $toc = giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit, $mentee);
@@ -725,17 +728,13 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
                         <img src="' . $OUTPUT->image_url('t/down') . '" class="iconsmall" alt="' . get_string('down') . '" /></a>';
                 }
 
-                // if (giportfolio_check_user_chapter($ch, $userid)) {
                     $toc .= '<a title="' . get_string('edit')
                         . '" href="editstudent.php?cmid=' . $cm->id . '&amp;id='
                         . $ch->id . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '"> '
                         . '<img src="' . $OUTPUT->image_url('t/edit') . '" class="iconsmall" alt="' . get_string('edit') . '" /></a>';
-                // }
 
-                // if (giportfolio_check_user_chapter($ch, $userid)) {
                     $toc .= ' <a title="' . get_string('delete') . '" href="deleteuserchapter.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id . '&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
                         <img src="' . $OUTPUT->image_url('t/delete') . '" class="iconsmall" alt="' . get_string('delete') . '" /></a>';
-                // }
             }
 
 
@@ -3864,4 +3863,32 @@ function giportfolio_get_cumulative_hours($userid, $giportfolioid) {
     $r = $DB->get_record_sql($sql, ['userid' => $userid, 'giportfolioid' => $giportfolioid]);
 
     return number_format($r->hours, 2);
+}
+
+// Portfolio with hours are used for service learning. Where the student will add their chapters
+// The parent portfolio will provide two chapters Begin and End.
+// The students chapters will have to be printed in between the Begin and End chapters.
+function giportfolio_reorder_usertoc($chapters) {
+    $studentchapters = [];
+    $newstruct = [];
+    $teacherchapters = [];
+
+    foreach ($chapters as $ch) {
+        if ($ch->userid ==  0) {
+            $teacherchapters [] = $ch;
+        } else {
+            $studentchapters[] = $ch;
+        }
+
+    }
+
+    // Reorganize chapters as: first teacher chapter, then all student chapters, then remaining teacher chapters
+    $newstruct = array_merge(
+    array_slice($teacherchapters, 0, 1), // First teacher chapter
+    $studentchapters,                   // All student chapters
+    array_slice($teacherchapters, 1) );   // Remaining teacher chapters
+    // Reindex the array by 'userid'
+    $chapters = array_column($newstruct, null, 'id');
+
+   return $chapters;
 }
