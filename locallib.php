@@ -2983,10 +2983,11 @@ function giportfolio_get_user_generated_chapters_hours($giportfolioid, $userid, 
     // Get the chapters created by the student.
     $chapterids = giportfolio_get_chaptersids_created_by_student($giportfolioid, $userid);
     $links = '';
+    $totalhours = 0;
 
     if($chapterids) {
         // Get the chapters content.
-        $sql = "SELECT gcont.id AS 'contribid', gcont.chapterid, gchap.title, gcont.numhours
+        $sql = "SELECT gcont.id AS 'contribid', gcont.chapterid, gchap.title as chaptitle, gcont.numhours,  gcont.title as conttitle
                 FROM {giportfolio_contributions}  gcont
                 JOIN  {giportfolio_chapters} gchap
                 ON  gcont.chapterid = gchap.id
@@ -3001,21 +3002,32 @@ function giportfolio_get_user_generated_chapters_hours($giportfolioid, $userid, 
         $chapteradded = [];
 
         foreach($contributions as $contribution) {
-            $url = new moodle_url('/mod/giportfolio/viewcontribute.php', [
-                'id' => $cm->id,
-                'chapterid' => $contribution->chapterid,
-                'userid' => $userid,
-                'cont' => 'no',
-            ]);
+            if (!array_key_exists($contribution->chapterid, $chapteradded)) {
+                    $details = new stdClass();
+                    $details->totalhours = $contribution->numhours;
+                    $url = new moodle_url('/mod/giportfolio/viewcontribute.php', [
+                        'id' => $cm->id,
+                        'chapterid' => $contribution->chapterid,
+                        'userid' => $userid,
+                        'cont' => 'no',
+                    ]);
+                    $details->params =  ['href' => $url, 'target' => '_blank'];
+                    $details->chaptertitle = $contribution->chaptitle;
+                    $chapteradded[$contribution->chapterid] = $details;
+            } else {
+                ($chapteradded[$contribution->chapterid])->totalhours = ($chapteradded[$contribution->chapterid])->totalhours + $contribution->numhours;
+            }
 
-            $params = ['href' => $url, 'target' => '_blank'];
-            $hours = number_format($contribution->numhours, 2);
-            $badge = html_writer::start_span('badge badge-primary sp') . $hours . html_writer::end_span();
-            $links .= html_writer::tag("a", shorten_text($contribution->title, 20),  $params) . '  ' . $badge .'<br>';
         }
 
+        foreach ($chapteradded as $detail) {
+            $hours = number_format($detail->totalhours, 2);
+            $badge = html_writer::start_span('badge badge-primary sp') . $hours . html_writer::end_span();
+            $links .= html_writer::tag("a", shorten_text($detail->chaptertitle, 20),  $detail->params) . '  ' . $badge .'<br>';
+        }
 
     }
+
     return [$links];
 }
 function giportfolio_get_registered_hours_total_per_chapter($chaptersid, $user, $giportfolioid) {
