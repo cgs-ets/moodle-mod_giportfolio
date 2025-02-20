@@ -264,7 +264,6 @@ $templatecontext->menteementor = ($mentor != 0 || (isset($mentee) && $mentee == 
 
 echo $OUTPUT->render_from_template('mod_giportfolio/show_activity_description', $templatecontext); // Show/hide instruction button.
 
-$totalhours = 0;
 
 if ($contriblist) {
     echo $OUTPUT->box_start('giportfolio_contributions');
@@ -281,7 +280,6 @@ if ($contriblist) {
     }
 
     $contributioncount = 0;
-    $totalhours = 0;
 
     comment::init();
 
@@ -299,6 +297,8 @@ if ($contriblist) {
     $align = 'right';
     $actionsharing = [];
     $shareicon = '';
+    $totalhours = 0;
+
     foreach ($contriblist as $contrib) {
         $ismine = ($contrib->userid == $USER->id) || $mentor != 0;
         $baseurl = new moodle_url(
@@ -423,17 +423,6 @@ if ($contriblist) {
             if (empty(giportfolio_has_seen_contribution($contrib->id))) { // First time the user sees the contrib.
                 giportfolio_follow_updates_entry($contrib);
             }
-
-        }
-
-        if ($giportfolio->numberhours) {
-            $contrib->numhours = number_format($contrib->numhours , 2);
-            $cout .= html_writer::start_tag('h6', ['class' => 'giportfolio-numberhours']) . get_string('hourslabel', 'giportfolio')  . html_writer::end_tag('h6') . $contrib->numhours;
-            $cout .= html_writer::start_tag('br').html_writer::end_tag('br');
-
-            //  Sum the hours to display
-            $totalhours += $contrib->numhours;
-        }
 
 
     }
