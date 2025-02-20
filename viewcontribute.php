@@ -424,6 +424,8 @@ if ($contriblist) {
                 giportfolio_follow_updates_entry($contrib);
             }
 
+        }
+
 
     }
 
