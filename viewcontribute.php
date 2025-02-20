@@ -352,10 +352,22 @@ if ($contriblist) {
             $cout .= '<span class="badge badge-info contributor-tag"'.$hidementortag.'>'.format_string(get_string('mentorcontribution', 'mod_giportfolio')).'</span>';
             $cout .= '<span class="badge badge-success contributor-tag"'.$hideteachertag.'>'.format_string(get_string('teachercontribution', 'mod_giportfolio')).'</span> <br>';
             $cout .= date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timecreated);
+
             if ($contrib->timecreated !== $contrib->timemodified) {
                 $cout .= '<br/><i>'.get_string('lastmodified', 'mod_giportfolio').date('l jS F Y'.($giportfolio->timeofday ? ' h:i A' : ''), $contrib->timemodified).'</i>';
             }
-            $cout .= '<br/><br/>';
+
+            $cout .= html_writer::start_tag('br').html_writer::end_tag('br');
+
+            if ($giportfolio->numberhours) {
+                $contrib->numhours = number_format($contrib->numhours , 2);
+                $cout .= html_writer::start_tag('h6', ['class' => 'giportfolio-numberhours']) . get_string('hourslabel', 'giportfolio')  . html_writer::end_tag('h6') . $contrib->numhours;
+                $cout .= html_writer::start_tag('br').html_writer::end_tag('br');
+
+                //  Sum the hours to display
+                $totalhours += $contrib->numhours;
+            }
+
             $cout = html_writer::tag('contribheader', $cout);
 
 
