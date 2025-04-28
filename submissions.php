@@ -108,8 +108,8 @@ groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/giportfolio/submissions.ph
 $updatepref = optional_param('updatepref', 0, PARAM_BOOL);
 
 if ($updatepref) {
-    $perpage = optional_param('perpage', 10, PARAM_INT);
-    $perpage = ($perpage <= 0) ? 10 : $perpage;
+    $perpage = optional_param('perpage', 25, PARAM_INT);
+    $perpage = ($perpage <= 0) ? 25 : $perpage;
     $filter = optional_param('filter', 0, PARAM_INT);
     set_user_preference('giportfolio_perpage', $perpage);
     set_user_preference('giportfolio_quickgrade', optional_param('quickgrade', 0, PARAM_BOOL));

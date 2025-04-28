@@ -58,6 +58,8 @@ if ($id) {
     $id = $cm->id;
 }
 
+$showshared = $giportfolio->peersharing == 1;
+
 require_course_login($course, true, $cm);
 
 $context = context_module::instance($cm->id);
@@ -69,7 +71,6 @@ $ismentor = in_array($USER->id, giportfolio_user_mentor_of_student($mentee));
 $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context) || $ismentor;
 $allowgrade = has_capability('mod/giportfolio:gradegiportfolios', $context, $USER->id, false);
 $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Allow a teacher to make a contrib on behalf of a student.
-
 $userid = $ismentor ? $mentee : $USER->id; // To allow teachers/parents to print students portfolio.
 
 if (!is_enrolled($context, $userid, '') && !is_siteadmin() && !$allowgrade) {
@@ -102,7 +103,6 @@ if ($showshared === null) {
 } else {
     $SESSION->giportfolio_show_shared = $showshared;
 }
-
 // Read chapters.
 $chapters = giportfolio_preload_chapters($giportfolio);
 // SYNERGY - add fake user chapters.
@@ -169,7 +169,7 @@ if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid
 }
 
 $isuserchapter = (bool) $chapter->userid || $mentor != 0 || $chapter->userid == $USER->id;
-
+// var_dump($isuserchapter); exit;
 if ($isuserchapter && !$allowcontribute  && !$cangrade) {
     throw new moodle_exception('notyourchapter', 'mod_giportfolio');
 }
@@ -389,7 +389,7 @@ if ($giportfolio->peersharing && $showshared) {
         }
     }
     if ($userids) {
-        $namefields = get_all_user_name_fields(true); // TODO
+        $namefields = user_picture::fields();
         $users = $DB->get_records_list('user', 'id', $userids, '', 'id,' . $namefields);
         foreach ($users as $user) {
             $fullname = fullname($user);
@@ -547,7 +547,7 @@ if ($contriblist) {
 
         $cout .= html_writer::start_tag('br').html_writer::end_tag('br');
 
-        if ($giportfolio->numberhours) {
+        if ($giportfolio->numberhours && $ismine) {
             $contrib->numhours = number_format($contrib->numhours , 2);
             $cout .= html_writer::start_tag('h6', ['class' => 'giportfolio-numberhours']) . get_string('hourslabel', 'giportfolio')  . html_writer::end_tag('h6') . $contrib->numhours;
             $cout .= html_writer::start_tag('br').html_writer::end_tag('br');
