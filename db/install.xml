@@ -58,6 +58,8 @@
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="importsrc" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The user this chapter belongs to - 0 for chapters seen by all users"/>
+        <FIELD NAME="locked" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" />
+
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

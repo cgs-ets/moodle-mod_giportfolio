@@ -882,3 +882,13 @@ span.badge.badge-primary.sp {
         color: white;
     } */
 }
+
+/* TOC Icons styling */
+.giportfolio-toc-icon {
+  color: #888888;
+  font-weight: bold;
+}
+
+.giportfolio-toc-icon-add {
+  color: red;
+}

@@ -463,31 +463,31 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
 
             if ($i != 1) {
                 $toc .= ' <a title="' . get_string('up') . '" href="move.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id .
-                    '&amp;up=1&amp;sesskey=' . $USER->sesskey . '">
-                    <img src="' . $OUTPUT->image_url('t/up') . '" class="iconsmall" alt="' . get_string('up') . '" /></a>';
+                    '&amp;up=1&amp;sesskey=' . $USER->sesskey . '">' .
+                    $OUTPUT->pix_icon('t/up', get_string('up'), 'moodle', array('class' => 'iconsmall giportfolio-toc-icon')) . '</a>';
             }
 
             if ($i != count($chapters)) {
                 $toc .= ' <a title="' . get_string('down') . '" href="move.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id .
-                    '&amp;up=0&amp;sesskey=' . $USER->sesskey . '">
-                    <img src="' . $OUTPUT->image_url('t/down') . '" class="iconsmall" alt="' . get_string('down') . '" /></a>';
+                    '&amp;up=0&amp;sesskey=' . $USER->sesskey . '">' .
+                    $OUTPUT->pix_icon('t/down', get_string('down'), 'moodle', array('class' => 'iconsmall giportfolio-toc-icon')) . '</a>';
             }
 
-            $toc .= ' <a title="' . get_string('edit') . '" href="edit.php?cmid=' . $cm->id . '&amp;id=' . $ch->id . '">
-            <img src="' . $OUTPUT->image_url('t/edit') . '" class="iconsmall" alt="' . get_string('edit') . '" /></a>';
+            $toc .= ' <a title="' . get_string('edit') . '" href="edit.php?cmid=' . $cm->id . '&amp;id=' . $ch->id . '">' .
+            $OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle', array('class' => 'iconsmall giportfolio-toc-icon')) . '</a>';
 
             $toc .= ' <a title="' . get_string('delete') . '" href="delete.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id .
-                '&amp;sesskey=' . $USER->sesskey . '">
-                <img src="' . $OUTPUT->image_url('t/delete') . '" class="iconsmall" alt="' . get_string('delete') . '" /></a>';
+                '&amp;sesskey=' . $USER->sesskey . '">' .
+                $OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle', array('class' => 'iconsmall giportfolio-toc-icon')) . '</a>';
 
             if ($ch->hidden) {
                 $toc .= ' <a title="' . get_string('show') . '" href="show.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id .
-                    '&amp;sesskey=' . $USER->sesskey . '">
-                    <img src="' . $OUTPUT->image_url('t/show') . '" class="iconsmall" alt="' . get_string('show') . '" /></a>';
+                    '&amp;sesskey=' . $USER->sesskey . '">' .
+                    $OUTPUT->pix_icon('t/show', get_string('show'), 'moodle', array('class' => 'iconsmall giportfolio-toc-icon')) . '</a>';
             } else {
                 $toc .= ' <a title="' . get_string('hide') . '" href="show.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id .
-                    '&amp;sesskey=' . $USER->sesskey . '">
-                    <img src="' . $OUTPUT->image_url('t/hide') . '" class="iconsmall" alt="' . get_string('hide') . '" /></a>';
+                    '&amp;sesskey=' . $USER->sesskey . '">' .
+                    $OUTPUT->pix_icon('t/hide', get_string('hide'), 'moodle', array('class' => 'iconsmall giportfolio-toc-icon')) . '</a>';
             }
 
             $data = new stdClass(); // Collects data for lock function.
@@ -539,9 +539,8 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
 
             // Synergy  only if the giportfolio activity has not yet contributions.
             $toc .= ' <a title="' . get_string('addafter', 'mod_giportfolio') . '" href="edit.php?cmid=' . $cm->id .
-                '&amp;pagenum=' . $ch->pagenum . '&amp;subchapter=' . $ch->subchapter . '">
-                <img src="' . $OUTPUT->image_url('add', 'mod_giportfolio') . '" class="iconsmall" alt="' .
-                get_string('addafter', 'mod_giportfolio') . '" /></a>';
+                '&amp;pagenum=' . $ch->pagenum . '&amp;subchapter=' . $ch->subchapter . '">' .
+                $OUTPUT->pix_icon('t/add', get_string('addafter', 'mod_giportfolio'), 'moodle', array('class' => 'iconsmall giportfolio-toc-icon-add')) . '</a>';
             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
             $first = 0;
         }
