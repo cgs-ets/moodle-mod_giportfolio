@@ -1,5 +1,5 @@
 {
-    "plugintypes": {
-        "giportfoliotool": "mod\/giportfolio\/tool"
+    "subplugintypes": {
+        "giportfoliotool": "\/tool"
     }
 }
