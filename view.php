@@ -150,9 +150,15 @@ if ($allowcontribute) {  // Student.
         if ($usergrade->items && $userfinalgrade->grade) {
             $percentage = explode("/", $userfinalgrade->str_long_grade);
             $percentage[0] = floatval($percentage[0]);
-            $percentage[1] = floatval($percentage[1]);
-            $viewdata->usergraded = get_string('usergraded', 'mod_giportfolio') . number_format($userfinalgrade->grade, 2) .
+
+            if ($percentage[1] > 0) {
+                $percentage[1] = floatval($percentage[1]);
+                $viewdata->usergraded = get_string('usergraded', 'mod_giportfolio') . number_format($userfinalgrade->grade, 2) .
                 '  (' . $userfinalgrade->str_long_grade . ') - ' . round(($percentage[0] / $percentage[1]) * 100, 4) . '%';
+            }
+
+
+
             if ($userfinalgrade->feedback) {
                 $viewdata->finalfeedback = get_string('usergradefeedback', 'mod_giportfolio') . $userfinalgrade->feedback;
             }
@@ -217,7 +223,7 @@ $viewdata->teacher = $allowedit || $allowviewgiportfolios;
 $viewdata->teacherandmentor = $teacherandmentor;
 $viewdata->mentor = $mentor;
 $viewdata->playbutton = ($allowcontribute || $allowedit || $allowviewgiportfolios) && !$mentor;
-$viewdata->playbuttonurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id, 'sesskey' => $USER->sesskey));
+$viewdata->playbuttonurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id));
 $viewdata->playparentbutton = $mentor;
 $viewdata->skipintro = $giportfolio->skipintro;
 $viewdata->intro = format_text($intro, FORMAT_MOODLE, array('noclean' => true, 'context' => $context));
