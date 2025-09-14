@@ -102,4 +102,11 @@ class chapter_viewed extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'giportfolio_chapters';
     }
+
+    /**
+     * Get objectid mapping
+     */
+    public static function get_objectid_mapping() {
+        return ['db' => 'giportfolio_chapters', 'restore' => 'giportfolio_chapter'];
+    }
 }
