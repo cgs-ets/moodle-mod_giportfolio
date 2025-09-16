@@ -62,4 +62,16 @@ class course_module_viewed extends \core\event\course_module_viewed {
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'giportfolio';
     }
+
+    /**
+     * Validate data
+     */
+    protected function validate_data() {
+        parent::validate_data();
+        
+        if (empty($this->objectid)) {
+            throw new \coding_exception('The \'objectid\' value must be set.');
+        }
+    }
+
 }

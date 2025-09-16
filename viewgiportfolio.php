@@ -36,7 +36,11 @@ $useredit = optional_param('useredit', 0, PARAM_BOOL); // Edit mode.
 $showshared = optional_param('showshared', null, PARAM_BOOL);
 $mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID.
 $mentee = optional_param('mentee', 0, PARAM_INT);
-$contribute = optional_param('cont', 'no', PARAM_RAW); // When teacher is contributing.
+$contribute = optional_param('cont', 'no', PARAM_ALPHA); // When teacher is contributing.
+// Validate contribute parameter against allowed values.
+if (!in_array($contribute, ['yes', 'no'])) {
+    $contribute = 'no';
+}
 $h = optional_param('h', 0, PARAM_INT);
 
 
@@ -72,6 +76,7 @@ $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context) |
 $allowgrade = has_capability('mod/giportfolio:gradegiportfolios', $context, $USER->id, false);
 $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Allow a teacher to make a contrib on behalf of a student.
 $userid = $ismentor ? $mentee : $USER->id; // To allow teachers/parents to print students portfolio.
+
 
 if (!is_enrolled($context, $userid, '') && !is_siteadmin() && !$allowgrade) {
     print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
@@ -389,7 +394,7 @@ if ($giportfolio->peersharing && $showshared) {
         }
     }
     if ($userids) {
-        $namefields = user_picture::fields();
+        $namefields = implode(',', \core_user\fields::for_userpic()->get_required_fields([]));
         $users = $DB->get_records_list('user', 'id', $userids, '', 'id,' . $namefields);
         foreach ($users as $user) {
             $fullname = fullname($user);

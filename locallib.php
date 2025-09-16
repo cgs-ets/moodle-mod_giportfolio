@@ -540,7 +540,7 @@ function giportfolio_get_toc($chapters, $chapter, $giportfolio, $cm, $edit) {
             // Synergy  only if the giportfolio activity has not yet contributions.
             $toc .= ' <a title="' . get_string('addafter', 'mod_giportfolio') . '" href="edit.php?cmid=' . $cm->id .
                 '&amp;pagenum=' . $ch->pagenum . '&amp;subchapter=' . $ch->subchapter . '">' .
-                $OUTPUT->pix_icon('t/add', get_string('addafter', 'mod_giportfolio'), 'moodle', array('class' => 'iconsmall giportfolio-toc-icon-add')) . '</a>';
+                '<i class="fa fa-plus text-danger" title="' . get_string('addafter', 'mod_giportfolio') . '"></i>' . '</a>';
             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
             $first = 0;
         }
@@ -718,22 +718,22 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
                     if (!giportfolio_get_first_userchapter($giportfolio->id, $ch->id, $userid)) {
                         $toc .= ' <a title="' . get_string('up') . '" href="moveuserchapter.php?id=' . $cm->id .
                             '&amp;chapterid=' . $ch->id . '&amp;up=1&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
-                            <img src="' . $OUTPUT->image_url('t/up') . '" class="iconsmall" alt="' . get_string('up') . '" /></a>';
+                            ' . $OUTPUT->pix_icon('t/up', get_string('up'), 'moodle', array('class' => 'iconsmall')) . '</a>';
                     }
                 }
                 if ($i != count($chapters)) {
                     $toc .= ' <a title="' . get_string('down') . '" href="moveuserchapter.php?id=' . $cm->id .
                         '&amp;chapterid=' . $ch->id . '&amp;up=0&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '">
-                        <img src="' . $OUTPUT->image_url('t/down') . '" class="iconsmall" alt="' . get_string('down') . '" /></a>';
+                        ' . $OUTPUT->pix_icon('t/down', get_string('down'), 'moodle', array('class' => 'iconsmall')) . '</a>';
                 }
 
                     $toc .= '<a title="' . get_string('edit')
                         . '" href="editstudent.php?cmid=' . $cm->id . '&amp;id='
                         . $ch->id . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '"> '
-                        . '<img src="' . $OUTPUT->image_url('t/edit') . '" class="iconsmall" alt="' . get_string('edit') . '" /></a>';
+                        . '' . $OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle', array('class' => 'iconsmall')) . '</a>';
 
                     $toc .= ' <a title="' . get_string('delete') . '" href="deleteuserchapter.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id . '&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
-                        <img src="' . $OUTPUT->image_url('t/delete') . '" class="iconsmall" alt="' . get_string('delete') . '" /></a>';
+                        ' . $OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle', array('class' => 'iconsmall')) . '</a>';
             }
 
 
@@ -742,8 +742,7 @@ function giportfolio_get_usertoc($chapters, $chapter, $giportfolio, $cm, $edit, 
 
                 $toc .= ' <a title="' . get_string('addafter', 'mod_giportfolio') . '" href="editstudent.php?cmid=' . $cm->id .
                     '&amp;pagenum=' . $ch->pagenum . '&amp;subchapter=' . $ch->subchapter . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
-                    <img src="' . $OUTPUT->image_url('add', 'mod_giportfolio') . '" class="iconsmall" alt="' .
-                    get_string('addafter', 'mod_giportfolio') . '" /></a>';
+                    ' . '<i class="fa fa-plus text-danger" title="' . get_string('addafter', 'mod_giportfolio') . '"></i>' . '</a>';
             }
 
             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
@@ -924,25 +923,25 @@ function giportfolio_get_usertoc_2($chapters, $chapter, $giportfolio, $cm, $edit
                     if (!giportfolio_get_first_userchapter($giportfolio->id, $ch->id, $userid)) {
                         $toc .= ' <a title="' . get_string('up') . '" href="moveuserchapter.php?id=' . $cm->id .
                             '&amp;chapterid=' . $ch->id . '&amp;up=1&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
-                            <img src="' . $OUTPUT->image_url('t/up') . '" class="iconsmall" alt="' . get_string('up') . '" /></a>';
+                            ' . $OUTPUT->pix_icon('t/up', get_string('up'), 'moodle', array('class' => 'iconsmall')) . '</a>';
                     }
                 }
                 if ($i != count($chapters)) {
                     $toc .= ' <a title="' . get_string('down') . '" href="moveuserchapter.php?id=' . $cm->id .
                         '&amp;chapterid=' . $ch->id . '&amp;up=0&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '">
-                        <img src="' . $OUTPUT->image_url('t/down') . '" class="iconsmall" alt="' . get_string('down') . '" /></a>';
+                        ' . $OUTPUT->pix_icon('t/down', get_string('down'), 'moodle', array('class' => 'iconsmall')) . '</a>';
                 }
 
                 // if (giportfolio_check_user_chapter($ch, $userid)) {
                     $toc .= '<a title="' . get_string('edit')
                         . '" href="editstudent.php?cmid=' . $cm->id . '&amp;id='
                         . $ch->id . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '"> '
-                        . '<img src="' . $OUTPUT->image_url('t/edit') . '" class="iconsmall" alt="' . get_string('edit') . '" /></a>';
+                        . '' . $OUTPUT->pix_icon('t/edit', get_string('edit'), 'moodle', array('class' => 'iconsmall')) . '</a>';
                 // }
 
                 // if (giportfolio_check_user_chapter($ch, $userid)) {
                     $toc .= ' <a title="' . get_string('delete') . '" href="deleteuserchapter.php?id=' . $cm->id . '&amp;chapterid=' . $ch->id . '&amp;sesskey=' . $USER->sesskey . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
-                        <img src="' . $OUTPUT->image_url('t/delete') . '" class="iconsmall" alt="' . get_string('delete') . '" /></a>';
+                        ' . $OUTPUT->pix_icon('t/delete', get_string('delete'), 'moodle', array('class' => 'iconsmall')) . '</a>';
                 // }
             }
 
@@ -952,8 +951,7 @@ function giportfolio_get_usertoc_2($chapters, $chapter, $giportfolio, $cm, $edit
 
                 $toc .= ' <a title="' . get_string('addafter', 'mod_giportfolio') . '" href="editstudent.php?cmid=' . $cm->id .
                     '&amp;pagenum=' . $ch->pagenum . '&amp;subchapter=' . $ch->subchapter . '&amp;mentor=' . $mentor . '&amp;mentee=' . $mentee . '&amp;cont=' . $contribute . '">
-                    <img src="' . $OUTPUT->image_url('add', 'mod_giportfolio') . '" class="iconsmall" alt="' .
-                    get_string('addafter', 'mod_giportfolio') . '" /></a>';
+                    ' . '<i class="fa fa-plus text-danger" title="' . get_string('addafter', 'mod_giportfolio') . '"></i>' . '</a>';
             }
 
             $toc .= (!$ch->subchapter) ? '<ul>' : '</li>';
@@ -1265,7 +1263,7 @@ function giportfolio_adduser_fake_block($userid, $giportfolio, $cm, $courseid, $
 
     require_once($CFG->libdir . '/gradelib.php');
 
-    $ufields = user_picture::fields('u');
+    $ufields = \core_user\fields::for_userpic()->get_sql('u', false, '', '', false)->selects;
 
     $select = "SELECT $ufields ";
 
@@ -1580,7 +1578,7 @@ function giportfolio_user_is_mentor($context, $user) {
     global $DB;
 
     if (!is_enrolled($context, $user)) {
-        $userfields = user_picture::fields('u'); // TODO: Fix to use the new way to get this fields
+        $userfields = \core_user\fields::for_userpic()->get_sql('u', false, '', '', false)->selects;
 
         $sql = "SELECT u.id, $userfields
                 FROM {role_assignments} ra, {context} c, {user} u
@@ -1679,7 +1677,7 @@ function giportfolio_who_can_contribute_details($menteeid) {
     $mentorsid = giportfolio_get_mentees_mentor($menteeid);
     if (!empty($mentorsid)) {
 
-        $ufields = user_picture::fields('u');
+        $ufields = \core_user\fields::for_userpic()->get_sql('u', false, '', '', false)->selects;
         $sql = "SELECT $ufields FROM {user} u WHERE u.id IN ($mentorsid)";
         $mentors = $DB->get_records_sql($sql);
         $mentorpictures = '';
@@ -1702,9 +1700,10 @@ function giportfolio_has_seen_contribution($contributionid) {
     global $DB, $USER;
 
     $sql = "SELECT chapterid
-            FROM mdl_giportfolio_follow_updates
-            WHERE contributionid = $contributionid and userid = $USER->id;";
-    $r = $DB->get_records_sql($sql);
+            FROM {giportfolio_follow_updates}
+            WHERE contributionid = ? AND userid = ?";
+    $params = array($contributionid, $USER->id);
+    $r = $DB->get_records_sql($sql, $params);
 
     return $r;
 }
@@ -1842,8 +1841,9 @@ function giportfolio_add_entry_from_teacher_send_notification($userid, $cm, $gip
     $d = new stdClass();
     $d->teacher = fullname($USER);
 
-    $sql = "SELECT *  FROM mdl_user WHERE id = $userid";
-    $std = $DB->get_records_sql($sql);
+    $sql = "SELECT * FROM {user} WHERE id = ?";
+    $params = array($userid);
+    $std = $DB->get_records_sql($sql, $params);
     $d->student = ($std[$userid])->firstname . ' ' . ($std[$userid])->lastname;
 
     $subj = get_string('notifyaddentryteacher_subject', 'mod_giportfolio', $d);
@@ -1915,7 +1915,6 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
     // Look for chapters created by the student.
     $studentchapterctx = new stdClass();
     $studentchapterctx->shortext = shorten_text(get_string('additionstitle', 'giportfolio'));
-    $studentchapterctx->icon = $OUTPUT->image_url('addition_icon', 'mod_giportfolio');
 
     // Look for chapters created by the student.
     $titles[] = $OUTPUT->render_from_template('mod_giportfolio/chapter_created_by_student', $studentchapterctx);
@@ -2003,7 +2002,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
 
     $table->finish_html();
 
-    $iconaddition   = html_writer::img($OUTPUT->image_url('addition_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
+    $iconaddition   = '<i class="fa fa-plus text-danger"></i>';
     $iconchapter    = html_writer::img($OUTPUT->image_url('chapter', 'mod_giportfolio'), '', ['class' => 'icon']);
     $iconsubchapter = html_writer::img($OUTPUT->image_url('subchapter_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
     $iconimported   = html_writer::img($OUTPUT->image_url('import_icon', 'mod_giportfolio'), '', ['class' => 'icon']);
@@ -2156,8 +2155,9 @@ function giportfolio_reminder_table($PAGE, $allusers, $context, $username, $list
                     fullname($puser, has_capability('moodle/site:viewfullnames', $context)) . '</a>';
                 $checkboxes = giportfolio_reminder_checkbox($puser);
                 $offset++;
-                $sql = "SELECT *  FROM mdl_giportfolio_reminder_sent WHERE userid = $puser->id AND chapterid = $chapterid;";
-                if ($chapters = $DB->get_record_sql($sql)) {
+                $sql = "SELECT * FROM {giportfolio_reminder_sent} WHERE userid = ? AND chapterid = ?";
+                $params = array($puser->id, $chapterid);
+                if ($chapters = $DB->get_record_sql($sql, $params)) {
 
                     $datemod = userdate($chapters->timemodified, get_string('strftimedaydate', 'core_langconfig'));
                     $row = array_merge($checkboxes, [$picture, $userlink, $reminder, $datemod]);
@@ -2351,10 +2351,10 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
                 }
 
                 $sql = "SELECT *
-                        FROM mdl_giportfolio_reminder_sent
-                        WHERE userid IN ($puser->parentsid) AND chapterid = $chapterid;";
+                        FROM {giportfolio_reminder_sent}
+                        WHERE userid IN ($puser->parentsid) AND chapterid = ?";
 
-                if ($chapters = $DB->get_record_sql($sql)) {
+                if ($chapters = $DB->get_record_sql($sql, array($chapterid))) {
                     $datemod = userdate($chapters->timemodified, get_string('strftimedaydate', 'core_langconfig'));
                     $row = array_merge($pouts, array($picture, $reminder, $datemod));
                 } else {
@@ -2502,12 +2502,12 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
     if ($usercontrib != '') {
         // Get all the contributions done by this user seen by the teacher.
         $sql = "SELECT contributionid, chapterid
-                FROM mdl_giportfolio_follow_updates
-                WHERE userid = $USER->id AND contributionid  IN ($usercontrib) AND giportfolioid = $giportfolio->id";
+                FROM {giportfolio_follow_updates}
+                WHERE userid = ? AND contributionid  IN ($usercontrib) AND giportfolioid = ?";
 
-        $contributionsseen = $DB->get_records_sql($sql);
+        $contributionsseen = $DB->get_records_sql($sql, array($USER->id, $giportfolio->id));
         $usercontrib = explode(',', $usercontrib); // Convert string to array again.
-        $contributionsnotseen = array_diff($usercontrib, array_keys($DB->get_records_sql($sql))); // Id's of the contributions not seen.
+        $contributionsnotseen = array_diff($usercontrib, array_keys($DB->get_records_sql($sql, array($USER->id, $giportfolio->id)))); // Id's of the contributions not seen.
         $cnotseen = [];
 
         foreach ($contributions as $contribution) {
@@ -2540,8 +2540,9 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
             } else {
                 $parentandstudent = $user->id;
             }
-            $sql = "SELECT id FROM mdl_giportfolio_reminder_sent WHERE userid IN ($parentandstudent) AND chapterid = $chapterid;";
-            if ($DB->get_records_sql($sql)) {
+            $sql = "SELECT id FROM {giportfolio_reminder_sent} WHERE userid IN ($parentandstudent) AND chapterid = ?";
+            $params = array($chapterid);
+            if ($DB->get_records_sql($sql, $params)) {
                 $links[] = html_writer::tag('a', "$reminder", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
             } else {
                 if (count($teachercontributions) > 0 && in_array($chapterid, $teachercontributions)) {
@@ -2609,9 +2610,9 @@ function giportfolio_get_contributions_to_display($chaptersid, $giportfolio, $us
                 $parentandstudent = $user->id;
             }
 
-            $sql = "SELECT id FROM mdl_giportfolio_reminder_sent WHERE userid IN ($parentandstudent) AND chapterid = $chapterid;";
+            $sql = "SELECT id FROM {giportfolio_reminder_sent} WHERE userid IN ($parentandstudent) AND chapterid = ?";
 
-            if ($DB->get_record_sql($sql)) {
+            if ($DB->get_record_sql($sql, array($chapterid))) {
                 $links[] = html_writer::tag('a', "$reminder", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
             } else {
                 $links[] = html_writer::tag('a', "$nocontribution", ['href' => $url, 'target' => '_blank', 'data-chid' => $chapterid]);
@@ -2639,9 +2640,9 @@ function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $useri
     global $DB, $PAGE, $USER;
 
     // Collect the chapters created by the student.
-    $sql = "SELECT id FROM mdl_giportfolio_chapters WHERE giportfolioid = $giportfolioid AND userid = $userid;";
-
-    $chapters = $DB->get_records_sql($sql);
+    $sql = "SELECT id FROM {giportfolio_chapters} WHERE giportfolioid = ? AND userid = ?";
+    $params = array($giportfolioid, $userid);
+    $chapters = $DB->get_records_sql($sql, $params);
     $chapterids = implode(',', array_keys($chapters));
     $contributionsseen = [];
     $links = '';
@@ -2649,22 +2650,23 @@ function giportfolio_get_user_generated_chapters_not_seen($giportfolioid, $useri
 
     if ($chapterids) {
 
-        $sql = "SELECT id FROM mdl_giportfolio_contributions WHERE giportfolioid = $giportfolioid AND userid = $userid AND chapterid IN ($chapterids)";
-        $cids = $DB->get_records_sql($sql);
+        $sql = "SELECT id FROM {giportfolio_contributions} WHERE giportfolioid = ? AND userid = ? AND chapterid IN ($chapterids)";
+        $params = array($giportfolioid, $userid);
+        $cids = $DB->get_records_sql($sql, $params);
 
         if ($cids) {
-            $cids = implode(',', array_keys($DB->get_records_sql($sql)));
-            $sql = "SELECT contributionid FROM mdl_giportfolio_follow_updates
-                    WHERE userid = $USER->id AND contributionid  IN ($cids) AND giportfolioid = $giportfolioid";
-            $contributionsseen = array_keys($DB->get_records_sql($sql));
+            $cids = implode(',', array_keys($DB->get_records_sql($sql, $params)));
+            $sql = "SELECT contributionid FROM {giportfolio_follow_updates}
+                    WHERE userid = ? AND contributionid  IN ($cids) AND giportfolioid = ?";
+            $contributionsseen = array_keys($DB->get_records_sql($sql, array($USER->id, $giportfolioid)));
         }
 
         // In case the chapter has no content, by pass it.
-        $sql = "SELECT gcont.id AS 'contribid', gcont.chapterid, gchap.title FROM mdl_giportfolio_contributions AS gcont
-                JOIN  mdl_giportfolio_chapters AS gchap on  gcont.chapterid = gchap.id
-                WHERE gcont.giportfolioid = $giportfolioid AND gcont.userid = $userid AND gcont.chapterid IN ($chapterids)";
+        $sql = "SELECT gcont.id AS 'contribid', gcont.chapterid, gchap.title FROM {giportfolio_contributions} AS gcont
+                JOIN  {giportfolio_chapters} AS gchap on  gcont.chapterid = gchap.id
+                WHERE gcont.giportfolioid = ? AND gcont.userid = ? AND gcont.chapterid IN ($chapterids)";
 
-        $countcontributions = $DB->get_records_sql($sql);
+        $countcontributions = $DB->get_records_sql($sql, array($giportfolioid, $userid));
         $chaptercontributions = [];
         $unseencontribution = html_writer::span('<i class = "fa fa-square-o fa-fw"></i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('unseencontrib', 'mod_giportfolio')]);
         $seencontribution = html_writer::span('<i class = "fa fa-check-square-o fa-fw"></i>', '', ['class' => 'giportfolio-legend', 'title' => get_string('seencontrib', 'mod_giportfolio')]);
@@ -2774,8 +2776,9 @@ function giportfolio_count_new_or_seencontributions_for_chapter($chapterid, $con
 function giportfolio_count_contributions_comments($contributionid) {
     global $DB;
 
-    $sql = "SELECT * FROM mdl_comments WHERE itemid = $contributionid;";
-    $total = count($DB->get_records_sql($sql));
+    $sql = "SELECT * FROM {comments} WHERE itemid = ?";
+    $params = array($contributionid);
+    $total = count($DB->get_records_sql($sql, $params));
 
     return $total;
 }
@@ -2820,7 +2823,6 @@ function giportfolio_registeredhours_content($allusers, $context, $username, $li
 
     $studentchapterctx = new stdClass();
     $studentchapterctx->shortext = shorten_text(get_string('additionstitle', 'giportfolio'));
-    $studentchapterctx->icon = $OUTPUT->image_url('addition_icon', 'mod_giportfolio');
 
     // Look for chapters created by the student.
     $titles[] = $OUTPUT->render_from_template('mod_giportfolio/chapter_created_by_student', $studentchapterctx);
@@ -3058,13 +3060,13 @@ function giportfolio_get_registered_hours_total_per_chapter($chaptersid, $user, 
 function giportfolio_get_last_chapter_seen($giportfolio) {
 
     global $DB, $USER;
-    $sql = "SELECT chapterid FROM mdl_giportfolio_last_seen WHERE userid = $USER->id AND giportfolioid = $giportfolio->id";
-    $record = $DB->get_record_sql($sql);
+    $sql = "SELECT chapterid FROM {giportfolio_last_seen} WHERE userid = ? AND giportfolioid = ?";
+    $record = $DB->get_record_sql($sql, array($USER->id, $giportfolio->id));
 
     if ($record) {  // Maybe the chapter was  hidden after the user saw it.
 
-        $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE id = $record->chapterid AND hidden = 0";
-        $record = $DB->get_records_sql($sql);
+        $sql = "SELECT * FROM {giportfolio_chapters} WHERE id = ? AND hidden = 0";
+        $record = $DB->get_records_sql($sql, array($record->chapterid));
 
         if ($record) {
             return $record;
@@ -3077,8 +3079,8 @@ function giportfolio_get_last_chapter_seen($giportfolio) {
 function giportfolio_all_chapters_hidden($giportfolio) {
     global $DB;
 
-    $sql = "SELECT * FROM mdl_giportfolio_chapters WHERE  giportfolioid = $giportfolio->id and userid = 0;";
-    $chapters = $DB->get_records_sql($sql);
+    $sql = "SELECT * FROM {giportfolio_chapters} WHERE  giportfolioid = ? and userid = 0";
+    $chapters = $DB->get_records_sql($sql, array($giportfolio->id));
     $counthidden = 0;
 
     foreach ($chapters as $chapter) {
@@ -3093,8 +3095,8 @@ function giportfolio_all_chapters_hidden($giportfolio) {
 function giportfolio_remove_last_chapter_seen($chapter){
     global $DB;
 
-    $sql = "SELECT id FROM mdl_giportfolio_last_seen WHERE chapterid = $chapter->id";
-    $record = $DB->get_records_sql($sql);
+    $sql = "SELECT id FROM {giportfolio_last_seen} WHERE chapterid = ?";
+    $record = $DB->get_records_sql($sql, array($chapter->id));
     $ids = implode(', ', array_keys($record));
 
     if (!empty($ids)) {
@@ -3525,6 +3527,9 @@ function giportfolio_table_columns($giportfolioid, $context) {
     $extrafieldnames = array();
     $showgradecol = false;
     $extrafields = \core_user\fields::for_userpic()->excluding('id', 'firstname', 'lastname', 'lastnamephonetic', 'firstnamephonetic', 'middlename', 'alternatename', 'description', 'email', 'imagealt')->get_required_fields();
+    if (!is_array($extrafields)) {
+        $extrafields = array();
+    }
 
     foreach ($extrafields as $field) {
         $extrafieldnames[] =  \core_user\fields::get_display_name($field);
@@ -3561,10 +3566,10 @@ function giportfolio_table_columns($giportfolioid, $context) {
 function giportfolio_get_giportfolio_chaptertitle($giportfolioid) {
     global $DB;
 
-    $sql = "SELECT   id  as  chapterid, title  FROM mdl_giportfolio_chapters
-    WHERE  giportfolioid = {$giportfolioid}  AND userid = 0";   // Just bring the chapters created by the teacher.
+    $sql = "SELECT   id  as  chapterid, title  FROM {giportfolio_chapters}
+    WHERE  giportfolioid = ?  AND userid = 0";   // Just bring the chapters created by the teacher.
 
-    return  $DB->get_records_sql($sql);
+    return  $DB->get_records_sql($sql, array($giportfolioid));
 }
 
 // Send notifications when a teacher/student makes a comment. CGS custom.
@@ -3575,12 +3580,12 @@ function giportfolio_send_comment_notification($contributionid) {
     $sql = "SELECT cont.id, gp.id AS 'giportfolioid', gp.name, gc.id AS 'chapterid',
             gc.title,  cont.title AS 'contributiontitle', cont.userid, gp.allowmentorcontrib,
             gp.notifycommententry, gp.notifycommententryteacher
-            FROM mdl_giportfolio AS gp
-            JOIN mdl_giportfolio_chapters AS gc ON gp.id = gc.giportfolioid
-            JOIN mdl_giportfolio_contributions AS cont ON cont.chapterid = gc.id
-            WHERE cont.id =  $contributionid;";
+            FROM {giportfolio} AS gp
+            JOIN {giportfolio_chapters} AS gc ON gp.id = gc.giportfolioid
+            JOIN {giportfolio_contributions} AS cont ON cont.chapterid = gc.id
+            WHERE cont.id = ?";
 
-    $contribution = $DB->get_records_sql($sql);
+    $contribution = $DB->get_records_sql($sql, array($contributionid));
 
     $giportfolioid = ($contribution[$contributionid])->giportfolioid;
     $cm = get_coursemodule_from_instance("giportfolio", $giportfolioid, $COURSE->id, false, MUST_EXIST);
@@ -3727,9 +3732,9 @@ function giportfolio_send_reminder($data) {
 
         if ($result != false) {
             $chid = $data->chapter->chapterid;
-            $sql = "SELECT id FROM mdl_giportfolio_reminder_sent WHERE userid = $user->id AND chapterid = $chid ;";
+            $sql = "SELECT id FROM {giportfolio_reminder_sent} WHERE userid = ? AND chapterid = ? ";
 
-            if (!$DB->get_record_sql($sql)) { // Only add it once.
+            if (!$DB->get_record_sql($sql, array($user->id, $chid))) { // Only add it once.
                 $record = new stdClass();
                 $record->giportfolioid = $data->chapter->portfolioid;
                 $record->chapterid = $data->chapter->chapterid;
@@ -3778,10 +3783,10 @@ function giportfolio_get_students_with_no_contributions($chapterid, $giportfolio
     global $DB;
 
     $sql = "SELECT distinct userid
-            FROM mdl_giportfolio_contributions
-            WHERE  giportfolioid = $giportfolioid AND chapterid = $chapterid;";
+            FROM {giportfolio_contributions}
+            WHERE  giportfolioid = ? AND chapterid = ?";
 
-    $r = $DB->get_records_sql($sql);
+    $r = $DB->get_records_sql($sql, array($giportfolioid, $chapterid));
     $userids = array_keys($r);
 
     return $userids;
@@ -3842,7 +3847,7 @@ function filter_student_with_contribution($data) {
     global $DB;
 
     // Get the contributions made by the student.
-    $sql = "SELECT userid FROM mdl_giportfolio_contributions WHERE chapterid = ? AND giportfolioid = ?";
+    $sql = "SELECT userid FROM {giportfolio_contributions} WHERE chapterid = ? AND giportfolioid = ?";
     $params = ['chapterid' => $data->chapterid, 'giportfolioid' => $data->giportfolioid];
 
     $result = $DB->get_records_sql($sql, $params);
@@ -3867,7 +3872,7 @@ function giportfolio_get_cumulative_hours($userid, $giportfolioid) {
     global $DB;
 
     $sql = "SELECT SUM(numhours) as hours
-            FROM mdl_giportfolio_contributions
+            FROM {giportfolio_contributions}
             WHERE userid = :userid
             AND giportfolioid = :giportfolioid";
 

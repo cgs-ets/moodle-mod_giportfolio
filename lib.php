@@ -590,7 +590,7 @@ function giportfolio_extend_settings_navigation(settings_navigation $settingsnav
     ) {
 
         $useredit = optional_param('useredit', 0, PARAM_BOOL); // Edit mode.
-        $urlparams = array('id' => $params['id'], 'chapterid' => $params['chapterid'], 'sesskey' => sesskey());
+        $urlparams = array('id' => $params['id'], 'chapterid' => $params['chapterid']);
         // $edit = 0;
         if (!empty($useredit)) {
             $tocedit = get_string('stopedit', 'mod_giportfolio');

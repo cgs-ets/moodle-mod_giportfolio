@@ -64,17 +64,6 @@ class giportfolio_printed extends \core\event\base {
         return "The user with id '$this->userid' has printed the giportfolio with course module id '$this->contextinstanceid'.";
     }
 
-    /**
-     * Return the legacy event log data.
-     *
-     * @return array|null
-     */
-    protected function get_legacy_logdata() {
-        return array(
-            $this->courseid, 'giportfolio', 'print', 'tool/print/index.php?id=' . $this->contextinstanceid,
-            $this->objectid, $this->contextinstanceid
-        );
-    }
 
     /**
      * Return localised event name.
@@ -103,5 +92,16 @@ class giportfolio_printed extends \core\event\base {
         $this->data['crud'] = 'r';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = 'giportfolio';
+    }
+
+    /**
+     * Validate data
+     */
+    protected function validate_data() {
+        parent::validate_data();
+        
+        if (empty($this->objectid)) {
+            throw new \coding_exception('The \'objectid\' value must be set.');
+        }
     }
 }

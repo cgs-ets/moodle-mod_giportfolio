@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/giportfolio/db" VERSION="20240801" COMMENT="XMLDB file for Moodle mod_giportfolio"
+<XMLDB PATH="mod/giportfolio/db" VERSION="20250915" COMMENT="XMLDB file for Moodle mod_giportfolio"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -58,8 +58,7 @@
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="importsrc" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="The user this chapter belongs to - 0 for chapters seen by all users"/>
-        <FIELD NAME="locked" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" />
-
+        <FIELD NAME="locked" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -83,6 +82,7 @@
         <FIELD NAME="mentorid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="stores the id of a contributor that is a mentor"/>
         <FIELD NAME="teacherid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Id of the teacher that does a contribution on behalf of a student"/>
         <FIELD NAME="shared" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Is this contribution visible to other students"/>
+        <FIELD NAME="numhours" TYPE="number" LENGTH="15" NOTNULL="false" SEQUENCE="false" DECIMALS="2"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

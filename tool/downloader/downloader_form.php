@@ -31,6 +31,7 @@ class downloader_form extends moodleform {
         $mform->addElement('hidden', 'id', $this->_customdata['id']);
         $mform->addElement('hidden', 'chapterid', $this->_customdata['chapterid']);
         $mform->setType('id', PARAM_INT);
+        $mform->setType('chapterid', PARAM_INT);
 
         $chapters = giportfoliotool_downloader_get_chapters($this->_customdata['giportfolioid']);
         $selectvalues = [];

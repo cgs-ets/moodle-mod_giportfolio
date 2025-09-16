@@ -36,7 +36,11 @@ $mentee = optional_param('mentee', 0, PARAM_INT);
 $cm = get_coursemodule_from_id('giportfolio', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $giportfolio = $DB->get_record('giportfolio', array('id' => $cm->instance), '*', MUST_EXIST);
-$contribute = optional_param('cont', 'no', PARAM_RAW); // When teacher is contributing.
+$contribute = optional_param('cont', 'no', PARAM_ALPHA); // When teacher is contributing.
+// Validate contribute parameter against allowed values.
+if (!in_array($contribute, ['yes', 'no'])) {
+    $contribute = 'no';
+}
 
 require_login($course, false, $cm);
 require_sesskey();
@@ -44,7 +48,26 @@ require_sesskey();
 $context = context_module::instance($cm->id);
 
 $PAGE->set_url('/mod/giportfolio/deleteuserchapter.php', array('id' => $id, 'chapterid' => $chapterid));
-$userid = ($mentor != 0 && $mentee!= 0 || has_capability('mod/giportfolio:gradegiportfolios', $context))? $mentee : $USER->id;
+
+// Determine target user with proper authorization checks.
+$cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context);
+
+if ($mentee != 0) {
+    // Someone is trying to delete a chapter for another user.
+    if ($cangrade) {
+        // Teacher with grading permissions can delete any student's chapter.
+        $userid = $mentee;
+    } else if ($mentor != 0 && in_array($USER->id, giportfolio_user_mentor_of_student($mentee))) {
+        // Valid mentor can delete their mentee's chapter.
+        $userid = $mentee;
+    } else {
+        // Invalid access attempt.
+        throw new moodle_exception('nopermissions', 'error');
+    }
+} else {
+    // User deleting their own chapter.
+    $userid = $USER->id;
+}
 
 $chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id,
     'userid' => $userid), '*', MUST_EXIST);

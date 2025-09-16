@@ -61,8 +61,8 @@ if (($mentor == 0 && !$mentorcancontribute) && !$cangrade) {
     require_capability('mod/giportfolio:submitportfolio', $context);
 }
 
-$maxfiles = 99; // TODO: add some setting.
-$maxbytes = $course->maxbytes; // TODO: add some setting.
+$maxfiles = 10; // Limit to 10 files for security.
+$maxbytes = min($course->maxbytes, 50 * 1024 * 1024); // Max 50MB or course limit, whichever is smaller.
 
 // Add instruction on the page code.
 // Read chapters.
@@ -89,7 +89,7 @@ if ($chapter->hidden) {
 
 giportfolio_add_fake_block($chapters, $chapter, $giportfolio, $cm, 0, 0, $mentor, $mentee); // Add TOC.
 
-$editoroptions = array('noclean' => true, 'subdirs' => true, 'maxfiles' => -1, 'maxbytes' => 0, 'context' => $context);
+$editoroptions = array('noclean' => true, 'subdirs' => true, 'maxfiles' => 20, 'maxbytes' => $maxbytes, 'context' => $context);
 $attachmentoptions = array('subdirs' => false, 'maxfiles' => $maxfiles, 'maxbytes' => $maxbytes);
 
 
@@ -193,25 +193,46 @@ if ($action) {
         }
     } else if ($action == 'show') {
         require_sesskey();
+        // Verify user owns this contribution or has grading capability.
+        if ($contribution->userid != $USER->id && !$cangrade) {
+            throw new moodle_exception('nopermissions', 'error');
+        }
         if ($contribution->hidden) {
             $DB->set_field('giportfolio_contributions', 'hidden', 0, array('id' => $contribution->id));
         }
         redirect($redir);
     } else if ($action == 'hide') {
         require_sesskey();
+        // Verify user owns this contribution or has grading capability.
+        if ($contribution->userid != $USER->id && !$cangrade) {
+            throw new moodle_exception('nopermissions', 'error');
+        }
         if (!$contribution->hidden) {
             $DB->set_field('giportfolio_contributions', 'hidden', 1, array('id' => $contribution->id));
         }
-
         redirect($redir);
     } else if ($action == 'share') {
         require_sesskey();
+        // Check if user is valid mentor of the contribution owner.
+        $isvalidmentor = ($mentorcancontribute && in_array($USER->id, giportfolio_user_mentor_of_student($contribution->userid)));
+        
+        // Verify permissions: owner, teacher with grading capability, or valid mentor.
+        if ($contribution->userid != $USER->id && !$cangrade && !$isvalidmentor) {
+            throw new moodle_exception('nopermissions', 'error');
+        }
         if (!$contribution->shared) {
             $DB->set_field('giportfolio_contributions', 'shared', 1, array('id' => $contribution->id));
         }
         redirect($redir);
     } else if ($action == 'unshare') {
         require_sesskey();
+        // Check if user is valid mentor of the contribution owner.
+        $isvalidmentor = ($mentorcancontribute && in_array($USER->id, giportfolio_user_mentor_of_student($contribution->userid)));
+        
+        // Verify permissions: owner, teacher with grading capability, or valid mentor.
+        if ($contribution->userid != $USER->id && !$cangrade && !$isvalidmentor) {
+            throw new moodle_exception('nopermissions', 'error');
+        }
         if ($contribution->shared) {
             $DB->set_field('giportfolio_contributions', 'shared', 0, array('id' => $contribution->id));
         }

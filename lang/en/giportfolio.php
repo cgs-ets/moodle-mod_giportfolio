@@ -289,6 +289,7 @@ $string['messageprovider:contributionreminder'] = 'Contribution reminder';
 $string['linktochapter'] = 'Link to chapter: {$a}' ;
 $string['linktochapter_desc'] = 'A link to this chapter will automatically be included in the message.';
 $string['grade'] = 'Grade';
+$string['additionstitle_help'] = 'Additions will only be displayed if they have contributions.';
 
 
 

@@ -64,15 +64,6 @@ class chapter_viewed extends \core\event\base {
             "course module id '$this->contextinstanceid'.";
     }
 
-    /**
-     * Return the legacy event log data.
-     *
-     * @return array|null
-     */
-    protected function get_legacy_logdata() {
-        return array($this->courseid, 'giportfolio', 'view chapter', 'view.php?id=' . $this->contextinstanceid .
-            '&amp;chapterid=' . $this->objectid, $this->objectid, $this->contextinstanceid);
-    }
 
     /**
      * Return localised event name.
@@ -89,7 +80,7 @@ class chapter_viewed extends \core\event\base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/giportfolio/view.php', array('id' => $this->contextinstanceid, 'chapterid' => $this->objectid));
+        return new \moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $this->contextinstanceid, 'chapterid' => $this->objectid));
     }
 
     /**
@@ -104,9 +95,13 @@ class chapter_viewed extends \core\event\base {
     }
 
     /**
-     * Get objectid mapping
+     * Validate data
      */
-    public static function get_objectid_mapping() {
-        return ['db' => 'giportfolio_chapters', 'restore' => 'giportfolio_chapter'];
+    protected function validate_data() {
+        parent::validate_data();
+        
+        if (empty($this->objectid)) {
+            throw new \coding_exception('The \'objectid\' value must be set.');
+        }
     }
 }

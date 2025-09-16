@@ -52,7 +52,15 @@ class print_giportfolio_page implements renderable, templatable {
      */
     protected $cm;
 
+    /**
+     * @var array $chapters The chapters array.
+     */
     protected $chapters;
+
+    /**
+     * @var int $userid The user ID.
+     */
+    protected $userid;
 
     /**
      * Construct this renderable.

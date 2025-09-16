@@ -106,4 +106,16 @@ class chapter_deleted extends \core\event\base {
         $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = 'giportfolio_chapters';
     }
+
+    /**
+     * Validate data
+     */
+    protected function validate_data() {
+        parent::validate_data();
+        
+        if (empty($this->objectid)) {
+            throw new \coding_exception('The \'objectid\' value must be set.');
+        }
+    }
+
 }

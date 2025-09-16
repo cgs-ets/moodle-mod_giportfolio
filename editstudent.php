@@ -34,7 +34,11 @@ $pagenum = optional_param('pagenum', 0, PARAM_INT);
 $subchapter = optional_param('subchapter', 0, PARAM_BOOL);
 $mentor = optional_param('mentor', 0, PARAM_INT); // Mentor ID
 $mentee = optional_param('mentee', 0, PARAM_INT);
-$contribute = optional_param('cont', 'no', PARAM_RAW);
+$contribute = optional_param('cont', 'no', PARAM_ALPHA);
+// Validate contribute parameter against allowed values.
+if (!in_array($contribute, ['yes', 'no'])) {
+    $contribute = 'no';
+}
 
 $cm = get_coursemodule_from_id('giportfolio', $cmid, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);

@@ -217,7 +217,7 @@ $viewdata->teacher = $allowedit || $allowviewgiportfolios;
 $viewdata->teacherandmentor = $teacherandmentor;
 $viewdata->mentor = $mentor;
 $viewdata->playbutton = ($allowcontribute || $allowedit || $allowviewgiportfolios) && !$mentor;
-$viewdata->playbuttonurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id);
+$viewdata->playbuttonurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', array('id' => $cm->id));
 $viewdata->playparentbutton = $mentor;
 $viewdata->skipintro = $giportfolio->skipintro;
 $viewdata->intro = format_text($intro, FORMAT_MOODLE, array('noclean' => true, 'context' => $context));

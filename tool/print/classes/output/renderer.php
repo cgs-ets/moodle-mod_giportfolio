@@ -215,8 +215,12 @@ class renderer extends plugin_renderer_base {
             }
         }
 
+        // Check if content property exists, if not set empty string
+        $content = isset($chapter->content) ? $chapter->content : '';
+        $contentformat = isset($chapter->contentformat) ? $chapter->contentformat : FORMAT_HTML;
+        
         $chaptertext = file_rewrite_pluginfile_urls(
-            $chapter->content,
+            $content,
             'pluginfile.php',
             $context->id,
             'mod_giportfolio',
@@ -225,7 +229,7 @@ class renderer extends plugin_renderer_base {
         );
 
         $giportfoliochapter .= '<br><br>';
-        $giportfoliochapter .= format_text($chaptertext, $chapter->contentformat, array('noclean' => true, 'context' => $context));
+        $giportfoliochapter .= format_text($chaptertext, $contentformat, array('noclean' => true, 'context' => $context));
         // Add the contributions.
         $giportfoliochaptercontributions = '';
         $giportfoliochaptercontributions .= html_writer::start_div('giportfolio_chapter_contribution p-t-1', ['id' => 'ch' . $chapter->id]);
