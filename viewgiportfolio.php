@@ -62,7 +62,8 @@ if ($id) {
     $id = $cm->id;
 }
 
-$showshared = $giportfolio->peersharing == 1;
+// Initialize showshared based on peersharing setting, but allow URL parameter to override
+$showshared_enabled = $giportfolio->peersharing == 1;
 
 require_course_login($course, true, $cm);
 
@@ -100,13 +101,18 @@ if ($allowedit) {
     $edit = 0;
 }
 
-if ($showshared === null) {
+// Only allow showshared if peersharing is enabled
+if (!$showshared_enabled) {
     $showshared = false;
-    if (isset($SESSION->giportfolio_show_shared)) {
-        $showshared = $SESSION->giportfolio_show_shared;
-    }
 } else {
-    $SESSION->giportfolio_show_shared = $showshared;
+    if ($showshared === null) {
+        $showshared = false;
+        if (isset($SESSION->giportfolio_show_shared)) {
+            $showshared = $SESSION->giportfolio_show_shared;
+        }
+    } else {
+        $SESSION->giportfolio_show_shared = $showshared;
+    }
 }
 // Read chapters.
 $chapters = giportfolio_preload_chapters($giportfolio);
@@ -406,15 +412,47 @@ if ($giportfolio->peersharing && $showshared) {
     }
 }
 
-if (!$isuserchapter && $giportfolio->peersharing) {
+if (!$isuserchapter && $showshared_enabled) {
 
     // If this is not a user chapter, display a button to show/hide other users' shared contributions,
     // as long as peersharing is enabled.
     if ($showshared) {
-        $hidesharedurl = new moodle_url($PAGE->url, array('showshared' => 0, 'mentee' => $mentee));
+        $urlparams = array(
+            'id' => $cm->id, 
+            'showshared' => 0
+        );
+        if (!empty($chapterid)) {
+            $urlparams['chapterid'] = $chapterid;
+        }
+        if (!empty($mentee)) {
+            $urlparams['mentee'] = $mentee;
+        }
+        if (!empty($mentor)) {
+            $urlparams['mentor'] = $mentor;
+        }
+        if (!empty($contribute) && $contribute !== 'no') {
+            $urlparams['cont'] = $contribute;
+        }
+        $hidesharedurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $urlparams);
         echo $OUTPUT->single_button($hidesharedurl, get_string('hideshared', 'mod_giportfolio', $alias), 'GET');
     } else {
-        $showsharedurl = new moodle_url($PAGE->url, array('showshared' => 1, 'mentee' => $mentee));
+        $urlparams = array(
+            'id' => $cm->id, 
+            'showshared' => 1
+        );
+        if (!empty($chapterid)) {
+            $urlparams['chapterid'] = $chapterid;
+        }
+        if (!empty($mentee)) {
+            $urlparams['mentee'] = $mentee;
+        }
+        if (!empty($mentor)) {
+            $urlparams['mentor'] = $mentor;
+        }
+        if (!empty($contribute) && $contribute !== 'no') {
+            $urlparams['cont'] = $contribute;
+        }
+        $showsharedurl = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $urlparams);
         echo $OUTPUT->single_button($showsharedurl, get_string('showshared', 'mod_giportfolio', $alias), 'GET');
     }
 }
