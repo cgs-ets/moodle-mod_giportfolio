@@ -290,6 +290,7 @@ $string['linktochapter'] = 'Link to chapter: {$a}' ;
 $string['linktochapter_desc'] = 'A link to this chapter will automatically be included in the message.';
 $string['grade'] = 'Grade';
 $string['additionstitle_help'] = 'Additions will only be displayed if they have contributions.';
-
-
-
+$string['reports'] = 'Reports';
+$string['hascontributions'] = 'Has contributions';
+$string['nocontributions'] = 'No contributions';
+$string['tutor'] = 'Tutor';

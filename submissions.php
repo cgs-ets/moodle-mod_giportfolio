@@ -25,6 +25,9 @@ require_once($CFG->libdir . '/plagiarismlib.php');
 require_once($CFG->libdir . '/gradelib.php');
 require_once("search_form.php");
 
+use core_table\local\filter\filter;
+use core_table\local\filter\integer_filter;
+
 $id = optional_param('id', 0, PARAM_INT); // Course module ID.
 $p = optional_param('p', 0, PARAM_INT); // Giportfolio ID.
 $currenttab = optional_param('tab', 'all', PARAM_ALPHA); // What tab are we in?
@@ -74,6 +77,7 @@ $graphcontributorsurl = new moodle_url($PAGE->url, array('tab' => 'graphcontribu
 $userwithnocontributionurl = new moodle_url($PAGE->url, array('tab' => 'contributionreminder'));
 $userwithnocontributionurlparents = new moodle_url($PAGE->url, array('tab' => 'contributionreminderparents'));
 $hoursregistered = new moodle_url($PAGE->url, array('tab'=> 'registeredhours'));
+$reports = new moodle_url($PAGE->url, array('tab'=> 'reports'));
 
 $tabs = array(
     new tabobject('all', $allurl, get_string('allusers', 'mod_giportfolio', $alias)),
@@ -83,6 +87,7 @@ $tabs = array(
     new tabobject('contributionreminder', $userwithnocontributionurl, get_string('userwithnocontrib', 'mod_giportfolio', $alias)),
     new tabobject('contributionreminderparents', $userwithnocontributionurlparents, get_string('parentuserwithnocontrib', 'mod_giportfolio')),
     new tabobject('registeredhours', $hoursregistered, get_string('registeredhours', 'mod_giportfolio')),
+    new tabobject('reports', $reports, get_string('reports', 'mod_giportfolio')),
 );
 
 echo get_string('studentgiportfolios', 'mod_giportfolio', $alias);
@@ -143,12 +148,12 @@ if ($fastg) { // Update the grade and the feedback.
 
 // Create the user filter form.
 
-if (!in_array($currenttab, ['registeredhours', 'contributionreminderparents'])) {
+if (!in_array($currenttab, ['registeredhours', 'contributionreminderparents', 'reports'])) {
     $mform = new giportfolio_search_form(null, array('id' => $id, 'tab' => $currenttab));
     $mform->display();
 }
 
-$customtabs = ['graphcontributors', 'contributionreminder', 'contributionreminderparents', 'registeredhours'];
+$customtabs = ['graphcontributors', 'contributionreminder', 'contributionreminderparents', 'registeredhours', 'reports'];
 
 // Print quickgrade form around the table.
 if ($quickgrade && !in_array($currenttab, $customtabs)) {
@@ -174,7 +179,7 @@ foreach ($allusers as $user) {
 
 $listusersids = "'" . implode("', '", $alluserids) . "'";
 // Generate table.
-
+$output;
 switch ($currenttab) {
 
     case 'graphcontributors':
@@ -210,6 +215,56 @@ switch ($currenttab) {
             echo $output;
         }
         break;
+    
+    case 'reports':
+        $studentstable = new \mod_giportfolio\table\students("giportfolio-students-{$course->id}");
+        $studentstable->set_instance_info($cm->id, $giportfolio->id);
+
+        $filterset = new \mod_giportfolio\table\students_filterset();
+        $filterset->add_filter(new integer_filter('courseid', filter::JOINTYPE_DEFAULT, [(int)$course->id]));
+        $filterset->add_filter(new integer_filter('cmid', filter::JOINTYPE_DEFAULT, [(int)$cm->id]));
+        $filterset->add_filter(new integer_filter('giportfolioid', filter::JOINTYPE_DEFAULT, [(int)$giportfolio->id]));
+
+        // Render the filter UI.
+        $filterrenderable = new \mod_giportfolio\output\students_filter(
+            $context,
+            $studentstable->uniqueid,
+            $giportfolio->id,
+            $cm->id
+        );
+        $templatecontext = $filterrenderable->export_for_template($OUTPUT);
+        echo $OUTPUT->render_from_template('mod_giportfolio/studentsfilter', $templatecontext);
+
+        // Start the form wrapping the table and bulk actions.
+        echo '<form id="studentsform" method="post">';
+        echo '<div class="userlist">';
+        $studentstable->set_filterset($filterset);
+        $studentstable->out(20, true);
+        echo '</div>';
+
+        // Bulk actions below the table.
+        echo '<div class="mt-3">';
+        echo '<label for="formactionid">' . get_string('withselectedusers') . '</label> ';
+
+        // Build download options.
+        $downloadbaseurl = new moodle_url('/mod/giportfolio/download.php', ['id' => $cm->id]);
+        $plugins = core_plugin_manager::instance()->get_plugins_of_type('dataformat');
+        $options = ['' => get_string('choosedots')];
+        foreach ($plugins as $plugin) {
+            if ($plugin->is_enabled()) {
+                $url = new moodle_url($downloadbaseurl, ['dataformat' => $plugin->name]);
+                $options[$url->out(false)] = $plugin->displayname;
+            }
+        }
+
+        echo html_writer::select($options, 'formaction', '', null, ['id' => 'formactionid']);
+        echo '</div>';
+        echo '</form>';
+
+        // Init bulk actions JS.
+        $PAGE->requires->js_call_amd('mod_giportfolio/bulk_actions', 'init', ['studentsform']);
+        break;
+        
 
     default:
 

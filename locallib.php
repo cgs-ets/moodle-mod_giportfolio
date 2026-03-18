@@ -2393,7 +2393,7 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
             'cm' => $cm
         ];
 
-        $displaylist = array();
+        $displaylist = [];
 
         if (has_all_capabilities(['mod/giportfolio:gradegiportfolios'], $context)) {
             $displaylist['#messageselect'] = get_string('messageselectadd');
