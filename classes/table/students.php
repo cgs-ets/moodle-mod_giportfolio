@@ -116,15 +116,15 @@ class students extends \table_sql implements dynamic_table {
             $columns[] = 'tutorname';
         }
 
+        // Contribution status column.
+        $headers[] = get_string('contributions', 'mod_giportfolio');
+        $columns[] = 'contribcount';
+
         // Last access column.
         if (!isset($hiddenfields['lastaccess'])) {
             $headers[] = get_string('lastcourseaccess');
             $columns[] = 'lastaccess';
         }
-
-        // Contribution status column.
-        $headers[] = get_string('contributions', 'mod_giportfolio');
-        $columns[] = 'contribcount';
 
         $this->define_columns($columns);
         $this->define_headers($headers);
