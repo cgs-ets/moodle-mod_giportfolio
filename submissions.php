@@ -108,7 +108,9 @@ $allusers = get_users_by_capability($context, 'mod/giportfolio:printclassplan', 
 $info = new \core_availability\info_module(cm_info::create($cm));
 $allusers = $info->filter_user_list($allusers);
 
-groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab);
+if ($currenttab !== 'reports') {
+    groups_print_activity_menu($cm, $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab);
+}
 
 $updatepref = optional_param('updatepref', 0, PARAM_BOOL);
 
