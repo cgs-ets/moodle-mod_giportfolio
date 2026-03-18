@@ -207,20 +207,15 @@ class students_search {
             }
         }
 
-        // Apply chapter filter.
+        // Get selected chapter ids (used to scope the status filter).
+        $chapterids = [];
         if ($this->filterset->has_filter('chapter')) {
-            [
-                'where' => $chapterwhere,
-                'params' => $chapterparams,
-            ] = $this->get_chapter_sql();
-
-            if (!empty($chapterwhere)) {
-                $wheres[] = "({$chapterwhere})";
-            }
-            if (!empty($chapterparams)) {
-                $params = array_merge($params, $chapterparams);
+            $chapterfilter = $this->filterset->get_filter('chapter');
+            foreach ($chapterfilter as $chapterid) {
+                $chapterids[] = $chapterid;
             }
         }
+        // Note: chapter filter alone does NOT restrict results — it only scopes the status filter.
 
         // Apply tutor filter (students whose group contains the selected tutor).
         if ($this->filterset->has_filter('tutor')) {
@@ -238,11 +233,12 @@ class students_search {
         }
 
         // Apply status filter (has contributions / no contributions).
+        // When a chapter is also selected, checks contributions for that specific chapter.
         if ($this->filterset->has_filter('status')) {
             [
                 'where' => $statuswhere,
                 'params' => $statusparams,
-            ] = $this->get_status_sql();
+            ] = $this->get_status_sql($chapterids);
 
             if (!empty($statuswhere)) {
                 $wheres[] = "({$statuswhere})";
@@ -329,13 +325,13 @@ class students_search {
      *
      * @return array With 'where' and 'params' keys.
      */
-    protected function get_chapter_sql(): array {
-        $chapterfilter = $this->filterset->get_filter('chapter');
-        $chapterids = [];
-        foreach ($chapterfilter as $chapterid) {
-            $chapterids[] = $chapterid;
-        }
-
+    /**
+     * Get the SQL for filtering by chapter (users who contributed to a specific chapter).
+     *
+     * @param int[] $chapterids The chapter ids to filter by.
+     * @return array With 'where' and 'params' keys.
+     */
+    protected function get_chapter_sql(array $chapterids): array {
         if (empty($chapterids)) {
             return ['where' => '', 'params' => []];
         }
@@ -357,13 +353,17 @@ class students_search {
     /**
      * Get the SQL for filtering by contribution status.
      *
+     * When chapter IDs are provided, checks contributions for those specific chapters.
+     * Otherwise checks contributions for the whole giportfolio.
+     *
      * Status values:
      * - 1 = Has contributions
      * - 0 = No contributions
      *
+     * @param int[] $chapterids Optional chapter IDs to scope the contribution check.
      * @return array With 'where' and 'params' keys.
      */
-    protected function get_status_sql(): array {
+    protected function get_status_sql(array $chapterids = []): array {
         $statusfilter = $this->filterset->get_filter('status');
         $statusvalues = [];
         foreach ($statusfilter as $status) {
@@ -378,12 +378,23 @@ class students_search {
         $params = [];
 
         foreach ($statusvalues as $status) {
+            // Build chapter restriction with unique param names per status value.
+            $chapterrestriction = '';
+            $chapparams = [];
+            if (!empty($chapterids)) {
+                global $DB;
+                $prefix = $status == 1 ? 'stchaphas' : 'stchapno';
+                [$chapinsql, $chapparams] = $DB->get_in_or_equal($chapterids, SQL_PARAMS_NAMED, $prefix);
+                $alias = $status == 1 ? 'gc3' : 'gc4';
+                $chapterrestriction = " AND {$alias}.chapterid {$chapinsql}";
+            }
+
             if ($status == 1) {
                 // Has contributions.
                 $conditions[] = "u.id IN (
                     SELECT gc3.userid
                       FROM {giportfolio_contributions} gc3
-                     WHERE gc3.giportfolioid = :giportfolioid_has
+                     WHERE gc3.giportfolioid = :giportfolioid_has{$chapterrestriction}
                 )";
                 $params['giportfolioid_has'] = $this->giportfolioid;
             } else {
@@ -391,10 +402,11 @@ class students_search {
                 $conditions[] = "u.id NOT IN (
                     SELECT gc4.userid
                       FROM {giportfolio_contributions} gc4
-                     WHERE gc4.giportfolioid = :giportfolioid_no
+                     WHERE gc4.giportfolioid = :giportfolioid_no{$chapterrestriction}
                 )";
                 $params['giportfolioid_no'] = $this->giportfolioid;
             }
+            $params = array_merge($params, $chapparams);
         }
 
         $jointype = $statusfilter->get_join_type();
