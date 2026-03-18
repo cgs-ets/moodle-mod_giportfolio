@@ -54,9 +54,7 @@ $columnnames = [
     'groups' => get_string('groups'),
 ];
 
-if ($giportfolio->numberhours) {
-    $columnnames['tutor'] = get_string('tutor', 'mod_giportfolio');
-}
+$columnnames['tutor'] = get_string('tutor', 'mod_giportfolio');
 
 $columnnames['contributions'] = get_string('contributions', 'mod_giportfolio');
 $columnnames['lastaccess'] = get_string('lastcourseaccess');
@@ -93,23 +91,21 @@ $params = array_merge(
 
 // Pre-compute tutor names per group if numberhours is enabled.
 $grouptutors = [];
-if ($giportfolio->numberhours) {
-    $coursecontext = context_course::instance($course->id);
-    $studentroleids = array_keys(get_archetype_roles('student'));
-    $coursegroups = groups_get_all_groups($course->id, 0, 0, 'g.*', true);
-    foreach ($coursegroups as $group) {
-        $tutornames = [];
-        foreach ($group->members as $memberid => $unused) {
-            if (!\mod_giportfolio\output\students_filter::user_is_student_in_course(
-                    $memberid, $coursecontext->id, $studentroleids)) {
-                $user = $DB->get_record('user', ['id' => $memberid], 'id, firstname, lastname');
-                if ($user) {
-                    $tutornames[] = fullname($user);
-                }
+$coursecontext = context_course::instance($course->id);
+$studentroleids = array_keys(get_archetype_roles('student'));
+$coursegroups = groups_get_all_groups($course->id, 0, 0, 'g.*', true);
+foreach ($coursegroups as $group) {
+    $tutornames = [];
+    foreach ($group->members as $memberid => $unused) {
+        if (!\mod_giportfolio\output\students_filter::user_is_student_in_course(
+                $memberid, $coursecontext->id, $studentroleids)) {
+            $user = $DB->get_record('user', ['id' => $memberid], 'id, firstname, lastname');
+            if ($user) {
+                $tutornames[] = fullname($user);
             }
         }
-        $grouptutors[$group->id] = $tutornames;
     }
+    $grouptutors[$group->id] = $tutornames;
 }
 
 $rs = $DB->get_recordset_sql($sql, $params);
@@ -121,19 +117,16 @@ $rs = $DB->get_recordset_sql($sql, $params);
     $rs,
     function (stdClass $record, bool $supportshtml) use ($giportfolio, $course, $grouptutors, $columnnames): stdClass {
         // Compute tutor value if needed.
-        $tutorvalue = '';
-        if ($giportfolio->numberhours) {
-            $usergroups = groups_get_all_groups($course->id, $record->id);
-            $tutors = [];
-            foreach ($usergroups as $ug) {
-                if (isset($grouptutors[$ug->id])) {
-                    foreach ($grouptutors[$ug->id] as $name) {
-                        $tutors[$name] = $name;
-                    }
+        $usergroups = groups_get_all_groups($course->id, $record->id);
+        $tutors = [];
+        foreach ($usergroups as $ug) {
+            if (isset($grouptutors[$ug->id])) {
+                foreach ($grouptutors[$ug->id] as $name) {
+                    $tutors[$name] = $name;
                 }
             }
-            $tutorvalue = implode(', ', $tutors);
         }
+        $tutorvalue = implode(', ', $tutors);
 
         // Format last access.
         $lastaccess = $record->lastaccess

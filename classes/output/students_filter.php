@@ -74,10 +74,8 @@ class students_filter extends \core\output\datafilter {
             $filtertypes[] = $filtertype;
         }
 
-        if ($this->giportfolio->numberhours) {
-            if ($filtertype = $this->get_tutor_filter()) {
-                $filtertypes[] = $filtertype;
-            }
+        if ($filtertype = $this->get_tutor_filter()) {
+            $filtertypes[] = $filtertype;
         }
 
         return $filtertypes;

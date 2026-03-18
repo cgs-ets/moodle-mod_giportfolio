@@ -110,7 +110,7 @@ class students extends \table_sql implements dynamic_table {
         }
 
         // Tutor column (only when numberhours is enabled).
-        $showtutor = $canseegroups && !empty($this->giportfolio) && $this->giportfolio->numberhours;
+        $showtutor = $canseegroups;
         if ($showtutor) {
             $headers[] = get_string('tutor', 'mod_giportfolio');
             $columns[] = 'tutorname';
