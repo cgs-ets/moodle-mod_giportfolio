@@ -51,6 +51,10 @@ if ($currenttab !== 'all') {
     $url->param('tab', $currenttab);
 }
 
+if ($chapterid && in_array($currenttab, ['contributionreminder', 'contributionreminderparents'])) {
+    $url->param('chapterid', $chapterid);
+}
+
 $PAGE->set_url($url);
 require_login($course->id, false, $cm);
 $context = context_module::instance($cm->id);
@@ -151,7 +155,7 @@ if ($fastg) { // Update the grade and the feedback.
 // Create the user filter form.
 
 if (!in_array($currenttab, ['registeredhours', 'contributionreminderparents', 'reports'])) {
-    $mform = new giportfolio_search_form(null, array('id' => $id, 'tab' => $currenttab));
+    $mform = new giportfolio_search_form(null, ['id' => $id, 'tab' => $currenttab, 'chapterid' => $chapterid]);
     $mform->display();
 }
 
@@ -189,14 +193,20 @@ switch ($currenttab) {
         break;
 
     case 'contributionreminder':
-        $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab . '&chapterid' . $chapterid;
+        $urlroot = new moodle_url('/mod/giportfolio/submissions.php', ['id' => $cm->id, 'tab' => $currenttab]);
+        if ($username) {
+            $urlroot->param('username', $username);
+        }
         giportfolio_reminder_chapter_selector($cm, $urlroot, $giportfolio, $chapterid, false);
         giportfolio_reminder_table($PAGE, $allusers, $context, $username, $listusersids, $page, $giportfolio, $course, $chapterid, $cm->id);
         break;
 
     case 'contributionreminderparents':
-        $urlroot = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=' . $currenttab . '&chapterid' . $chapterid;
-        $forstudents = $CFG->wwwroot . '/mod/giportfolio/submissions.php?id=' . $cm->id . '&tab=contributionreminder'. '&chapterid' . $chapterid;
+        $urlroot = new moodle_url('/mod/giportfolio/submissions.php', ['id' => $cm->id, 'tab' => $currenttab]);
+        if ($username) {
+            $urlroot->param('username', $username);
+        }
+        $forstudents = (new moodle_url('/mod/giportfolio/submissions.php', ['id' => $cm->id, 'tab' => 'contributionreminder', 'chapterid' => $chapterid]))->out(false);
         giportfolio_reminder_chapter_selector($cm, $urlroot,  $giportfolio, $chapterid, false);
         $output .= html_writer::start_div('parent-warning', ['class' => 'alert alert-warning']);
         $output .= html_writer::tag('span', get_string('parentuserwithnocontribwarning', 'mod_giportfolio', $forstudents) );

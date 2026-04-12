@@ -39,6 +39,11 @@ class giportfolio_search_form extends moodleform {
         $mform->addElement('hidden', 'tab', $this->_customdata['tab']);
         $mform->setType('tab', PARAM_ALPHA);
 
+        if (!empty($this->_customdata['chapterid'])) {
+            $mform->addElement('hidden', 'chapterid', $this->_customdata['chapterid']);
+            $mform->setType('chapterid', PARAM_INT);
+        }
+
         $mform->addElement('submit', 'submitbutton', 'Search');
         // Set the defaults.
     }
