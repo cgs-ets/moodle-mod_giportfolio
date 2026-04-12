@@ -51,6 +51,7 @@ if (!isset($plugins[$dataformat]) || !$plugins[$dataformat]->is_enabled()) {
 $columnnames = [
     'firstname' => get_string('firstname'),
     'lastname' => get_string('lastname'),
+    'email' => get_string('email'),
     'groups' => get_string('groups'),
 ];
 
@@ -65,7 +66,7 @@ $columnnames['lastaccess'] = get_string('lastcourseaccess');
 
 [$groupconcatnamesql, $groupconcatnameparams] = groups_get_names_concat_sql($course->id);
 
-$sql = "SELECT u.id, u.firstname, u.lastname,
+$sql = "SELECT u.id, u.firstname, u.lastname, u.email,
                COALESCE(gcn.groupnames, '') AS groups,
                COALESCE(ul.timeaccess, 0) AS lastaccess,
                COALESCE(gc.contribcount, 0) AS contributions

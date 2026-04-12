@@ -96,6 +96,9 @@ class students extends \table_sql implements dynamic_table {
         $headers[] = get_string('fullname');
         $columns[] = 'fullname';
 
+        $headers[] = get_string('email');
+        $columns[] = 'email';
+
         // Get the list of fields we have to hide.
         $hiddenfields = [];
         if (!has_capability('moodle/course:viewhiddenuserfields', $this->context)) {
@@ -186,6 +189,19 @@ class students extends \table_sql implements dynamic_table {
         $fullname = fullname($data);
 
         return $userpic . ' ' . \html_writer::link($portfoliourl, $fullname);
+    }
+
+    /**
+     * Generate the email column.
+     *
+     * @param \stdClass $data
+     * @return string
+     */
+    public function col_email($data) {
+        if ($this->is_downloading()) {
+            return $data->email;
+        }
+        return \html_writer::link('mailto:' . $data->email, $data->email);
     }
 
     /**
