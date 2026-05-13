@@ -1885,6 +1885,10 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
         $d = new stdClass();
         $d->chapterid = $i;
 
+        if ($chapter->hidden) {
+            continue;
+        }
+
         if (isset($chapter->subchapters)) {
 
             $d->subchapters = array_values($chapter->subchapters);
