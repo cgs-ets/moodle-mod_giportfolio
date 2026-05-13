@@ -26,7 +26,8 @@ require_once('../../config.php');
 
 $id = required_param('id', PARAM_INT); // Course module ID.
 $dataformat = required_param('dataformat', PARAM_ALPHA);
-$userids = required_param_array('userid', PARAM_INT);
+// Accept user ids via POST (bulk form) or GET; optional_param_array reads both automatically.
+$userids = optional_param_array('userid', [], PARAM_INT);
 
 $cm = get_coursemodule_from_id('giportfolio', $id, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);

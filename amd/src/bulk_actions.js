@@ -49,7 +49,7 @@ export const init = (formId) => {
             return;
         }
 
-        // For download actions (URLs), redirect with selected user ids.
+        // For download actions (URLs), POST selected user ids to avoid URL length limits.
         if (action.indexOf('#') === -1 && action !== '') {
             e.preventDefault();
 
@@ -63,15 +63,35 @@ export const init = (formId) => {
                 return;
             }
 
-            // Build URL with user ids.
-            const url = new URL(action, window.location.origin);
-            checkboxes.forEach(checkbox => {
-                const userid = checkbox.getAttribute('name').replace('user', '');
-                url.searchParams.append('userid[]', userid);
+            // Parse the action URL to extract base URL and existing params (e.g. id, dataformat).
+            const actionUrl = new URL(action, window.location.origin);
+
+            // Build a temporary form that POSTs to download.php to avoid URI length limits.
+            const downloadForm = document.createElement('form');
+            downloadForm.method = 'post';
+            downloadForm.action = actionUrl.pathname;
+
+            // Forward all query-string params (id, dataformat, etc.) as hidden inputs.
+            actionUrl.searchParams.forEach((value, key) => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                downloadForm.appendChild(input);
             });
 
-            // Navigate to download URL.
-            window.location.href = url.toString();
+            // Append one hidden input per selected user.
+            checkboxes.forEach(checkbox => {
+                const userid = checkbox.getAttribute('name').replace('user', '');
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'userid[]';
+                input.value = userid;
+                downloadForm.appendChild(input);
+            });
+
+            document.body.appendChild(downloadForm);
+            downloadForm.submit();
             actionSelect.value = '';
         }
     });

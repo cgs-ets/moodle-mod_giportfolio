@@ -47,6 +47,17 @@ export const init = (chaptersubchapmap) => {
     const initListeners = () => {
         document.querySelectorAll('th.ch-title').forEach(chapter => {
 
+            if(chapter.children[0].dataset.sortby.includes("fa-eye-slash")) {
+                // Collapse the subchapters
+                const val = chapter.children[0].dataset.sortby
+
+                //  Convert the string element to a dom element
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(val, 'text/html');
+                const div = doc.querySelector('div');
+                collapseSubchapters(div.dataset.chapterid);
+            }
+
             chapter.addEventListener('click', function (e) {
                 e.preventDefault();
 
@@ -66,7 +77,11 @@ export const init = (chaptersubchapmap) => {
                 const colIndex = myArray[0].split('c');
 
 
+
+                
                 if (e.target.classList.contains("fa-caret-left")) {
+                    console.log("e.target")
+                    console.log(e.target)
                     collapse(e.target);
                 } else if (e.target.classList.contains("fa-caret-right")) {
                     expand(e.target);

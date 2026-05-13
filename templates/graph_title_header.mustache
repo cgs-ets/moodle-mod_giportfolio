@@ -1,5 +1,7 @@
 {{#ischapter}}
     <div id ="{{chapterid}}" data-chapterid ="{{chapterid}}" class="rotated-text-container">
+        {{#ishidden}}<i class="fa fa-eye-slash" aria-hidden="true" title = "Chapter and subchapters hidden from student"></i>{{/ishidden}}
+        <br>
         <span data-chapterid = "{{chapterid}}" class="rotated-text" title = "{{title}}">{{title}}</span>
     </div>
     <div class = "subchapter-icon">

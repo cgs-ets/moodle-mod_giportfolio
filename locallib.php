@@ -1885,10 +1885,6 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
         $d = new stdClass();
         $d->chapterid = $i;
 
-        if ($chapter->hidden) {
-            continue;
-        }
-
         if (isset($chapter->subchapters)) {
 
             $d->subchapters = array_values($chapter->subchapters);
@@ -1900,15 +1896,13 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
         $titlectx->subchapters = isset($chapter->subchapters);
         $titlectx->ischapter = !$chapter->subchapter;
         $titlectx->chapterid = $chapter->id;
-
         $titlectx->importedch = ($chapter->importsrc != '') ? $OUTPUT->image_url('import_icon', 'mod_giportfolio') : false;
+        $titlectx->ishidden = $chapter->hidden;
 
         if (!$chapter->subchapter) {
-
             $titlectx->icon = $OUTPUT->image_url('chapter', 'mod_giportfolio');
             $titles[] = $OUTPUT->render_from_template('mod_giportfolio/graph_title_header', $titlectx);
         } else {
-
             $titlectx->icon = $OUTPUT->image_url('subchapter_icon', 'mod_giportfolio');
             $titles[] = $OUTPUT->render_from_template('mod_giportfolio/graph_title_header', $titlectx);
         }
@@ -2016,6 +2010,7 @@ function giportfolio_graph_of_contributors($PAGE, $allusers, $context, $username
         'iconsubchapter'    => $iconsubchapter,
         'iconaddition'      => $iconaddition,
         'iconimported'      => $iconimported,
+        
     ];
 
     echo $OUTPUT->render_from_template('mod_giportfolio/graph_legends_table', $data);
