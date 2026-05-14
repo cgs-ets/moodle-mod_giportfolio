@@ -114,9 +114,11 @@ class contributions_report extends table_sql implements dynamic_table {
         $this->define_header_column('fullname');
         $this->sortable(true, 'lastname');
         $this->no_sorting('select');
+        $this->no_sorting('supervisor');
         foreach ($this->chapters as $chapter) {
             $this->no_sorting('chapter_' . $chapter->id);
         }
+        $this->column_class('supervisor', 'd-none');
 
         $this->set_default_per_page(20);
         $this->set_attribute('id', 'giportfolio-contributions-report');
