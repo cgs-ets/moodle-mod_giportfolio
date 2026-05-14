@@ -48,7 +48,10 @@ export const init = (filterRegionId) => {
 
     // Register hidden filters before init() so they are included in every request.
     // year must be registered first so it is present when the first AJAX fires.
-    const yearSelect = document.querySelector('[data-region="contributions-year-selector"]');
+    // Search from filterSet's parent to handle cases where yearSelect is a sibling element.
+    const yearSelect = (filterSet.closest('[data-region="contributions-year-selector"]')
+        ?? filterSet.parentElement?.querySelector('[data-region="contributions-year-selector"]')
+        ?? document.querySelector('[data-region="contributions-year-selector"]'));
 
     // Sync data-table-year from the <select> value before anything fires.
     if (yearSelect) {
@@ -94,9 +97,6 @@ export const init = (filterRegionId) => {
         setFilterFromConfig(coreFilter, filterSet, initialFilters)
             .then(() => initialFilterPromise.resolve())
             .catch();
-    } else {
-        // No saved filters — trigger a reload so the year filter is sent on first load.
-        coreFilter.updateTableFromFilter();
     }
 };
 

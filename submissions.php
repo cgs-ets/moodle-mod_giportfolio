@@ -253,15 +253,16 @@ switch ($currenttab) {
 
         if ($subreport === 'contributions') {
             // --- Contribution report (one column per chapter per year) ---
-            $defaultyear = (int) date('Y');
-
             $contribfilterrenderable = new \mod_giportfolio\output\contributions_filter(
                 $context,
                 "giportfolio-contributions-{$course->id}",
                 $giportfolio->id,
                 $cm->id,
-                $defaultyear
+                (int) date('Y')
             );
+            // Use the most recent year that actually has chapters, not necessarily the current calendar year.
+            $availableyears = $contribfilterrenderable->get_available_years();
+            $defaultyear = !empty($availableyears) ? $availableyears[0] : (int) date('Y');
             $contribtplctx = $contribfilterrenderable->export_for_template($OUTPUT);
             echo $OUTPUT->render_from_template('mod_giportfolio/contributionsfilter', $contribtplctx);
 
