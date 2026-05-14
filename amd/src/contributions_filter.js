@@ -90,6 +90,9 @@ export const init = (filterRegionId) => {
         setFilterFromConfig(coreFilter, filterSet, initialFilters)
             .then(() => initialFilterPromise.resolve())
             .catch();
+    } else {
+        // No saved filters — fire an initial reload so the year filter is sent on first load.
+        coreFilter.updateTableFromFilter();
     }
 };
 
