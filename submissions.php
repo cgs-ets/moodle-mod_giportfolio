@@ -229,52 +229,121 @@ switch ($currenttab) {
         break;
     
     case 'reports':
-        $studentstable = new \mod_giportfolio\table\students("giportfolio-students-{$course->id}");
-        $studentstable->set_instance_info($cm->id, $giportfolio->id);
+        $subreport = optional_param('subreport', 'none', PARAM_ALPHA);
 
-        $filterset = new \mod_giportfolio\table\students_filterset();
-        $filterset->add_filter(new integer_filter('courseid', filter::JOINTYPE_DEFAULT, [(int)$course->id]));
-        $filterset->add_filter(new integer_filter('cmid', filter::JOINTYPE_DEFAULT, [(int)$cm->id]));
-        $filterset->add_filter(new integer_filter('giportfolioid', filter::JOINTYPE_DEFAULT, [(int)$giportfolio->id]));
+        // Sub-tab navigation rendered via template.
+        $generalurl      = new moodle_url($PAGE->url, ['subreport' => 'general']);
+        $contributionurl = new moodle_url($PAGE->url, ['subreport' => 'contributions']);
+        echo $OUTPUT->render_from_template('mod_giportfolio/reportsubnav', [
+            'tabs' => [
+                [
+                    'url'    => $generalurl->out(false),
+                    'label'  => get_string('generalreport', 'mod_giportfolio'),
+                    'title'  => get_string('generalreport_title', 'mod_giportfolio'),
+                    'active' => $subreport === 'general',
+                ],
+                [
+                    'url'    => $contributionurl->out(false),
+                    'label'  => get_string('contributionreport', 'mod_giportfolio'),
+                    'title'  => get_string('contributionreport_title', 'mod_giportfolio'),
+                    'active' => $subreport === 'contributions',
+                ],
+            ],
+        ]);
 
-        // Render the filter UI.
-        $filterrenderable = new \mod_giportfolio\output\students_filter(
-            $context,
-            $studentstable->uniqueid,
-            $giportfolio->id,
-            $cm->id
-        );
-        $templatecontext = $filterrenderable->export_for_template($OUTPUT);
-        echo $OUTPUT->render_from_template('mod_giportfolio/studentsfilter', $templatecontext);
+        if ($subreport === 'contributions') {
+            // --- Contribution report (one column per chapter per year) ---
+            $defaultyear = (int) date('Y');
 
-        // Start the form wrapping the table and bulk actions.
-        echo '<form id="studentsform" method="post">';
-        echo '<div class="userlist">';
-        $studentstable->set_filterset($filterset);
-        $studentstable->out(20, true);
-        echo '</div>';
+            $contribfilterrenderable = new \mod_giportfolio\output\contributions_filter(
+                $context,
+                "giportfolio-contributions-{$course->id}",
+                $giportfolio->id,
+                $cm->id,
+                $defaultyear
+            );
+            $contribtplctx = $contribfilterrenderable->export_for_template($OUTPUT);
+            echo $OUTPUT->render_from_template('mod_giportfolio/contributionsfilter', $contribtplctx);
 
-        // Bulk actions below the table.
-        echo '<div class="mt-3">';
-        echo '<label for="formactionid">' . get_string('withselectedusers') . '</label> ';
+            $contribtable = new \mod_giportfolio\table\contributions_report("giportfolio-contributions-{$course->id}");
+            $contribtable->set_instance_info($cm->id, $giportfolio->id);
 
-        // Build download options.
-        $downloadbaseurl = new moodle_url('/mod/giportfolio/download.php', ['id' => $cm->id]);
-        $plugins = core_plugin_manager::instance()->get_plugins_of_type('dataformat');
-        $options = ['' => get_string('choosedots')];
-        foreach ($plugins as $plugin) {
-            if ($plugin->is_enabled()) {
-                $url = new moodle_url($downloadbaseurl, ['dataformat' => $plugin->name]);
-                $options[$url->out(false)] = $plugin->displayname;
+            $contribfilterset = new \mod_giportfolio\table\contributions_filterset();
+            $contribfilterset->add_filter(new integer_filter('courseid', filter::JOINTYPE_DEFAULT, [(int)$course->id]));
+            $contribfilterset->add_filter(new integer_filter('cmid', filter::JOINTYPE_DEFAULT, [(int)$cm->id]));
+            $contribfilterset->add_filter(new integer_filter('giportfolioid', filter::JOINTYPE_DEFAULT, [(int)$giportfolio->id]));
+            $contribfilterset->add_filter(new integer_filter('year', filter::JOINTYPE_DEFAULT, [$defaultyear]));
+
+            echo '<form id="contribform" method="post">';
+            echo '<div class="userlist">';
+            $contribtable->set_filterset($contribfilterset);
+            $contribtable->out(20, true);
+            echo '</div>';
+
+            echo '<div class="mt-3">';
+            echo '<label for="contribactionid">' . get_string('withselectedusers') . '</label> ';
+
+            $contribdownloadbaseurl = new moodle_url('/mod/giportfolio/download_contributions.php', [
+                'id'   => $cm->id,
+                'year' => $defaultyear,
+            ]);
+            $contribplugins = core_plugin_manager::instance()->get_plugins_of_type('dataformat');
+            $contriboptions = ['' => get_string('choosedots')];
+            foreach ($contribplugins as $plugin) {
+                if ($plugin->is_enabled()) {
+                    $url = new moodle_url($contribdownloadbaseurl, ['dataformat' => $plugin->name]);
+                    $contriboptions[$url->out(false)] = $plugin->displayname;
+                }
             }
+            echo html_writer::select($contriboptions, 'contribaction', '', null, ['id' => 'contribactionid']);
+            echo '</div>';
+            echo '</form>';
+
+            $PAGE->requires->js_call_amd('mod_giportfolio/bulk_actions', 'init', ['contribform', 'contributions-table', 'contribactionid']);
+
+        } elseif ($subreport === 'general') {
+            // --- General report (existing) ---
+            $studentstable = new \mod_giportfolio\table\students("giportfolio-students-{$course->id}");
+            $studentstable->set_instance_info($cm->id, $giportfolio->id);
+
+            $filterset = new \mod_giportfolio\table\students_filterset();
+            $filterset->add_filter(new integer_filter('courseid', filter::JOINTYPE_DEFAULT, [(int)$course->id]));
+            $filterset->add_filter(new integer_filter('cmid', filter::JOINTYPE_DEFAULT, [(int)$cm->id]));
+            $filterset->add_filter(new integer_filter('giportfolioid', filter::JOINTYPE_DEFAULT, [(int)$giportfolio->id]));
+
+            $filterrenderable = new \mod_giportfolio\output\students_filter(
+                $context,
+                $studentstable->uniqueid,
+                $giportfolio->id,
+                $cm->id
+            );
+            $templatecontext = $filterrenderable->export_for_template($OUTPUT);
+            echo $OUTPUT->render_from_template('mod_giportfolio/studentsfilter', $templatecontext);
+
+            echo '<form id="studentsform" method="post">';
+            echo '<div class="userlist">';
+            $studentstable->set_filterset($filterset);
+            $studentstable->out(20, true);
+            echo '</div>';
+
+            echo '<div class="mt-3">';
+            echo '<label for="formactionid">' . get_string('withselectedusers') . '</label> ';
+
+            $downloadbaseurl = new moodle_url('/mod/giportfolio/download.php', ['id' => $cm->id]);
+            $plugins = core_plugin_manager::instance()->get_plugins_of_type('dataformat');
+            $options = ['' => get_string('choosedots')];
+            foreach ($plugins as $plugin) {
+                if ($plugin->is_enabled()) {
+                    $url = new moodle_url($downloadbaseurl, ['dataformat' => $plugin->name]);
+                    $options[$url->out(false)] = $plugin->displayname;
+                }
+            }
+            echo html_writer::select($options, 'formaction', '', null, ['id' => 'formactionid']);
+            echo '</div>';
+            echo '</form>';
+
+            $PAGE->requires->js_call_amd('mod_giportfolio/bulk_actions', 'init', ['studentsform']);
         }
-
-        echo html_writer::select($options, 'formaction', '', null, ['id' => 'formactionid']);
-        echo '</div>';
-        echo '</form>';
-
-        // Init bulk actions JS.
-        $PAGE->requires->js_call_amd('mod_giportfolio/bulk_actions', 'init', ['studentsform']);
         break;
         
 

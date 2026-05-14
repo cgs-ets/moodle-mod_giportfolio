@@ -113,7 +113,7 @@ foreach ($coursegroups as $group) {
 $rs = $DB->get_recordset_sql($sql, $params);
 
 \core\dataformat::download_data(
-    'giportfolio_' . $giportfolio->id . '_students',
+    str_replace(' ', '_', trim($giportfolio->name)) . '_students',
     $dataformat,
     $columnnames,
     $rs,

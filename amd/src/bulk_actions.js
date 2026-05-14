@@ -26,9 +26,11 @@ import CheckboxToggleAll from 'core/checkbox-toggleall';
 /**
  * Initialise bulk actions.
  *
- * @param {String} formId The form element id.
+ * @param {String} formId      The form element id.
+ * @param {String} toggleGroup The checkbox-toggleall group name (default: 'students-table').
+ * @param {String} selectId    The id of the action <select> element (default: 'formactionid').
  */
-export const init = (formId) => {
+export const init = (formId, toggleGroup = 'students-table', selectId = 'formactionid') => {
     // Ensure CheckboxToggleAll listeners are registered.
     CheckboxToggleAll.init();
 
@@ -37,7 +39,7 @@ export const init = (formId) => {
         return;
     }
 
-    const actionSelect = form.querySelector('#formactionid');
+    const actionSelect = form.querySelector('#' + selectId);
     if (!actionSelect) {
         return;
     }
@@ -53,9 +55,9 @@ export const init = (formId) => {
         if (action.indexOf('#') === -1 && action !== '') {
             e.preventDefault();
 
-            // Collect selected user ids.
+            // Collect selected user ids from the correct togglegroup.
             const checkboxes = form.querySelectorAll(
-                'input[data-togglegroup="students-table"][data-toggle="slave"]:checked'
+                `input[data-togglegroup="${toggleGroup}"][data-toggle="slave"]:checked`
             );
 
             if (!checkboxes.length) {

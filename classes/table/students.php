@@ -30,13 +30,14 @@ use context;
 use core_table\dynamic as dynamic_table;
 use core_table\local\filter\filterset;
 use moodle_url;
+use table_sql;
 
 defined('MOODLE_INTERNAL') || die;
 
 global $CFG;
 require_once($CFG->libdir . '/tablelib.php');
 
-class students extends \table_sql implements dynamic_table {
+class students extends table_sql implements dynamic_table {
 
     /** @var int $courseid The course id. */
     protected $courseid;

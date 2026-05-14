@@ -892,3 +892,28 @@ span.badge.badge-primary.sp {
 .giportfolio-toc-icon-add {
   color: red;
 }
+
+/* Report sub-nav pills */
+.giportfolio-subnav-tab {
+  display: inline-block;
+  padding: 4px 16px;
+  font-size: .875rem;
+  border-radius: 4px;
+  text-decoration: none;
+  border: 1px solid #55565a;
+  color: #55565a;
+  background: transparent;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.giportfolio-subnav-tab:hover {
+  border-color: #005b94;
+  color: #005b94;
+  background: transparent;
+  text-decoration: none;
+}
+.giportfolio-subnav-tab.active {
+  background: #005b94;
+  border-color: #005b94;
+  color: #fff;
+  text-decoration: none;
+}
