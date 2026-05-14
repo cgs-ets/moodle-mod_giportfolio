@@ -131,44 +131,42 @@ class contributions_search {
         $outerjoins[] = 'LEFT JOIN {user_lastaccess} ul ON (ul.userid = u.id AND ul.courseid = :courseid2)';
         $params['courseid2'] = $this->course->id;
 
-        // Supervisor subquery — two-step fallback:
-        // 1. Member of the same group with non-editing teacher role in the module context (portfolio-specific).
-        // 2. If none found, fall back to any non-student member of the same group (course-level).
-        // Use shortname 'teacher' = non-editing teacher role (archetype 'teacher').
-        // get_archetype_roles covers renamed roles like "Presenter (Non-editing teacher)".
+        // Supervisor: prefer the group member with non-editing teacher role in the module context.
+        // Falls back to any non-student group member at course level if none found.
+        // Uses LEFT JOINs — no subquery inside aggregate, compatible with all DB engines.
         $supervisorroleids = array_keys(get_archetype_roles('teacher'));
         $studentroleids    = array_keys(get_archetype_roles('student'));
         $modulecontextid   = $this->context->id;
         $coursecontext     = \context_course::instance($this->course->id);
         if (!empty($supervisorroleids) && !empty($studentroleids)) {
-            [$supinsql, $supinparams]   = $DB->get_in_or_equal($supervisorroleids, SQL_PARAMS_NAMED, 'suprl');
-            [$stuinsql, $stuinparams]   = $DB->get_in_or_equal($studentroleids, SQL_PARAMS_NAMED, 'sturl');
+            [$supinsql, $supinparams] = $DB->get_in_or_equal($supervisorroleids, SQL_PARAMS_NAMED, 'suprl');
+            [$stuinsql, $stuinparams] = $DB->get_in_or_equal($studentroleids, SQL_PARAMS_NAMED, 'sturl');
             $outerselect .= ", COALESCE(supervisorsub.supervisorname, '') AS supervisorname";
             $outerjoins[] = "LEFT JOIN (
                 SELECT gm_s.userid AS studentid,
                        COALESCE(
-                           MIN(CASE WHEN EXISTS (
-                               SELECT 1 FROM {role_assignments} ra_mod
-                                WHERE ra_mod.userid = tu.id
-                                  AND ra_mod.contextid = :supervisormodctxid
-                                  AND ra_mod.roleid {$supinsql}
-                           ) THEN CONCAT(tu.lastname, ' ', tu.firstname) END),
-                           MIN(CASE WHEN NOT EXISTS (
-                               SELECT 1 FROM {role_assignments} ra_crs
-                                WHERE ra_crs.userid = tu.id
-                                  AND ra_crs.contextid = :supervisorcoursectxid
-                                  AND ra_crs.roleid {$stuinsql}
-                           ) THEN CONCAT(tu.lastname, ' ', tu.firstname) END)
+                           MIN(CASE WHEN ra_mod.id IS NOT NULL
+                               THEN " . $DB->sql_concat('tu.lastname', "' '", 'tu.firstname') . " END),
+                           MIN(CASE WHEN ra_crs.id IS NULL
+                               THEN " . $DB->sql_concat('tu.lastname', "' '", 'tu.firstname') . " END)
                        ) AS supervisorname
                   FROM {groups_members} gm_s
                   JOIN {groups} g_t ON g_t.id = gm_s.groupid AND g_t.courseid = :supervisorcourse
                   JOIN {groups_members} gm_t ON gm_t.groupid = gm_s.groupid AND gm_t.userid <> gm_s.userid
                   JOIN {user} tu ON tu.id = gm_t.userid
+             LEFT JOIN {role_assignments} ra_mod
+                    ON ra_mod.userid = tu.id
+                   AND ra_mod.contextid = :supervisormodctxid
+                   AND ra_mod.roleid {$supinsql}
+             LEFT JOIN {role_assignments} ra_crs
+                    ON ra_crs.userid = tu.id
+                   AND ra_crs.contextid = :supervisorcoursectxid
+                   AND ra_crs.roleid {$stuinsql}
               GROUP BY gm_s.userid
             ) supervisorsub ON supervisorsub.studentid = u.id";
+            $params['supervisorcourse']      = $this->course->id;
             $params['supervisormodctxid']    = $modulecontextid;
             $params['supervisorcoursectxid'] = $coursecontext->id;
-            $params['supervisorcourse']      = $this->course->id;
             $params = array_merge($params, $supinparams, $stuinparams);
         } else {
             $outerselect .= ", '' AS supervisorname";

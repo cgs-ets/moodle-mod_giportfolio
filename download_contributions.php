@@ -97,7 +97,7 @@ if (!empty($chapters)) {
     }
 }
 
-// Pre-compute supervisor names — two-step fallback:
+// Pre-compute supervisor names — two-step fallback, fully DB-agnostic:
 // 1. Non-editing teacher role in module context (portfolio-specific).
 // 2. Fall back to any non-student member of the same group (course-level).
 $supervisormap     = [];
@@ -110,26 +110,26 @@ if (!empty($supervisorroleids) && !empty($studentroleids)) {
     $supervisors = $DB->get_records_sql(
         "SELECT gm_s.userid AS studentid,
                 COALESCE(
-                    MIN(CASE WHEN EXISTS (
-                        SELECT 1 FROM {role_assignments} ra_mod
-                         WHERE ra_mod.userid = tu.id
-                           AND ra_mod.contextid = :dlmodctxid
-                           AND ra_mod.roleid {$supinsql}
-                    ) THEN CONCAT(tu.lastname, ' ', tu.firstname) END),
-                    MIN(CASE WHEN NOT EXISTS (
-                        SELECT 1 FROM {role_assignments} ra_crs
-                         WHERE ra_crs.userid = tu.id
-                           AND ra_crs.contextid = :dlcoursectxid
-                           AND ra_crs.roleid {$stuinsql}
-                    ) THEN CONCAT(tu.lastname, ' ', tu.firstname) END)
+                    MIN(CASE WHEN ra_mod.id IS NOT NULL
+                        THEN " . $DB->sql_concat('tu.lastname', "' '", 'tu.firstname') . " END),
+                    MIN(CASE WHEN ra_crs.id IS NULL
+                        THEN " . $DB->sql_concat('tu.lastname', "' '", 'tu.firstname') . " END)
                 ) AS supervisorname
            FROM {groups_members} gm_s
            JOIN {groups} g ON g.id = gm_s.groupid AND g.courseid = :dlcid
            JOIN {groups_members} gm_t ON gm_t.groupid = gm_s.groupid AND gm_t.userid <> gm_s.userid
            JOIN {user} tu ON tu.id = gm_t.userid
+      LEFT JOIN {role_assignments} ra_mod
+             ON ra_mod.userid = tu.id
+            AND ra_mod.contextid = :dlmodctxid
+            AND ra_mod.roleid {$supinsql}
+      LEFT JOIN {role_assignments} ra_crs
+             ON ra_crs.userid = tu.id
+            AND ra_crs.contextid = :dlcoursectxid
+            AND ra_crs.roleid {$stuinsql}
        GROUP BY gm_s.userid",
         array_merge(
-            ['dlmodctxid' => $context->id, 'dlcoursectxid' => $coursecontext->id, 'dlcid' => $course->id],
+            ['dlcid' => $course->id, 'dlmodctxid' => $context->id, 'dlcoursectxid' => $coursecontext->id],
             $supinparams,
             $stuinparams
         )
