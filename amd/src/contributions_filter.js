@@ -46,6 +46,15 @@ export const init = (filterRegionId) => {
         return;
     }
 
+    // Register hidden filters before init() so they are included in every request.
+    // year must be registered first so it is present when the first AJAX fires.
+    const yearSelect = document.querySelector('[data-region="contributions-year-selector"]');
+
+    // Sync data-table-year from the <select> value before anything fires.
+    if (yearSelect) {
+        filterSet.dataset.tableYear = yearSelect.value;
+    }
+
     // Create and initialize the core datafilter.
     const coreFilter = new CoreFilter(filterSet, function(filters, pendingPromise) {
         DynamicTable.setFilters(
@@ -62,7 +71,6 @@ export const init = (filterRegionId) => {
             .catch(Notification.exception);
     });
 
-    // Register hidden filters — always sent with every AJAX request.
     coreFilter.activeFilters.courseid      = new CourseFilter('courseid', filterSet);
     coreFilter.activeFilters.cmid          = new HiddenFilter('cmid', filterSet, 'tableCmid');
     coreFilter.activeFilters.giportfolioid = new HiddenFilter('giportfolioid', filterSet, 'tableGiportfolioid');
@@ -70,14 +78,10 @@ export const init = (filterRegionId) => {
 
     coreFilter.init();
 
-    // Wire the year <select> to update the hidden year filter and reload the table.
-    const yearSelect = document.querySelector('[data-region="contributions-year-selector"]');
+    // Wire the year <select> — on change update the data attribute and reload.
     if (yearSelect) {
         yearSelect.addEventListener('change', () => {
-            const newYear = parseInt(yearSelect.value, 10);
-            // Update the data attribute so the hidden filter reads the new value.
-            filterSet.dataset.tableYear = newYear;
-            // Reload the table with the new year filter.
+            filterSet.dataset.tableYear = yearSelect.value;
             coreFilter.updateTableFromFilter();
         });
     }
@@ -91,7 +95,7 @@ export const init = (filterRegionId) => {
             .then(() => initialFilterPromise.resolve())
             .catch();
     } else {
-        // No saved filters — fire an initial reload so the year filter is sent on first load.
+        // No saved filters — trigger a reload so the year filter is sent on first load.
         coreFilter.updateTableFromFilter();
     }
 };
