@@ -73,7 +73,13 @@ export const init = (formId, toggleGroup = 'students-table', selectId = 'formact
             downloadForm.method = 'post';
             downloadForm.action = actionUrl.pathname;
 
-            // Forward all query-string params (id, dataformat, etc.) as hidden inputs.
+            // If there is a year selector on the page, use its current value instead of the baked-in default.
+            const yearSelector = document.querySelector('[data-region="contributions-year-selector"]');
+            if (yearSelector) {
+                actionUrl.searchParams.set('year', yearSelector.value);
+            }
+
+            // Forward all query-string params (id, dataformat, year, etc.) as hidden inputs.
             actionUrl.searchParams.forEach((value, key) => {
                 const input = document.createElement('input');
                 input.type = 'hidden';
