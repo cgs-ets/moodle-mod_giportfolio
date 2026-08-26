@@ -78,7 +78,7 @@ $cangrade = has_capability('mod/giportfolio:gradegiportfolios', $context); // Al
 
 if (!$cangrade) {
     if ($chapter->userid && $chapter->userid != $USER->id && $mentor == 0) {
-        throw new moodle_exception('notyourchapter', 'mod_giportfolio');
+        throw new \moodle_exception('notyourchapter', 'mod_giportfolio');
     }
 }
 
@@ -159,7 +159,7 @@ $redir = new moodle_url('/mod/giportfolio/viewgiportfolio.php', $params);
 // Handle delete / show / hide actions.
 if ($action) {
     if (!$contribution) {
-        print_error('invalidcontributionid', 'giportfolio');
+        throw new \moodle_exception('invalidcontributionid', 'giportfolio');
     }
 
     if ($action == 'delete') {
@@ -195,7 +195,7 @@ if ($action) {
         require_sesskey();
         // Verify user owns this contribution or has grading capability.
         if ($contribution->userid != $USER->id && !$cangrade) {
-            throw new moodle_exception('nopermissions', 'error');
+            throw new \moodle_exception('nopermissions', 'error');
         }
         if ($contribution->hidden) {
             $DB->set_field('giportfolio_contributions', 'hidden', 0, array('id' => $contribution->id));
@@ -205,7 +205,7 @@ if ($action) {
         require_sesskey();
         // Verify user owns this contribution or has grading capability.
         if ($contribution->userid != $USER->id && !$cangrade) {
-            throw new moodle_exception('nopermissions', 'error');
+            throw new \moodle_exception('nopermissions', 'error');
         }
         if (!$contribution->hidden) {
             $DB->set_field('giportfolio_contributions', 'hidden', 1, array('id' => $contribution->id));
@@ -218,7 +218,7 @@ if ($action) {
         
         // Verify permissions: owner, teacher with grading capability, or valid mentor.
         if ($contribution->userid != $USER->id && !$cangrade && !$isvalidmentor) {
-            throw new moodle_exception('nopermissions', 'error');
+            throw new \moodle_exception('nopermissions', 'error');
         }
         if (!$contribution->shared) {
             $DB->set_field('giportfolio_contributions', 'shared', 1, array('id' => $contribution->id));
@@ -231,7 +231,7 @@ if ($action) {
         
         // Verify permissions: owner, teacher with grading capability, or valid mentor.
         if ($contribution->userid != $USER->id && !$cangrade && !$isvalidmentor) {
-            throw new moodle_exception('nopermissions', 'error');
+            throw new \moodle_exception('nopermissions', 'error');
         }
         if ($contribution->shared) {
             $DB->set_field('giportfolio_contributions', 'shared', 0, array('id' => $contribution->id));

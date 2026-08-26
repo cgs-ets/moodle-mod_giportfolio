@@ -102,19 +102,19 @@ if ($chapterid == '0') { // Go to first chapter if no given.
 }
 
 if (!$chapterid) {
-    print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
+    throw new \moodle_exception('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
 }
 
 if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id))) {
-    print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
+    throw new \moodle_exception('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
 }
 if ($chapter->userid && $chapter->userid != $userid) {
-    throw new moodle_exception('errorchapter', 'mod_giportfolio');
+    throw new \moodle_exception('errorchapter', 'mod_giportfolio');
 }
 
 // Chapter is hidden for students.
 if ($chapter->hidden && !$viewhidden) {
-    print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewcontribute.php', array('id' => $course->id)));
+    throw new \moodle_exception('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewcontribute.php', array('id' => $course->id)));
 }
 
 // $params = array('id' => $id, 'chapterid' => $chapterid, 'userid' => $userid, 'cont' => $contribute);

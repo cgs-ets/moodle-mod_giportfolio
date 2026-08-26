@@ -80,11 +80,11 @@ $userid = $ismentor ? $mentee : $USER->id; // To allow teachers/parents to print
 
 
 if (!is_enrolled($context, $userid, '') && !is_siteadmin() && !$allowgrade) {
-    print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
+    throw new \moodle_exception('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
 if ((!is_enrolled($context, $USER->id, '') && $mentee == 0 && !$ismentor) && !is_siteadmin() && !$allowgrade) {
-    print_error('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
+    throw new \moodle_exception('errorpath', 'mod_giportfolio', new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
 if ($allowedit) {
@@ -168,26 +168,26 @@ if (!$chapterid) {
     if (giportfolio_all_chapters_hidden($giportfolio)) {
 
         if ($cangrade) {
-            throw new moodle_exception('teacherchaptershiddenexception', 'mod_giportfolio');
+            throw new \moodle_exception('teacherchaptershiddenexception', 'mod_giportfolio');
         } else {
-            throw new moodle_exception('studentchaptershiddenexception', 'mod_giportfolio');
+            throw new \moodle_exception('studentchaptershiddenexception', 'mod_giportfolio');
         }
     }
 }
 
 if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid, 'giportfolioid' => $giportfolio->id))) {
-    print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
+    throw new \moodle_exception('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
 }
 
 $isuserchapter = (bool) $chapter->userid || $mentor != 0 || $chapter->userid == $USER->id;
 // var_dump($isuserchapter); exit;
 if ($isuserchapter && !$allowcontribute  && !$cangrade) {
-    throw new moodle_exception('notyourchapter', 'mod_giportfolio');
+    throw new \moodle_exception('notyourchapter', 'mod_giportfolio');
 }
 
 // Chapter is hidden for students.
 if ($chapter->hidden and !$viewhidden) {
-    print_error('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
+    throw new \moodle_exception('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
 }
 
 $params = array('id' => $id, 'chapterid' => $chapterid, 'mentee' => $mentee); // We need the mentee param for the settings navigation.
