@@ -1359,15 +1359,20 @@ function giportfolio_quick_update_grades($id, $menu, $currentgroup, $giportfolio
         false,
         true
     );
+
     $itemid = giportfolio_get_gradeitem($giportfolioid);
 
+    // var_dump($itemid); exit;
+
     foreach ($allportousers as $puser) {
-        if (!empty($menu[$puser->id])) {
+        if (isset($menu[$puser->id]) && $menu[$puser->id] !== '') {
             if ($menu[$puser->id] == -1) {
                 $menu[$puser->id] = 0;
             }
+
             $gradeid = giportfolio_get_usergrade_id($itemid, $puser->id);
             if ($gradeid) {
+            
                 $newgrade = new stdClass();
                 $newgrade->id = $gradeid;
                 $newgrade->itemid = $itemid;
@@ -3260,6 +3265,7 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                     $updatedchapters = display_chapters_not_seen($giportfolio, $puser->id, $cm);
                     $lastupdated = date('l jS \of F Y ', $usercontribution);
                     $usergrade = grade_get_grades($course->id, 'mod', 'giportfolio', $giportfolio->id, $puser->id);
+                   
                     if ($usergrade->items) {
                         $gradeitemgrademax = $usergrade->items[0]->grademax;
                         $userfinalgrade = $usergrade->items[0]->grades[$puser->id];
@@ -3326,15 +3332,16 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                 $userlink = '<a href="' . $CFG->wwwroot . '/user/view.php?id=' . $puser->id . '&amp;course=' . $course->id . '">' .
                     fullname($puser, has_capability('moodle/site:viewfullnames', $context)) . '</a>';
                 $extradata = array();
-                foreach ($extrafields as $field) {
-                    $extradata[] = $puser->{$field};
-                }
+                
+                // foreach ($extrafields as $field) {
+                //     $extradata[] = $puser->{$field};
+                // }
                 $aux = $showgradecol ? array($lastupdated, $statuspublish, $updatedchapters, $userfinalgrade->grade, $feedback) :
                     array($lastupdated, $statuspublish, $updatedchapters, $feedback);
 
                 $row = array_merge(
                     array($picture, $userlink),
-                    $extradata,
+                    // $extradata,
                     $aux
                 );
                 $offset++;
@@ -3355,8 +3362,11 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
             'name' => 'fastg',
             'value' => get_string('saveallfeedback', 'mod_giportfolio')
         ));
+
+        echo html_writer::empty_tag('br');
         echo html_writer::tag('div', $savefeedback, array('class' => 'fastgbutton'));
         echo html_writer::end_tag('form');
+        echo html_writer::empty_tag('br');
     } else if ($quickgrade) {
         echo html_writer::end_tag('form');
     }

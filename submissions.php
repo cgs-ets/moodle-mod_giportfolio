@@ -138,7 +138,7 @@ $strsaveallfeedback = get_string('saveallfeedback', 'mod_giportfolio');
 $fastg = optional_param('fastg', 0, PARAM_BOOL);
 
 if ($fastg) { // Update the grade and the feedback.
-
+   
     if (isset($_POST["menu"])) {
         $menu = $_POST["menu"];
         giportfolio_quick_update_grades($cm->id, $menu, $currentgroup, $giportfolio->id);
@@ -419,7 +419,7 @@ function display_chapters_not_seen( $giportfolio, $contributorid, $cm) {
     global $DB, $PAGE;
 
     $chapters =  get_updated_chapters_not_seen($giportfolio, $contributorid, $cm);
-    $morethanthree = count($chapters) > 3;
+    $morethanthree = !is_null($chapters) ? (count($chapters) > 3) : false;
     $links = '';
     $index = 0;
 
