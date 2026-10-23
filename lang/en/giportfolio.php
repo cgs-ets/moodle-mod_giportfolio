@@ -303,3 +303,5 @@ $string['year'] = 'Year';
 $string['nochaptersinyear'] = 'No chapters found for the selected year.';
 $string['contributed'] = 'Yes';
 $string['notcontributed'] = 'No';
+$string['subplugintype_giportfoliotool_plural'];
+

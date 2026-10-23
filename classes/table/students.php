@@ -262,7 +262,7 @@ class students extends table_sql implements dynamic_table {
         foreach ($group->members as $memberid => $unused) {
             if (!\mod_giportfolio\output\students_filter::user_is_student_in_course(
                     $memberid, $coursecontext->id, $studentroleids)) {
-                $user = $DB->get_record('user', ['id' => $memberid], 'id, firstname, lastname');
+                $user = $DB->get_record('user', ['id' => $memberid], 'id, firstname, lastname, firstnamephonetic, lastnamephonetic, middlename, alternatename');
                 if ($user) {
                     $tutornames[] = fullname($user);
                 }

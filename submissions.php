@@ -185,7 +185,7 @@ foreach ($allusers as $user) {
 
 $listusersids = "'" . implode("', '", $alluserids) . "'";
 // Generate table.
-$output;
+$output='';
 switch ($currenttab) {
 
     case 'graphcontributors':

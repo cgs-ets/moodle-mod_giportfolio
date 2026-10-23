@@ -32,10 +32,9 @@ $messageproviders = array(
 
     'contributionreminder' => [ // CGS custom.
         'defaults' => [
-            'email' => MESSAGE_PERMITTED ,
-            'popup' => MESSAGE_PERMITTED ,
-            'airnotifier' => MESSAGE_PERMITTED ,
-
+            'email' => MESSAGE_PERMITTED + MESSAGE_DEFAULT_ENABLED,
+            'popup' => MESSAGE_PERMITTED,
+            'airnotifier' => MESSAGE_PERMITTED,
         ],
     ],
     'commentnotification' => [  // CGS custom.

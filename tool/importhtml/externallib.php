@@ -32,7 +32,7 @@ require_once(__DIR__ . '/locallib.php');
  * @copyright 2012 Paul Charsley
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class giportfoliotool_external extends external_api {
+class giportfoliotool_external extends core_external\external_api {
     /**
      * Returns description of method parameters
      * @return external_function_parameters

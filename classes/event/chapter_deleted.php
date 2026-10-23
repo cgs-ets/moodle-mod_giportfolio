@@ -65,20 +65,6 @@ class chapter_deleted extends \core\event\base {
     }
 
     /**
-     * Return the legacy event log data.
-     *
-     * @return array|null
-     */
-    protected function get_legacy_logdata() {
-
-        //$chapter = $this->get_record_snapshot('giportfolio_chapters', $this->objectid);
-        if ($chapter = $this->get_record_snapshot('giportfolio_chapters', $this->objectid)) {
-
-            return array($this->courseid, 'giportfolio', 'update', 'view.php?id=' . $this->contextinstanceid, $chapter->giportfolioid, $this->contextinstanceid);
-        }
-    }
-
-    /**
      * Return localised event name.
      *
      * @return string

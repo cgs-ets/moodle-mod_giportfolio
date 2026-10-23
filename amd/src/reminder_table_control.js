@@ -29,11 +29,11 @@ import * as Str from 'core/str';
 import URL from 'core/url';
 import Templates from 'core/templates';
 import ModalEvents from 'core/modal_events';
-import ModalFactory from 'core/modal_factory';
+import ModalSaveCancel from 'core/modal_save_cancel';
 
 const Selectors = {
     bulkActionSelect: "#formactionid",
-    bulkUserSelectedCheckBoxes: "input[data-togglegroup='participants-table'][data-toggle='slave']:checked",
+    bulkUserSelectedCheckBoxes: "input[data-togglegroup='participants-table'][data-toggle='target']:checked",
     checkCountButton: "#checkall",
     showCountText: '[data-region="participant-count"]',
     showCountToggle: '[data-action="showcount"]',
@@ -159,8 +159,7 @@ export const init = ({
             link: link
         };
 
-        return ModalFactory.create({
-                type: ModalFactory.types.SAVE_CANCEL,
+        return ModalSaveCancel.create({
                 body: Templates.render('mod_giportfolio/send_bulk_message', context),
                 title: titlePromise,
                 buttons: {

@@ -57,7 +57,7 @@ export const init = (formId, toggleGroup = 'students-table', selectId = 'formact
 
             // Collect selected user ids from the correct togglegroup.
             const checkboxes = form.querySelectorAll(
-                `input[data-togglegroup="${toggleGroup}"][data-toggle="slave"]:checked`
+                `input[data-togglegroup="${toggleGroup}"][data-toggle="target"]:checked`
             );
 
             if (!checkboxes.length) {

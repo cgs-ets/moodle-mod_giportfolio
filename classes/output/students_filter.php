@@ -211,7 +211,7 @@ class students_filter extends \core\output\datafilter {
                     continue;
                 }
                 if (!self::user_is_student_in_course($memberid, $coursecontext->id, $studentroleids)) {
-                    $user = \core_user::get_user($memberid, 'id, firstname, lastname');
+                    $user = \core_user::get_user($memberid, 'id, firstname, lastname, firstnamephonetic, lastnamephonetic, middlename, alternatename');
                     if ($user) {
                         $tutors[$memberid] = fullname($user);
                     }

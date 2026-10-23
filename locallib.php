@@ -2342,7 +2342,7 @@ function giportfolio_reminder_parents_table($PAGE, $allusers, $context, $usernam
                             "name" => "user$parent->id",
                             "data-action" => "toggle",
                             "data-togglegroup" => "participants-table",
-                            "data-toggle" => "slave",
+                            "data-toggle" => "target",
                             "class" => 'parent-reminder-checkbox'
                         ];
                         $pout .= html_writer::tag('input', '', $checkboxattr);
@@ -3276,7 +3276,7 @@ function giportfolio_submissionstables($context, $username, $currenttab, $giport
                             $menu = html_writer::select(
                                 make_grades_menu($giportfolio->grade),
                                 'menu[' . $puser->id . ']',
-                                round(($userfinalgrade->grade), 0),
+                                round(($userfinalgrade->grade ?? 0), 0),
                                 array(-1 => get_string('nograde')),
                                 $attributes
                             );
@@ -3535,7 +3535,7 @@ function giportfolio_table_columns($giportfolioid, $context) {
     $tablecolumns = [];
     $extrafieldnames = array();
     $showgradecol = false;
-    $extrafields = \core_user\fields::for_userpic()->excluding('id', 'firstname', 'lastname', 'lastnamephonetic', 'firstnamephonetic', 'middlename', 'alternatename', 'description', 'email', 'imagealt')->get_required_fields();
+    $extrafields = \core_user\fields::for_userpic()->excluding('id', 'picture', 'firstname', 'lastname', 'lastnamephonetic', 'firstnamephonetic', 'middlename', 'alternatename', 'description', 'email', 'imagealt')->get_required_fields();
     if (!is_array($extrafields)) {
         $extrafields = array();
     }
@@ -3868,11 +3868,7 @@ function filter_student_with_contribution($data) {
 
 // Utility function to get fields from mdl_user table
 function get_user_fields() {
-    $ufields = \core_user\fields::for_name()->with_userpic()->get_required_fields();
-    $ufields[0] = 'u.id';
-    $ufields = implode(', ', $ufields);
-
-    return $ufields;
+    return \core_user\fields::for_name()->with_userpic()->get_sql('u', false, '', 'id', false)->selects;
 }
 /**
  *Get the sum of all the hours registered by the student
