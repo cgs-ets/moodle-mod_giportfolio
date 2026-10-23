@@ -32,6 +32,7 @@ require_once(__DIR__ . '/locallib.php');
  * @copyright 2012 Paul Charsley
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 class giportfoliotool_external extends core_external\external_api {
     /**
      * Returns description of method parameters
@@ -40,13 +41,13 @@ class giportfoliotool_external extends core_external\external_api {
      */
 
     public static function import_chapters_parameters() {
-        return new external_function_parameters(
+        return new core_external\external_function_parameters(
             array(
-                'chapterids' => new external_value(PARAM_RAW, 'chapter idd to import'),
-                'giportfolioid' => new external_value(PARAM_RAW, 'origin giportfiod id'),
-                'cm' => new external_value(PARAM_RAW, 'course module id'),
-                'chapterandcoursemodule' => new external_value(PARAM_RAW, 'Chapter id and its context module id'),
-                'chaptersdetails' => new external_value(PARAM_RAW, 'Contains all the chapters details'),
+                'chapterids' => new core_external\external_value(PARAM_RAW, 'chapter idd to import'),
+                'giportfolioid' => new core_external\external_value(PARAM_RAW, 'origin giportfiod id'),
+                'cm' => new core_external\external_value(PARAM_RAW, 'course module id'),
+                'chapterandcoursemodule' => new core_external\external_value(PARAM_RAW, 'Chapter id and its context module id'),
+                'chaptersdetails' => new core_external\external_value(PARAM_RAW, 'Contains all the chapters details'),
             )
         );
     }
@@ -97,13 +98,13 @@ class giportfoliotool_external extends core_external\external_api {
     /**
      * Describes the structure of the function return value.
      * Returns the URL of the file for the group
-     * @return external_single_structure
+     * @return core_external\external_single_structure
      *
      */
     public static function import_chapters_returns() {
-        return new external_single_structure(
+        return new core_external\external_single_structure(
             array(
-                'status' => new external_value(PARAM_RAW, 'Result of saving records'),
+                'status' => new core_external\external_value(PARAM_RAW, 'Result of saving records'),
             )
         );
     }

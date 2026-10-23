@@ -3883,7 +3883,7 @@ function giportfolio_get_cumulative_hours($userid, $giportfolioid) {
 
     $r = $DB->get_record_sql($sql, ['userid' => $userid, 'giportfolioid' => $giportfolioid]);
 
-    return number_format($r->hours, 2);
+    return number_format($r->hours ?? 0, 2);
 }
 
 // Portfolio with hours are used for service learning. Where the student will add their chapters
