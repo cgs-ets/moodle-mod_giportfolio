@@ -179,7 +179,7 @@ if (!$chapter = $DB->get_record('giportfolio_chapters', array('id' => $chapterid
     throw new \moodle_exception('errorchapter', 'mod_giportfolio', new moodle_url('/course/viewgiportfolio.php', array('id' => $course->id)));
 }
 
-$isuserchapter = (bool) $chapter->userid || $mentor != 0 || $chapter->userid == $USER->id;
+$isuserchapter = $chapter->userid != 0 && $chapter->userid != $USER->id && $mentor == 0;
 // var_dump($isuserchapter); exit;
 if ($isuserchapter && !$allowcontribute  && !$cangrade) {
     throw new \moodle_exception('notyourchapter', 'mod_giportfolio');

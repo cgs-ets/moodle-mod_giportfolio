@@ -68,6 +68,18 @@ $noneditingteachercancontribute = giportfolio_non_editing_teacher_allowed_to_con
 $allowedit = has_capability('mod/giportfolio:edit', $context);
 
 $allowcontribute = has_capability('mod/giportfolio:submitportfolio', $context);
+// In a locked (frozen) context capabilities return false — fall back to a single query against role_assignments.
+if (!$allowcontribute && $context->is_locked()) {
+    $studentroleids = array_keys(get_archetype_roles('student'));
+    [$insql, $inparams] = $DB->get_in_or_equal($studentroleids, SQL_PARAMS_NAMED, 'rl');
+    $inparams['userid'] = $USER->id;
+    $coursecontext = $context->get_course_context();
+    $inparams['contextid'] = $coursecontext->id;
+    $allowcontribute = $DB->record_exists_sql(
+        "SELECT 1 FROM {role_assignments} WHERE userid = :userid AND contextid = :contextid AND roleid $insql",
+        $inparams
+    );
+}
 
 $allowreport = has_capability('report/outline:view', $context->get_course_context());
 $allowview = has_capability('mod/giportfolio:view', $context);
